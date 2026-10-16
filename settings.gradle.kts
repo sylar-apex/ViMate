@@ -44,6 +44,7 @@ include(":kmpcore:di")
 include(":kmpcore:utils")
 include(":kmpcore:permissions")
 include(":kmpcore:storage:datastore")
+include(":kmpcore:networking")
 
 // Reusable media player library — core = engine, models, logic; ui = Compose player screens
 include(":kmediaplayer:core")
