@@ -40,6 +40,8 @@ kotlin {
             api(projects.kmpcore.di)
             api(projects.kmpcore.utils)
             api(projects.kmpcore.mvi)
+            api(projects.kmpcore.networking)
+            api(projects.kdownloader.core)
             api(libs.koin.core.viewmodel)
             implementation(libs.kotlin.serialization)
         }

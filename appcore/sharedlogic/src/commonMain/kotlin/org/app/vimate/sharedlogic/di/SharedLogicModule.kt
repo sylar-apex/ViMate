@@ -4,6 +4,7 @@ import org.app.kmediaplayer.settings.ObservableSettings
 import org.app.vimate.sharedlogic.data.CatalogRepository
 import org.app.vimate.sharedlogic.data.StoreFactory
 import org.app.vimate.sharedlogic.data.UserDataRepository
+import org.app.vimate.sharedlogic.download.downloadModule
 import org.app.vimate.sharedlogic.event.AppEvents
 import org.app.vimate.sharedlogic.platform.HostSignals
 import org.app.vimate.sharedlogic.playback.PlaybackLauncher
@@ -23,7 +24,7 @@ import org.koin.dsl.module
 
 /** App-wide data: settings, user records, the catalog, the event bus and platform services. */
 fun sharedLogicModule() = module {
-    includes(platformDataModule())
+    includes(platformDataModule(), downloadModule())
     single { ObservableSettings(get<StoreFactory>().open("settings"), appSettingRegistries) }
     single { UserDataRepository(get<StoreFactory>().open("user")) }
     single { CatalogRepository() }

@@ -111,6 +111,41 @@
     <string name="detail_following">Following</string>
     <string name="detail_related">Related</string>
 
+    <!-- Download sheet -->
+    <string name="dl_rename">Rename</string>
+    <string name="dl_path">Path:%1$s</string>
+    <string name="dl_free">%1$s FREE/%2$s</string>
+    <string name="dl_change">Change</string>
+    <string name="dl_music">Music</string>
+    <string name="dl_video">Video</string>
+    <string name="dl_videos">Videos</string>
+    <string name="dl_original">Original</string>
+    <string name="dl_unknown_size">Unknown size</string>
+    <string name="dl_download_caps">DOWNLOAD</string>
+    <string name="dl_movies_folder">Movies folder</string>
+    <string name="dl_music_folder">Music folder</string>
+    <string name="dl_download_folder">Download folder</string>
+    <string name="dl_no_folder">Not available on this platform</string>
+
+    <!-- Downloads screen -->
+    <string name="downloads_title">Downloads</string>
+    <string name="downloads_empty">No downloads yet</string>
+    <string name="downloads_pause">Pause</string>
+    <string name="downloads_resume">Resume</string>
+    <string name="state_queued">queued</string>
+    <string name="state_running">running</string>
+    <string name="state_paused">paused</string>
+    <string name="state_completed">completed</string>
+    <string name="state_failed">failed</string>
+    <string name="state_canceled">canceled</string>
+
+    <!-- Batch -->
+    <string name="batch_title">%1$s Videos</string>
+    <string name="batch_download_in">Download videos in</string>
+    <string name="batch_edit">Edit list</string>
+    <string name="batch_expand">Expand</string>
+    <string name="batch_collapse">Collapse</string>
+
     <!-- Report reasons -->
     <string name="report_sexual">Sexual content</string>
     <string name="report_violent">Violent or repulsive content</string>

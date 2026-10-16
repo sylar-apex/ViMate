@@ -12,6 +12,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.app.vimate.appcore.theme.ViAlpha
 import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appcore.theme.ViShapes
+import org.app.vimate.appcore.theme.isViDark
+import org.app.vimate.appcore.component.SheetHandle
+import org.app.vimate.downloads.ui.DownloadSheet
 import org.app.vimate.home.ui.ReportSheet
 import org.app.vimate.sharedlogic.event.AppEvents
 import org.app.vimate.sharedlogic.event.SheetRequest
@@ -27,9 +30,13 @@ internal fun SheetHost(events: AppEvents, content: @Composable (SheetRequest) ->
         onDismissRequest = events::closeSheet,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         shape = ViShapes.sheet,
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = if (active is SheetRequest.Download && !isViDark()) ViColors.sheet else MaterialTheme.colorScheme.surface,
         scrimColor = ViColors.black.copy(alpha = if (styled) ViAlpha.SCRIM_STYLED else ViAlpha.SCRIM),
-        dragHandle = if (active is SheetRequest.Report) null else { { BottomSheetDefaults.DragHandle() } },
+        dragHandle = when (active) {
+            is SheetRequest.Report -> null
+            is SheetRequest.Download -> { { SheetHandle() } }
+            else -> { { BottomSheetDefaults.DragHandle() } }
+        },
         contentWindowInsets = { WindowInsets(0) },
     ) {
         content(active)
@@ -41,6 +48,7 @@ internal fun SheetHost(events: AppEvents, content: @Composable (SheetRequest) ->
 internal fun AppSheet(request: SheetRequest) {
     when (request) {
         is SheetRequest.Report -> ReportSheet(request.mediaId)
-        is SheetRequest.Download, is SheetRequest.ItemMenu, is SheetRequest.AddToPlaylist, SheetRequest.CreatePlaylist -> Unit
+        is SheetRequest.Download -> DownloadSheet(request.mediaId, request.url)
+        is SheetRequest.ItemMenu, is SheetRequest.AddToPlaylist, SheetRequest.CreatePlaylist -> Unit
     }
 }

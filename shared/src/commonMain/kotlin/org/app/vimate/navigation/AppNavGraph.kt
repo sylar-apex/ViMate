@@ -7,6 +7,8 @@ import androidx.navigation.toRoute
 import com.psbapp.navigation.utils.pop
 import com.psbapp.navigation.utils.push
 import org.app.vimate.detail.ui.DetailScreen
+import org.app.vimate.downloads.ui.BatchScreen
+import org.app.vimate.downloads.ui.DownloadsScreen
 import org.app.vimate.home.ui.HomeNavigation
 import org.app.vimate.home.ui.HomeScreen
 import org.app.vimate.shell.MainTab
@@ -16,14 +18,14 @@ fun NavGraphBuilder.appNavGraph(navController: NavController, tab: MainTab, onTa
     val back: () -> Unit = { navController.pop() }
 
     composable<Routes.Tabs> {
-        TabsScreen(tab = tab, onTab = onTab, onBasket = {}) { current ->
+        TabsScreen(tab = tab, onTab = onTab, onBasket = { navController.push(Routes.Batch) }) { current ->
             when (current) {
                 MainTab.HOME -> HomeScreen(
                     HomeNavigation(
                         onSearch = {},
                         onNotifications = {},
                         onSites = {},
-                        onDownloads = {},
+                        onDownloads = { navController.push(Routes.Downloads) },
                         onShorts = {},
                         onDetail = { navController.push(Routes.Detail(it)) },
                     ),
@@ -32,6 +34,8 @@ fun NavGraphBuilder.appNavGraph(navController: NavController, tab: MainTab, onTa
             }
         }
     }
+    composable<Routes.Downloads> { DownloadsScreen(onBack = back) }
+    composable<Routes.Batch> { BatchScreen(onBack = back) }
     composable<Routes.Detail> { entry ->
         val route = entry.toRoute<Routes.Detail>()
         DetailScreen(route.mediaId, route.autoPlay, onBack = back, onOpenDetail = { navController.push(Routes.Detail(it)) })

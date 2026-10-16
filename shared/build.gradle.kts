@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 }
 
-val features = listOf("onboarding", "player", "home", "detail")
+val features = listOf("onboarding", "player", "home", "detail", "downloads")
 
 kotlin {
     listOf(
