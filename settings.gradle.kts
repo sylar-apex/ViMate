@@ -50,6 +50,9 @@ include(":kmpcore:networking")
 include(":kmediaplayer:core")
 include(":kmediaplayer:ui")
 
+// Reusable download library — queue, resume, segmented downloads, per-platform storage
+include(":kdownloader:core")
+
 // App-level shared code
 include(":appcore")
 include(":appcore:appres")

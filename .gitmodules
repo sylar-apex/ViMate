@@ -4,3 +4,6 @@
 [submodule "kmediaplayer"]
 	path = kmediaplayer
 	url = https://github.com/sylar-apex/kmediaplayer.git
+[submodule "kdownloader"]
+	path = kdownloader
+	url = https://github.com/sylar-apex/kdownloader.git
