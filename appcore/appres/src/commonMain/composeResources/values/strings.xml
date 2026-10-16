@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">ViMate</string>
+    <string name="back">Back</string>
+    <string name="more">More</string>
+    <string name="play">Play</string>
+    <string name="download">Download</string>
+    <string name="share">Share</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="open">Open</string>
+    <string name="add">Add</string>
+    <string name="create">Create</string>
+    <string name="search">Search</string>
+    <string name="select_all">Select All</string>
+    <string name="deselect_all">Deselect All</string>
+    <string name="delete_count">Delete (%1$s)</string>
+    <string name="play_or_pause">Play or pause</string>
+
+    <!-- Bottom navigation -->
+    <string name="tab_home">HOME</string>
+    <string name="tab_music">MUSIC</string>
+    <string name="tab_files">MY FILES</string>
+    <string name="tab_me">ME</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Start</string>
+    <string name="onboarding_smarter_title">Smarter</string>
+    <string name="onboarding_smarter_body">Finds videos just for you.</string>
+    <string name="onboarding_cleaner_title">Cleaner</string>
+    <string name="onboarding_cleaner_body">Fewer ads, a cleaner download experience</string>
+    <string name="onboarding_faster_title">Faster</string>
+    <string name="onboarding_faster_body">Get videos in a flash</string>
+
+    <!-- Toasts -->
+    <string name="msg_enter_profile_name">Enter a name to create a local profile.</string>
+    <string name="msg_signed_in">Signed in on this device.</string>
+    <string name="msg_playback_unavailable">Playback is not available here. You can still download this file.</string>
+    <string name="msg_added_to_downloads">Added to downloads</string>
+    <string name="msg_added_n_to_downloads">Added %1$s to downloads</string>
+    <string name="msg_already_queued">This file is already in the queue.</string>
+    <string name="msg_wifi_only">Downloads are set to Wi-Fi only.</string>
+    <string name="msg_not_a_url">Enter a video name or a direct media URL.</string>
+    <string name="msg_page_not_media">That page is not a direct media file. Paste a link that ends in mp4, webm, or mp3.</string>
+    <string name="msg_watch_later_added">Added to Watch Later</string>
+    <string name="msg_watch_later_removed">Removed from Watch Later</string>
+    <string name="msg_hidden_from_home">Hidden from Home</string>
+    <string name="msg_report_saved">Report saved on this device</string>
+    <string name="msg_following">Following %1$s</string>
+    <string name="msg_unfollowed">Unfollowed %1$s</string>
+    <string name="msg_set_private_password_first">Set a password in My Files › Private first.</string>
+    <string name="msg_no_private_password">No private password is set.</string>
+    <string name="msg_private_unlocked">Private files unlocked for this session.</string>
+    <string name="msg_password_mismatch">Password does not match.</string>
+    <string name="msg_passwords_differ">Passwords do not match</string>
+    <string name="msg_password_too_short">Use at least 4 characters.</string>
+    <string name="msg_password_saved">Private-folder password saved on this device. Files are hidden in the app, not encrypted.</string>
+    <string name="msg_private_lock_removed">Private lock removed and private files unhidden.</string>
+    <string name="msg_feedback_saved">Feedback saved on this device.</string>
+    <string name="msg_cache_freed">Freed %1$s</string>
+    <string name="msg_like_us_thanks">Thanks. This build does not open a social network.</string>
+    <string name="msg_update_current">ViMate 1.0 is the current build. There is no remote update feed.</string>
+    <string name="msg_privacy_note">Privacy: library, history, and settings stay on this device.</string>
+    <string name="msg_import_android_only">Import from the device library is available on Android.</string>
+    <string name="msg_imported_one">Imported 1 file</string>
+    <string name="msg_imported_many">Imported %1$s files</string>
+    <string name="msg_no_downloads_running">No downloads in progress</string>
+    <string name="msg_paused_n">Paused %1$s</string>
+    <string name="msg_nothing_to_resume">Nothing to resume</string>
+    <string name="msg_resumed_n">Resumed %1$s</string>
+    <string name="msg_deleted_n">Deleted %1$s</string>
+    <string name="msg_no_subtitles">No subtitle file is available for this title.</string>
+    <string name="msg_widget_confirm">Confirm the widget on the home screen.</string>
+    <string name="msg_widget_long_press">Long-press the home screen and add the ViMate widget.</string>
+    <string name="msg_widget_android_only">Home screen widgets are available on Android.</string>
+    <string name="msg_download_failed">Download failed: %1$s</string>
+
+    <!-- In-app notifications -->
+    <string name="note_download_complete">Download complete</string>
+    <string name="note_saved">Saved</string>
+    <string name="note_thanks">Thanks</string>
+    <string name="note_like_us_body">ViMate is a local player and library.</string>
+    <string name="note_item">Item</string>
+
+    <!-- Report reasons -->
+    <string name="report_sexual">Sexual content</string>
+    <string name="report_violent">Violent or repulsive content</string>
+    <string name="report_hateful">Hateful or abusive content</string>
+    <string name="report_harmful">Harmful or dangerous acts</string>
+    <string name="report_spam">Spam or misleading</string>
+    <string name="report_child_abuse">Child abuse</string>
+</resources>
