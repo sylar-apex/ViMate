@@ -59,7 +59,7 @@ include(":appcore:appres")
 include(":appcore:sharedlogic")
 
 // One module per screen, each split into domain + presentation
-val features = listOf("onboarding")
+val features = listOf("onboarding", "player", "home", "detail")
 features.forEach { feature ->
     include(":appfeatures:$feature:domain")
     include(":appfeatures:$feature:presentation")

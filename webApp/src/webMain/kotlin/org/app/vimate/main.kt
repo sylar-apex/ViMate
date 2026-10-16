@@ -8,6 +8,6 @@ import org.app.vimate.di.initApp
 fun main() {
     initApp()
     ComposeViewport {
-        App()
+        App(embeddedPlayer = true)
     }
 }

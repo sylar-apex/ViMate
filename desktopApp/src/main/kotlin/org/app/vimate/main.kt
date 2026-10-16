@@ -18,6 +18,6 @@ fun main() = application {
         title = "ViMate",
         state = rememberWindowState(size = WindowSize, position = WindowPosition(Alignment.Center)),
     ) {
-        App()
+        App(embeddedPlayer = true)
     }
 }

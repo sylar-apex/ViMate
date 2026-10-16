@@ -2,7 +2,10 @@ package org.app.vimate.di
 
 import com.psbapp.di.KoinModulesInterface
 import com.psbapp.utils.dispatcher.dispatcherDiModule
+import org.app.vimate.detail.di.detailDomainModule
+import org.app.vimate.home.di.homeDomainModule
 import org.app.vimate.onboarding.di.onboardingDomainModule
+import org.app.vimate.player.di.playerDomainModule
 import org.app.vimate.sharedlogic.di.sharedLogicModule
 import org.koin.core.module.Module
 
@@ -12,5 +15,8 @@ object AppModules : KoinModulesInterface {
         dispatcherDiModule(),
         sharedLogicModule(),
         onboardingDomainModule(),
+        playerDomainModule(),
+        homeDomainModule(),
+        detailDomainModule(),
     )
 }

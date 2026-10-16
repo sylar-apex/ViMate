@@ -32,6 +32,10 @@ class CatalogRepository {
         return media
     }
 
+    /** The catalog or local title whose file or stream is [uri]. */
+    fun mediaForUri(uri: String): Media? =
+        local.values.firstOrNull { m -> m.renditions.any { it.url == uri } } ?: items.firstOrNull { m -> m.renditions.any { it.url == uri } }
+
     companion object {
         const val LOCAL_PREFIX = "local:"
         const val LOCAL_QUALITY = "local"

@@ -5,12 +5,13 @@ import com.psbapp.di.initKoin
 import org.app.kmediaplayer.android.KMediaPlayerAndroid
 import org.app.vimate.di.AppModules
 import org.app.vimate.di.configureApp
+import org.app.vimate.player.PlayerActivity
 import org.koin.mp.KoinPlatform
 
 class ViMateApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        KMediaPlayerAndroid.init(this, musicActivity = MainActivity::class.java)
+        KMediaPlayerAndroid.init(this, videoActivity = PlayerActivity::class.java, musicActivity = MainActivity::class.java)
         initKoin(this, AppModules)
         KoinPlatform.getKoin().configureApp()
     }

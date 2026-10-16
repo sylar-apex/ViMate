@@ -5,5 +5,5 @@ import org.app.vimate.di.initApp
 
 fun MainViewController() = ComposeUIViewController {
     initApp()
-    App()
+    App(embeddedPlayer = true)
 }

@@ -22,15 +22,21 @@ import org.app.vimate.appcore.theme.ViTheme
 import org.app.vimate.navigation.Routes
 import org.app.vimate.navigation.appNavGraph
 import org.app.vimate.onboarding.ui.OnboardingScreen
+import org.app.vimate.player.ui.EmbeddedPlayer
 import org.app.vimate.sharedlogic.event.AppEvents
 import org.app.vimate.sharedlogic.settings.AppKeys
 import org.app.vimate.shell.MainTab
+import org.app.vimate.shell.AppSheet
 import org.app.vimate.shell.MessageToast
+import org.app.vimate.shell.SheetHost
 import org.koin.compose.koinInject
 
-/** The main window: onboarding on first launch, then the tabs and every sub-page. */
+/**
+ * The main window: onboarding on first launch, then the tabs and every sub-page. [embeddedPlayer] shows
+ * the video player inside this window, for platforms without a separate player screen.
+ */
 @Composable
-fun App() {
+fun App(embeddedPlayer: Boolean = false) {
     ViTheme {
         settingsVersion()
         val events = koinInject<AppEvents>()
@@ -40,6 +46,7 @@ fun App() {
             } else {
                 MainWindow(events)
             }
+            if (embeddedPlayer) EmbeddedPlayer()
         }
     }
 }
@@ -58,4 +65,5 @@ private fun MainWindow(events: AppEvents) {
         }
         MessageToast(events, aboveNav = onTabs)
     }
+    SheetHost(events) { AppSheet(it) }
 }

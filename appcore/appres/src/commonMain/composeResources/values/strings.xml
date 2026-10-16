@@ -86,6 +86,31 @@
     <string name="note_like_us_body">ViMate is a local player and library.</string>
     <string name="note_item">Item</string>
 
+    <!-- Home -->
+    <string name="home_search_hint">Search or enter url</string>
+    <string name="home_notifications">Notifications</string>
+    <string name="home_sites">Sites</string>
+    <string name="home_downloads">Downloads</string>
+    <string name="home_shorts">Shorts</string>
+    <string name="home_chip_all">All</string>
+    <string name="home_empty">Nothing to show here. Items you mark Not interested stay hidden.</string>
+    <string name="home_add_to_batch">Add to batch</string>
+    <string name="home_remove_from_batch">Remove from batch</string>
+    <string name="menu_add_watch_later">Add to Watch Later</string>
+    <string name="menu_remove_watch_later">Remove from Watch Later</string>
+    <string name="menu_not_interested">Not interested</string>
+    <string name="menu_report">Report</string>
+    <string name="basket_one">1 file added</string>
+    <string name="basket_many">%1$s files added</string>
+    <string name="report_title">Report</string>
+    <string name="report_done">Done</string>
+
+    <!-- Detail -->
+    <string name="detail_title">Video</string>
+    <string name="detail_subscribe">Subscribe</string>
+    <string name="detail_following">Following</string>
+    <string name="detail_related">Related</string>
+
     <!-- Report reasons -->
     <string name="report_sexual">Sexual content</string>
     <string name="report_violent">Violent or repulsive content</string>
