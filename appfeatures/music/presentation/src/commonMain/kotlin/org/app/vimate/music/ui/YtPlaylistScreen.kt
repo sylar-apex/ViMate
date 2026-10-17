@@ -55,7 +55,7 @@ fun YtPlaylistContent(listId: String, state: YtPlaylistContract.State, onEvent: 
     val nav = LocalAppNavigator.current
     val share = rememberShareText()
     val p = state
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(stringResource(Res.string.music_playlist_detail)) { nav.back() }
         LazyColumn(Modifier.fillMaxSize()) {
             item {

@@ -40,7 +40,7 @@ internal fun BatchSheet(state: BatchSelectContract.State, onEvent: (BatchSelectC
     val sel = state.sel
     val musicTitle = stringResource(Res.string.batch_music)
     val videoTitle = stringResource(Res.string.batch_video)
-    ModalBottomSheet(onDismissRequest = { onEvent(BatchSelectContract.Event.DismissSheet) }, containerColor = ViColors.white, dragHandle = null, shape = RoundedCornerShape(0.dp)) {
+    ModalBottomSheet(onDismissRequest = { onEvent(BatchSelectContract.Event.DismissSheet) }, containerColor = ViColors.surface, dragHandle = null, shape = RoundedCornerShape(0.dp)) {
         LazyColumn(Modifier.navigationBarsPadding()) {
             item {
                 Text(stringResource(Res.string.batch_items_selected, videos.size), Modifier.fillMaxWidth().padding(vertical = 16.dp), textAlign = TextAlign.Center, fontSize = 20.sp, color = ViColors.ink)
@@ -71,7 +71,7 @@ internal fun BatchSheet(state: BatchSelectContract.State, onEvent: (BatchSelectC
             }
             item {
                 Row(Modifier.padding(12.dp).fillMaxWidth().height(44.dp).clip(CircleShape).background(ViColors.batchDownload).clickable(enabled = state.infos.isNotEmpty()) { onEvent(BatchSelectContract.Event.Download) }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(18.dp).clip(CircleShape).background(ViColors.white), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(12.dp), ViColors.batchDownload) }
+                    Box(Modifier.size(18.dp).clip(CircleShape).background(ViColors.surface), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(12.dp), ViColors.batchDownload) }
                     Text(stringResource(Res.string.batch_download), Modifier.padding(start = 6.dp), color = ViColors.white, fontSize = 17.sp)
                 }
             }

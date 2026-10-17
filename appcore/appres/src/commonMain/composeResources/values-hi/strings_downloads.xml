@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="downloads_ok">ठीक है</string>
+    <string name="downloads_rename">नाम बदलें</string>
+    <string name="downloads_path">पाथ: %1$s</string>
+    <string name="downloads_free">%1$s खाली/%2$s</string>
+    <string name="downloads_change">बदलें</string>
+    <string name="downloads_change_toast">सेटिंग्स › डाउनलोड में फ़ोल्डर का नाम बदलें</string>
+    <string name="downloads_music">म्यूज़िक</string>
+    <string name="downloads_video">वीडियो</string>
+    <string name="downloads_not_available">उपलब्ध नहीं</string>
+    <string name="downloads_added">डाउनलोड में जोड़ा गया</string>
+    <string name="downloads_download">डाउनलोड</string>
+    <string name="downloads_dialog_title">वीडियो डाउनलोड करें</string>
+    <string name="downloads_video_quality">वीडियो क्वालिटी</string>
+    <string name="downloads_audio_quality">ऑडियो क्वालिटी</string>
+    <string name="downloads_save_to">यहाँ सेव करें</string>
+    <string name="downloads_download_size">डाउनलोड (%1$s)</string>
+</resources>

@@ -21,7 +21,20 @@ class DesktopPlatformActions : PlatformActions {
         Toolkit.getDefaultToolkit().systemClipboard.getData(DataFlavor.stringFlavor) as? String
     }.getOrNull()
 
-    override fun notify(title: String, body: String) {}
+    override fun notify(title: String, body: String) {
+        runCatching {
+            if (System.getProperty("os.name").startsWith("Mac")) {
+                // Notification Center through AppleScript; quotes escaped so a video title cannot break the script.
+                fun q(s: String) = "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+                ProcessBuilder("osascript", "-e", "display notification ${q(body)} with title ${q(title)}").start()
+            } else if (java.awt.SystemTray.isSupported()) {
+                val tray = java.awt.SystemTray.getSystemTray()
+                val icon = java.awt.TrayIcon(java.awt.image.BufferedImage(16, 16, java.awt.image.BufferedImage.TYPE_INT_ARGB), title)
+                tray.add(icon)
+                icon.displayMessage(title, body, java.awt.TrayIcon.MessageType.INFO)
+            }
+        }
+    }
 
     override fun pinWidget(widget: HomeWidget) = WidgetPinResult.UNSUPPORTED
 

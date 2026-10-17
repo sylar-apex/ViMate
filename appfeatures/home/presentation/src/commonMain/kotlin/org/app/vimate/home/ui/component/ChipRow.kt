@@ -47,7 +47,7 @@ internal fun ChipRow(selected: Int, onChip: (Int) -> Unit) {
     val nav = LocalAppNavigator.current
     Row(Modifier.fillMaxWidth().height(42.dp).padding(top = 2.dp), verticalAlignment = Alignment.Top) {
         Box(Modifier.padding(start = 16.dp).width(87.dp).height(32.dp)) {
-            Row(Modifier.fillMaxSize().clip(CircleShape).background(Color.White).clickable { nav.go(Routes.Shorts()) }.padding(start = 11.dp),
+            Row(Modifier.fillMaxSize().clip(CircleShape).background(ViColors.surface).clickable { nav.go(Routes.Shorts()) }.padding(start = 11.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 Ic(Res.drawable.ic_shorts, Modifier.size(19.dp), ViColors.shortsChipRed)
                 Text(stringResource(Res.string.home_shorts), Modifier.padding(start = 7.dp).graphicsLayer(scaleX = 0.97f, transformOrigin = TransformOrigin(0f, .5f)),
@@ -57,9 +57,9 @@ internal fun ChipRow(selected: Int, onChip: (Int) -> Unit) {
         LazyRow(Modifier.padding(start = 3.dp), contentPadding = PaddingValues(start = 10.dp, end = 12.dp), horizontalArrangement = Arrangement.spacedBy(11.7.dp)) {
             itemsIndexed(chipLabels, key = { i, _ -> i }) { i, label ->
                 val sel = i == selected
-                Box(Modifier.height(32.dp).clip(CircleShape).background(if (sel) ViColors.chipOn else Color.White).clickable { onChip(i) }
+                Box(Modifier.height(32.dp).clip(CircleShape).background(if (sel) ViColors.chipOn else ViColors.surface).clickable { onChip(i) }
                     .padding(horizontal = 10.dp), contentAlignment = Alignment.Center) {
-                    Text(stringResource(label), color = if (sel) Color.White else ViColors.ink, fontWeight = if (sel) FontWeight.Medium else FontWeight.Normal,
+                    Text(stringResource(label), color = if (sel) ViColors.surface else ViColors.ink, fontWeight = if (sel) FontWeight.Medium else FontWeight.Normal,
                         fontSize = 13.4.sp, modifier = Modifier.offset(y = 1.dp), lineHeight = 20.sp, maxLines = 1)
                 }
             }

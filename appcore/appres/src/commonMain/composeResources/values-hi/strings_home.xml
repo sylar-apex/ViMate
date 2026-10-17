@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_search_hint">खोजें या URL डालें</string>
+    <string name="home_downloads">डाउनलोड</string>
+    <string name="home_shorts">शॉर्ट्स</string>
+    <string name="home_chip_all">सभी</string>
+    <string name="home_chip_music">म्यूज़िक</string>
+    <string name="home_chip_jukebox">ज्यूकबॉक्स</string>
+    <string name="home_chip_playlists">प्लेलिस्ट</string>
+    <string name="home_chip_1990s">1990 के दशक</string>
+    <string name="home_chip_movies">फ़िल्में</string>
+    <string name="home_chip_comedy">कॉमेडी</string>
+    <string name="home_chip_news">समाचार</string>
+    <string name="home_chip_gaming">गेमिंग</string>
+    <string name="home_chip_bhojpuri">भोजपुरी</string>
+    <string name="home_chip_punjabi">पंजाबी</string>
+    <string name="home_site_sites">साइटें</string>
+</resources>

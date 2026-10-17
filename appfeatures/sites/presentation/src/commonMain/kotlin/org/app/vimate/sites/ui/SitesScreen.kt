@@ -1,5 +1,8 @@
 package org.app.vimate.sites.ui
 
+import org.app.vimate.sharedlogic.settings.AppKeys
+import org.app.kmediaplayer.settings.ObservableSettings
+import org.app.vimate.sites.logic.SiteFilter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -133,10 +136,10 @@ import org.app.vimate.appres.resources.site_tag_spotlight
 import org.app.vimate.appres.resources.site_tag_posts
 import org.koin.compose.koinInject
 
-private val PageBg = Color(0xFFF7F8FB)
-private val CardLine = Color(0xFFE7E9EE)
-private val Subtitle = Color(0xFF9AA0A8)
-private val ChipIdle = Color(0xFFF1F2F4)
+private val PageBg get() = ViColors.wideCanvas
+private val CardLine get() = ViColors.wideHairline
+private val Subtitle get() = ViColors.sectionLabel
+private val ChipIdle get() = ViColors.chipIdle
 private val Accent = Color(0xFFEF3B3B)
 private val Gold = Color(0xFFF5B400)
 private val Purple = Color(0xFF7C5CFC)
@@ -147,6 +150,7 @@ private enum class Chip { All, Social, Video, Music, Entertainment, News, Shoppi
 fun SitesScreen() {
     val nav = LocalAppNavigator.current
     val library = koinInject<Library>()
+    val settings = koinInject<ObservableSettings>()
     val shortcuts by library.customShortcuts.items.collectAsStateWithLifecycle()
     SitesContent(
         shortcuts = shortcuts,
@@ -155,7 +159,7 @@ fun SitesScreen() {
         onSearch = { q ->
             val url = if (q.contains(' ') || !q.contains('.')) "https://www.google.com/search?q=" + q.encodeURLParameter(spaceToPlus = true)
             else typedToUrl(q) { it.encodeURLParameter(spaceToPlus = true) }
-            nav.go(Routes.Browser(url))
+            nav.go(Routes.Browser(if (settings[AppKeys.hideAdultSites]) SiteFilter.safeSearch(url) else url))
         },
         onAdd = { name, url, group ->
             val target = typedToUrl(url.ifBlank { name }) { it.encodeURLParameter(spaceToPlus = true) }
@@ -237,7 +241,7 @@ fun SitesContent(
     }
     removing?.let { shortcut ->
         LightDialog(onDismiss = { removing = null }) {
-            Text(stringResource(Res.string.sites_remove_shortcut), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF1C1C1E))
+            Text(stringResource(Res.string.sites_remove_shortcut), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = ViColors.ink)
             Text(shortcut.name, Modifier.padding(top = 8.dp), color = Subtitle, fontSize = 14.sp)
             DialogActions(
                 onCancel = { removing = null },
@@ -257,7 +261,7 @@ private fun SitesHero(query: String, onQuery: (String) -> Unit, onSubmit: () -> 
                 Ic(Res.drawable.ic_globe, Modifier.size(26.dp), ViColors.ink)
             }
             Column(Modifier.padding(start = 10.dp)) {
-                Text(stringResource(Res.string.sites_title), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1C1C1E), lineHeight = 26.sp)
+                Text(stringResource(Res.string.sites_title), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = ViColors.ink, lineHeight = 26.sp)
                 Text(stringResource(Res.string.sites_subtitle), fontSize = 13.sp, color = Subtitle, lineHeight = 16.sp)
             }
         }
@@ -279,7 +283,7 @@ private fun SearchBar(query: String, onQuery: (String) -> Unit, onSubmit: () -> 
         keyboardActions = KeyboardActions(onSearch = { onSubmit() }),
         decorationBox = { inner ->
             Row(
-                Modifier.fillMaxSize().clip(RoundedCornerShape(14.dp)).background(ViColors.white).border(1.dp, Color(0xFFE4E6EB), RoundedCornerShape(14.dp)).padding(start = 14.dp, end = 6.dp),
+                Modifier.fillMaxSize().clip(RoundedCornerShape(14.dp)).background(ViColors.surface).border(1.dp, ViColors.searchBorder, RoundedCornerShape(14.dp)).padding(start = 14.dp, end = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(Icons.Filled.Search, stringResource(Res.string.sites_search), tint = Color(0xFF9AA0A8), modifier = Modifier.size(18.dp))
@@ -308,9 +312,9 @@ private fun ChipRow(selected: Chip, onSelect: (Chip) -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 chip.icon()?.let { icon ->
-                    Icon(icon, null, Modifier.padding(end = 6.dp).size(15.dp), tint = if (on) ViColors.white else Color(0xFF6B7280))
+                    Icon(icon, null, Modifier.padding(end = 6.dp).size(15.dp), tint = if (on) ViColors.white else ViColors.muted)
                 }
-                Text(chip.label(), fontSize = 13.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Medium, color = if (on) ViColors.white else Color(0xFF4B5563))
+                Text(chip.label(), fontSize = 13.sp, fontWeight = if (on) FontWeight.SemiBold else FontWeight.Medium, color = if (on) ViColors.white else ViColors.muted)
             }
         }
     }
@@ -322,7 +326,7 @@ private fun SectionHeader(group: SiteGroup, onAdd: () -> Unit) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             SectionMark(group)
             Column(Modifier.padding(start = 10.dp).weight(1f)) {
-                Text(group.title(), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF1C1C1E))
+                Text(group.title(), fontWeight = FontWeight.Bold, fontSize = 16.sp, color = ViColors.ink)
                 Text(group.subtitle(), fontSize = 12.sp, color = Subtitle)
             }
             Row(
@@ -333,7 +337,7 @@ private fun SectionHeader(group: SiteGroup, onAdd: () -> Unit) {
                 Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 4.dp), color = Accent, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
-        Box(Modifier.padding(top = 12.dp).fillMaxWidth().height(1.dp).background(Color(0xFFECEEF2)))
+        Box(Modifier.padding(top = 12.dp).fillMaxWidth().height(1.dp).background(ViColors.wideHairline))
     }
 }
 
@@ -352,20 +356,20 @@ private fun SectionMark(group: SiteGroup) {
 private fun SiteCard(name: String, onOpen: () -> Unit, onRemove: (() -> Unit)? = null, logo: @Composable () -> Unit) {
     var menu by remember { mutableStateOf(false) }
     Box(
-        Modifier.fillMaxWidth().height(112.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.white).border(1.dp, CardLine, RoundedCornerShape(16.dp)).clickable(onClick = onOpen),
+        Modifier.fillMaxWidth().height(112.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.surface).border(1.dp, CardLine, RoundedCornerShape(16.dp)).clickable(onClick = onOpen),
     ) {
         Box(Modifier.align(Alignment.TopEnd)) {
             Box(Modifier.size(28.dp).clickable { menu = true }, contentAlignment = Alignment.Center) {
-                Icon(Icons.Filled.MoreVert, null, Modifier.size(16.dp), tint = Color(0xFFC5C8D0))
+                Icon(Icons.Filled.MoreVert, null, Modifier.size(16.dp), tint = ViColors.hint)
             }
-            DropdownMenu(menu, { menu = false }, containerColor = ViColors.white) {
+            DropdownMenu(menu, { menu = false }, containerColor = ViColors.surface) {
                 DropdownMenuItem(text = { Text(stringResource(Res.string.sites_open)) }, onClick = { menu = false; onOpen() })
                 if (onRemove != null) DropdownMenuItem(text = { Text(stringResource(Res.string.sites_remove)) }, onClick = { menu = false; onRemove() })
             }
         }
         Column(Modifier.align(Alignment.Center).padding(top = 6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             logo()
-            Text(name, Modifier.padding(top = 8.dp), fontSize = 12.sp, lineHeight = 14.sp, color = Color(0xFF6B7280), textAlign = TextAlign.Center, maxLines = 2)
+            Text(name, Modifier.padding(top = 8.dp), fontSize = 12.sp, lineHeight = 14.sp, color = ViColors.muted, textAlign = TextAlign.Center, maxLines = 2)
         }
     }
 }
@@ -384,7 +388,7 @@ private fun AddCard(height: Dp, onClick: () -> Unit) {
         horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(Icons.Filled.Add, stringResource(Res.string.sites_add_shortcut), tint = Color(0xFF9AA0A8), modifier = Modifier.size(18.dp))
-        Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 6.dp), fontSize = 13.sp, color = Color(0xFF6B7280), fontWeight = FontWeight.Medium)
+        Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 6.dp), fontSize = 13.sp, color = ViColors.muted, fontWeight = FontWeight.Medium)
     }
     Column(
         Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(16.dp)).drawBehind {
@@ -397,7 +401,7 @@ private fun AddCard(height: Dp, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Box(Modifier.size(36.dp).clip(CircleShape).background(Color(0xFFF3F4F6)), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(36.dp).clip(CircleShape).background(ViColors.chipIdle), contentAlignment = Alignment.Center) {
             Icon(Icons.Filled.Add, stringResource(Res.string.sites_add_shortcut), tint = Color(0xFF9AA0A8), modifier = Modifier.size(18.dp))
         }
         Text(stringResource(Res.string.sites_add), Modifier.padding(top = 8.dp), fontSize = 12.sp, color = Color(0xFF9AA0A8))
@@ -419,8 +423,8 @@ private fun AddShortcutDialog(group: SiteGroup, onDismiss: () -> Unit, onAdd: (n
     var name by remember { mutableStateOf("") }
     var url by remember { mutableStateOf("") }
     val fieldColors = OutlinedTextFieldDefaults.colors(
-        focusedTextColor = Color(0xFF1C1C1E),
-        unfocusedTextColor = Color(0xFF1C1C1E),
+        focusedTextColor = ViColors.ink,
+        unfocusedTextColor = ViColors.ink,
         focusedBorderColor = Accent,
         unfocusedBorderColor = CardLine,
         focusedLabelColor = Accent,
@@ -430,7 +434,7 @@ private fun AddShortcutDialog(group: SiteGroup, onDismiss: () -> Unit, onAdd: (n
         unfocusedContainerColor = ViColors.white,
     )
     LightDialog(onDismiss = onDismiss) {
-        Text(stringResource(Res.string.sites_add_shortcut), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF1C1C1E))
+        Text(stringResource(Res.string.sites_add_shortcut), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = ViColors.ink)
         Text(group.title(), Modifier.padding(top = 4.dp), color = Subtitle, fontSize = 13.sp)
         OutlinedTextField(name, { name = it }, Modifier.fillMaxWidth().padding(top = 16.dp), singleLine = true, shape = RoundedCornerShape(12.dp), label = { Text(stringResource(Res.string.sites_shortcut_name)) }, colors = fieldColors)
         OutlinedTextField(url, { url = it }, Modifier.fillMaxWidth().padding(top = 10.dp), singleLine = true, shape = RoundedCornerShape(12.dp), label = { Text(stringResource(Res.string.sites_shortcut_url)) }, colors = fieldColors)
@@ -441,7 +445,7 @@ private fun AddShortcutDialog(group: SiteGroup, onDismiss: () -> Unit, onAdd: (n
 @Composable
 private fun LightDialog(onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Column(Modifier.width(420.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.white).padding(22.dp)) { content() }
+        Column(Modifier.width(420.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.surface).padding(22.dp)) { content() }
     }
 }
 
@@ -538,7 +542,7 @@ private val WIDE_MIN = 840.dp
 private fun WideHero(query: String, onQuery: (String) -> Unit, onSubmit: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {
-            Text(stringResource(Res.string.sites_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1C1C1E), lineHeight = 32.sp)
+            Text(stringResource(Res.string.sites_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = ViColors.ink, lineHeight = 32.sp)
             Text(stringResource(Res.string.sites_wide_subtitle), Modifier.padding(top = 2.dp), fontSize = 14.sp, color = Subtitle)
         }
         SearchBar(query, onQuery, onSubmit, Modifier.padding(start = 24.dp).widthIn(max = 560.dp))
@@ -551,7 +555,7 @@ private fun WideSectionHeader(group: SiteGroup, onAdd: () -> Unit, onViewAll: ((
     Row(Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         SectionMark(group)
         Column(Modifier.padding(start = 12.dp).weight(1f)) {
-            Text(group.title(), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF1C1C1E))
+            Text(group.title(), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = ViColors.ink)
             Text(group.subtitle(), fontSize = 13.sp, color = Subtitle)
         }
         Row(
@@ -562,12 +566,12 @@ private fun WideSectionHeader(group: SiteGroup, onAdd: () -> Unit, onViewAll: ((
             Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 4.dp), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Accent)
         }
         if (onViewAll != null) Row(
-            Modifier.padding(start = 6.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.white).border(1.dp, CardLine, RoundedCornerShape(10.dp)).clickable(onClick = onViewAll)
+            Modifier.padding(start = 6.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.surface).border(1.dp, CardLine, RoundedCornerShape(10.dp)).clickable(onClick = onViewAll)
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(stringResource(Res.string.sites_view_all), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1C1C1E))
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.padding(start = 2.dp).size(18.dp), tint = Color(0xFF1C1C1E))
+            Text(stringResource(Res.string.sites_view_all), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = ViColors.ink)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.padding(start = 2.dp).size(18.dp), tint = ViColors.ink)
         }
     }
 }
@@ -578,20 +582,20 @@ private fun WideSiteCard(name: String, line: String, brand: Color, onOpen: () ->
     var menu by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(14.dp)
     Row(
-        Modifier.fillMaxWidth().height(72.dp).clip(shape).background(ViColors.white).background(brand.copy(alpha = 0.06f)).border(1.dp, brand.copy(alpha = 0.12f), shape)
+        Modifier.fillMaxWidth().height(72.dp).clip(shape).background(ViColors.surface).background(brand.copy(alpha = if (ViColors.isDark) 0.14f else 0.06f)).border(1.dp, brand.copy(alpha = 0.12f), shape)
             .clickable(onClick = onOpen).padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         logo()
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF1C1C1E), maxLines = 1, overflow = TextOverflow.Ellipsis)
-            if (line.isNotEmpty()) Text(line, Modifier.padding(top = 2.dp), fontSize = 12.sp, lineHeight = 15.sp, color = Color(0xFF6B7280), maxLines = 2, overflow = TextOverflow.Ellipsis)
+            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = ViColors.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (line.isNotEmpty()) Text(line, Modifier.padding(top = 2.dp), fontSize = 12.sp, lineHeight = 15.sp, color = ViColors.muted, maxLines = 2, overflow = TextOverflow.Ellipsis)
         }
         Box {
-            Box(Modifier.size(30.dp).clip(CircleShape).background(ViColors.white).clickable { if (onRemove != null) menu = true else onOpen() }, contentAlignment = Alignment.Center) {
-                Icon(if (onRemove != null) Icons.Filled.MoreVert else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.size(18.dp), tint = Color(0xFF1C1C1E))
+            Box(Modifier.size(30.dp).clip(CircleShape).background(ViColors.chipIdle).clickable { if (onRemove != null) menu = true else onOpen() }, contentAlignment = Alignment.Center) {
+                Icon(if (onRemove != null) Icons.Filled.MoreVert else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.size(18.dp), tint = ViColors.ink)
             }
-            DropdownMenu(menu, { menu = false }, containerColor = ViColors.white) {
+            DropdownMenu(menu, { menu = false }, containerColor = ViColors.surface) {
                 DropdownMenuItem(text = { Text(stringResource(Res.string.sites_open)) }, onClick = { menu = false; onOpen() })
                 if (onRemove != null) DropdownMenuItem(text = { Text(stringResource(Res.string.sites_remove)) }, onClick = { menu = false; onRemove() })
             }

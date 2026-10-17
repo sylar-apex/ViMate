@@ -1,5 +1,6 @@
 package org.app.vimate
 
+import org.app.vimate.appcore.navigation.Routes
 import android.Manifest
 import android.content.Intent
 import android.os.Build
@@ -70,6 +71,7 @@ class MainActivity : ComponentActivity() {
     private fun handle(intent: Intent?) {
         when {
             intent?.getStringExtra(EXTRA_TAB) == "files" -> LaunchRequests.post(LaunchRequest.OpenTab(Tab.FILES))
+            intent?.getStringExtra(EXTRA_PAGE) == PAGE_SEARCH -> LaunchRequests.post(LaunchRequest.OpenPage(Routes.Search()))
             intent?.getStringExtra(EXTRA_VIDEO) != null -> LaunchRequests.post(LaunchRequest.OpenVideo(intent.getStringExtra(EXTRA_VIDEO)!!))
             intent?.action == Intent.ACTION_SEND -> LaunchRequests.postSharedText(intent.getStringExtra(Intent.EXTRA_TEXT))
             intent?.action == Intent.ACTION_VIEW -> intent.dataString?.let { LaunchRequests.post(LaunchRequest.OpenUrl(it)) }
@@ -79,5 +81,8 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val EXTRA_TAB = "tab"
         const val EXTRA_VIDEO = "video"
+        /** Quick Search notification: open a page directly. */
+        const val EXTRA_PAGE = "page"
+        const val PAGE_SEARCH = "search"
     }
 }

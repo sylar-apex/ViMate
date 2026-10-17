@@ -62,6 +62,15 @@ class AndroidPlatformActions(private val context: Context) : PlatformActions {
     override fun pinWidget(widget: HomeWidget): WidgetPinResult =
         AndroidHost.widgetPinner?.invoke(widget) ?: WidgetPinResult.ADD_BY_LONG_PRESS
 
+    override fun canDrawOverlays(): Boolean = Build.VERSION.SDK_INT < 23 || android.provider.Settings.canDrawOverlays(context)
+
+    override fun requestOverlayPermission() {
+        context.startActivity(
+            android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:${context.packageName}"))
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    }
+
     override fun requestImport() {
         AndroidHost.importLauncher?.invoke()
     }

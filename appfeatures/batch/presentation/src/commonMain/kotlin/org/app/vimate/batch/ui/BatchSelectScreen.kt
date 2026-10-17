@@ -51,7 +51,7 @@ fun BatchSelectContent(state: BatchSelectContract.State, onEvent: (BatchSelectCo
     val nav = LocalAppNavigator.current
     val videos = state.videos
     val picked = state.picked
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(stringResource(Res.string.batch_selected)) { nav.back() }
         LazyColumn(Modifier.weight(1f)) {
             items(videos, key = { it.id }) { v ->
@@ -64,7 +64,7 @@ fun BatchSelectContent(state: BatchSelectContract.State, onEvent: (BatchSelectCo
                 Box(Modifier.padding(end = 34.dp).fillMaxWidth().height(0.7.dp).background(ViColors.rule))
             }
         }
-        Row(Modifier.fillMaxWidth().height(48.dp).background(ViColors.white), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().height(48.dp).background(ViColors.surface), verticalAlignment = Alignment.CenterVertically) {
             Row(Modifier.padding(start = 19.dp).clickable { onEvent(BatchSelectContract.Event.ToggleAll) }, verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(19.dp)) { Check(picked.size == videos.size) }
                 Text(stringResource(Res.string.batch_select_all), Modifier.padding(start = 8.dp), fontSize = 15.sp, color = ViColors.muted)

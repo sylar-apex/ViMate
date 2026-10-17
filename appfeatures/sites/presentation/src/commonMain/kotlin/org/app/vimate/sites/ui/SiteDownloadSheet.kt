@@ -1,5 +1,6 @@
 package org.app.vimate.sites.ui
 
+import org.app.vimate.sharedlogic.download.vid.VidDownloads
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,6 +73,7 @@ fun SiteDownloadSheet(state: Loadable<SiteMedia>, retry: () -> Unit, onDismiss: 
     val enqueue = koinInject<EnqueueSiteMediaUseCase>()
     val settings = koinInject<ObservableSettings>()
     val platform = koinInject<PlatformActions>()
+    val downloads = koinInject<VidDownloads>()
     val media = state.data
     var title by remember(media) { mutableStateOf(media?.title.orEmpty()) }
     var renaming by remember { mutableStateOf(false) }
@@ -86,7 +88,7 @@ fun SiteDownloadSheet(state: Loadable<SiteMedia>, retry: () -> Unit, onDismiss: 
         Column(Modifier.height(screenH - 164.dp).navigationBarsPadding()) {
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                 Spacer(Modifier.height(12.dp))
-                Column(Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(12.dp)).background(ViColors.white).padding(start = 12.dp, end = 12.dp, top = 12.dp)) {
+                Column(Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(12.dp)).background(ViColors.surface).padding(start = 12.dp, end = 12.dp, top = 12.dp)) {
                     Row {
                         Box(Modifier.size(114.dp, 64.dp).clip(RoundedCornerShape(6.dp)).background(ViColors.grabTile)) {
                             AsyncImage(media?.thumbnail, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
@@ -102,7 +104,7 @@ fun SiteDownloadSheet(state: Loadable<SiteMedia>, retry: () -> Unit, onDismiss: 
                     Row(Modifier.padding(top = 12.dp).fillMaxWidth().height(30.dp), verticalAlignment = Alignment.CenterVertically) {
                         Ic(Res.drawable.ic_nav_files_on, Modifier.size(24.dp), ViColors.ink)
                         Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                            Text(stringResource(Res.string.sitesheet_path, settings[AppKeys.downloadFolder]), maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            Text(stringResource(Res.string.sitesheet_path, remember(settings[AppKeys.downloadFolder]) { downloads.location() }), maxLines = 1, overflow = TextOverflow.Ellipsis,
                                 fontSize = 11.5.sp, color = ViColors.ink, modifier = Modifier.width(193.dp))
                             Text(stringResource(Res.string.sitesheet_free, fmtSize(stat.freeBytes).replace(" ", ""), fmtSize(stat.totalBytes).replace(" ", "")), fontSize = 11.5.sp, color = ViColors.metaGrey)
                         }
@@ -110,7 +112,7 @@ fun SiteDownloadSheet(state: Loadable<SiteMedia>, retry: () -> Unit, onDismiss: 
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                LazyColumn(Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(12.dp)).background(ViColors.white)) {
+                LazyColumn(Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(12.dp)).background(ViColors.surface)) {
                     when {
                         state.loading -> item(key = "loading") { Loading() }
                         state.error != null -> item(key = "error") { ErrorBox(state.error!!, retry) }
@@ -128,7 +130,7 @@ fun SiteDownloadSheet(state: Loadable<SiteMedia>, retry: () -> Unit, onDismiss: 
                     scope.launch { toast(getString(Res.string.sites_added_to_downloads)) }
                     onDismiss()
                 }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(24.dp).clip(CircleShape).background(ViColors.white), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(16.dp), ViColors.grabButton) }
+                Box(Modifier.size(24.dp).clip(CircleShape).background(ViColors.surface), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(16.dp), ViColors.grabButton) }
                 Text(stringResource(Res.string.sitesheet_download), Modifier.padding(start = 8.dp), color = ViColors.white, fontSize = 18.sp)
             }
         }

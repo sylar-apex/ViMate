@@ -18,10 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +41,9 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
+/** Pages outside the tabs that have their own side bar entry, highlighted while open. */
+internal enum class SidePage { Shorts, Sites, Settings }
+
 private val tabLabels = mapOf(
     MainTab.HOME to Res.string.wide_home, MainTab.MUSIC to Res.string.wide_music,
     MainTab.FILES to Res.string.wide_files, MainTab.ME to Res.string.wide_me,
@@ -55,7 +54,7 @@ private val tabLabels = mapOf(
  * Brand at the top, the four tabs, then Explore shortcuts and Settings at the bottom.
  */
 @Composable
-internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (Int) -> Unit) {
+internal fun SideBar(tab: Int, onTabs: Boolean, page: SidePage?, activeDownloads: Int, onTab: (Int) -> Unit) {
     val nav = LocalAppNavigator.current
     Row(Modifier.fillMaxHeight()) {
         Column(
@@ -72,15 +71,12 @@ internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (In
                     ) { onTab(item.index) }
                 }
                 Section(Res.string.wide_section_explore)
-                NavItem(Res.drawable.ic_shorts, Res.string.wide_shorts) { nav.go(Routes.Shorts()) }
-                NavItem(Res.drawable.ic_globe, Res.string.wide_sites) { nav.go(Routes.Sites) }
+                NavItem(Res.drawable.ic_shorts, Res.string.wide_shorts, page == SidePage.Shorts) { nav.go(Routes.Shorts()) }
+                NavItem(Res.drawable.ic_globe, Res.string.wide_sites, page == SidePage.Sites) { nav.go(Routes.Sites) }
             }
-            PremiumCard { nav.go(Routes.SettingsGroup("Download")) }
-            Spacer(Modifier.height(14.dp))
             Box(Modifier.fillMaxWidth().height(1.dp).background(ViColors.wideHairline))
             Spacer(Modifier.height(8.dp))
-            NavItem(Res.drawable.ic_settings, Res.string.wide_settings) { nav.go(Routes.Settings) }
-            NavItem(Res.drawable.ic_help, Res.string.wide_help) { nav.go(Routes.Help) }
+            NavItem(Res.drawable.ic_settings, Res.string.wide_settings, page == SidePage.Settings) { nav.go(Routes.Settings) }
             Spacer(Modifier.height(14.dp))
         }
         Box(Modifier.width(1.dp).fillMaxHeight().background(ViColors.wideHairline))
@@ -134,26 +130,6 @@ private fun NavItem(icon: DrawableResource, label: StringResource, selected: Boo
         )
         if (badge > 0) Box(Modifier.size(20.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
             Text("$badge", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-        }
-    }
-}
-
-/** Promo card above Settings: fast, HD, ad-free downloads; opens the download settings. */
-@Composable
-private fun PremiumCard(onClick: () -> Unit) {
-    val h = rememberHover()
-    Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(ViColors.premiumStart, ViColors.premiumEnd)))
-            .hover(h).clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(Icons.Filled.WorkspacePremium, null, Modifier.size(24.dp), tint = ViColors.crown)
-        Column(Modifier.weight(1f).padding(start = 10.dp)) {
-            Text(stringResource(Res.string.wide_premium_title), color = ViColors.ink, fontSize = 13.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold)
-            Text(stringResource(Res.string.wide_premium_sub), Modifier.padding(top = 2.dp), color = ViColors.sectionLabel, fontSize = 11.sp)
-        }
-        Box(Modifier.size(26.dp).clip(CircleShape).background(if (h.hovered) VRed else Color.White), contentAlignment = Alignment.Center) {
-            Icon(Icons.Filled.ChevronRight, null, Modifier.size(18.dp), tint = if (h.hovered) Color.White else ViColors.ink)
         }
     }
 }

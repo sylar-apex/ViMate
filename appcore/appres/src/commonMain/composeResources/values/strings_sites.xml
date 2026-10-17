@@ -76,7 +76,7 @@
     <!-- Site download sheet -->
     <string name="sitesheet_ok">OK</string>
     <string name="sitesheet_rename">Rename</string>
-    <string name="sitesheet_path">Path:/storage/emulated/0/Download/%1$s/download/</string>
+    <string name="sitesheet_path">Path: %1$s</string>
     <string name="sitesheet_free">%1$s FREE/%2$s</string>
     <string name="sitesheet_change">Change</string>
     <string name="sitesheet_download">DOWNLOAD</string>
@@ -95,4 +95,6 @@
     <string name="site_tag_posts">Posts</string>
     <string name="sites_view_all">View All</string>
     <string name="sites_wide_subtitle">Download videos from your favorite websites</string>
+    <string name="sites_blocked">This site is hidden by Sites Filter.
+Turn it off in Settings › Content to open it.</string>
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="music_title">म्यूज़िक</string>
+    <string name="music_downloads">डाउनलोड</string>
+    <string name="music_search_hint">म्यूज़िक खोजें</string>
+    <string name="music_play_all">सभी चलाएँ</string>
+    <string name="music_play">चलाएँ</string>
+    <string name="music_shuffle">शफ़ल</string>
+    <string name="music_no_songs">कोई गाना नहीं</string>
+    <string name="music_playlist_detail">प्लेलिस्ट विवरण</string>
+    <string name="music_videos_count">%1$d वीडियो</string>
+    <string name="music_share">शेयर करें</string>
+    <string name="music_save">सेव करें</string>
+    <string name="music_download">डाउनलोड</string>
+    <string name="music_back">वापस</string>
+</resources>

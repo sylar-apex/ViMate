@@ -1,5 +1,8 @@
 package org.app.vimate.me.ui.wide
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -60,13 +63,22 @@ import org.app.vimate.sharedlogic.yt.Video
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.stringResource
 
-/** Tablet / desktop Me tab: profile and library cards, tools, hot sites, then a hot-videos grid. */
+/** Tools shown on the wide Me page; sign-in, subscriptions, Like us, Junk Clean and Boost are left out. */
+private val ToolTints = listOf(Color(0xFF3B82F6), Color(0xFF10B981), Color(0xFFEC4899), Color(0xFF06B6D4), Color(0xFF64748B))
+private val WideTools = listOf(MeTool.SHARE, MeTool.UPDATE, MeTool.FEEDBACK, MeTool.HELP, MeTool.SETTINGS)
+
+/** Tablet / desktop Me tab: theme switch, one library + tools card, hot sites, then a hot-videos grid. */
 @Composable
 internal fun MeWide(
     hot: List<Video>, dark: Boolean, onSetDark: (Boolean) -> Unit, onSignIn: () -> Unit, onFiles: () -> Unit,
     onRoute: (Any) -> Unit, onTool: (MeTool) -> Unit, onDownload: (Video) -> Unit, onSite: (String) -> Unit,
 ) {
-    WidePage(stringResource(Res.string.wide_me)) {
+    var dialog by remember { mutableStateOf<MeTool?>(null) }
+    dialog?.let { d ->
+        if (d == MeTool.FEEDBACK) FeedbackDialog { dialog = null }
+        else HelpDialog({ dialog = null }) { dialog = MeTool.FEEDBACK }
+    }
+    WidePage(stringResource(Res.string.wide_me), actions = { ThemeToggle(dark, onSetDark) }) {
         LazyVerticalGrid(
             GridCells.Adaptive(WideSpec.cardMin),
             contentPadding = PaddingValues(start = WideSpec.gutter, end = WideSpec.gutter, bottom = WideSpec.bottomInset),
@@ -74,18 +86,16 @@ internal fun MeWide(
         ) {
             item(key = "top", span = { GridItemSpan(maxLineSpan) }) {
                 Column(verticalArrangement = Arrangement.spacedBy(WideSpec.gap)) {
-                    if (LocalWindowClass.current.isWide) Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(WideSpec.gap)) {
-                        ProfileCard(dark, onSetDark, onSignIn, Modifier.weight(1f).fillMaxHeight())
-                        LibraryCard(onFiles, onRoute, Modifier.weight(1.25f).fillMaxHeight(), fill = true)
-                    } else {
-                        ProfileCard(dark, onSetDark, onSignIn, Modifier.fillMaxWidth())
-                        LibraryCard(onFiles, onRoute, Modifier.fillMaxWidth())
+                    // Compact tiles: tinted icon + label, packed in rows (library, then tools).
+                    WideSectionTitle(stringResource(Res.string.wide_section_library))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ToolTile(Res.drawable.ic_me_files, stringResource(Res.string.me_my_files), VRed, onFiles)
+                        ToolTile(Res.drawable.ic_me_history, stringResource(Res.string.me_history), Color(0xFFF59E0B)) { onRoute(Routes.History) }
+                        ToolTile(Res.drawable.ic_me_playlist, stringResource(Res.string.me_playlist), Color(0xFF8B5CF6)) { onRoute(Routes.Playlists) }
                     }
-                    WideCard(Modifier.fillMaxWidth()) {
-                        WideSectionTitle(stringResource(Res.string.wide_section_tools))
-                        Row(Modifier.fillMaxWidth()) {
-                            MeTool.entries.forEach { t -> ToolTile(t.icon, stringResource(t.label), t == MeTool.LIKE) { onTool(t) } }
-                        }
+                    WideSectionTitle(stringResource(Res.string.wide_section_tools), Modifier.padding(top = 6.dp))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        WideTools.forEachIndexed { k, t -> ToolTile(t.icon, stringResource(t.label), ToolTints[k % ToolTints.size]) { if (t == MeTool.FEEDBACK || t == MeTool.HELP) dialog = t else onTool(t) } }
                     }
                     WideSectionTitle(stringResource(Res.string.me_hot_sites), Modifier.padding(top = 10.dp))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(14.dp), contentPadding = PaddingValues(vertical = 4.dp)) {
@@ -102,94 +112,35 @@ internal fun MeWide(
 }
 
 @Composable
-private fun ProfileCard(dark: Boolean, onSetDark: (Boolean) -> Unit, onSignIn: () -> Unit, modifier: Modifier) {
-    val shape = RoundedCornerShape(WideSpec.cardRadius)
-    Box(modifier.clip(shape).background(Brush.linearGradient(listOf(ViColors.brandLight, VRed, ViColors.brandDark)))) {
-        // Soft decorative circles.
-        Box(Modifier.align(Alignment.TopEnd).padding(top = 0.dp).size(180.dp).clip(CircleShape).background(Color.White.copy(alpha = .08f)))
-        Box(Modifier.align(Alignment.BottomEnd).padding(end = 90.dp).size(110.dp).clip(CircleShape).background(Color.White.copy(alpha = .06f)))
-        Column(Modifier.padding(24.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(60.dp).clip(CircleShape).background(Color.White.copy(alpha = .22f)).border(2.dp, Color.White.copy(alpha = .6f), CircleShape),
-                    contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_person, Modifier.size(32.dp), Color.White) }
-                Spacer(Modifier.weight(1f))
-                ThemeToggle(dark, onSetDark)
-            }
-            Text(stringResource(Res.string.wide_me_welcome), Modifier.padding(top = 18.dp), color = Color.White, fontSize = 22.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold)
-            Text(stringResource(Res.string.wide_me_signin_sub), Modifier.padding(top = 6.dp), color = Color.White.copy(alpha = .85f), fontSize = 14.sp, lineHeight = 20.sp)
-            Spacer(Modifier.height(20.dp))
-            val h = rememberHover()
-            val bg by animateColorAsState(if (h.hovered) Color.White.copy(alpha = .9f) else Color.White)
-            Row(Modifier.height(44.dp).clip(RoundedCornerShape(12.dp)).background(bg).hover(h).clickable(onClick = onSignIn).padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically) {
-                Ic(Res.drawable.ic_person, Modifier.size(18.dp), VRed)
-                Text(stringResource(Res.string.me_sign_in), Modifier.padding(start = 8.dp), color = VRed, fontSize = 14.5.sp, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
-}
-
-/** Light / Dark segmented switch on the profile card. */
-@Composable
 private fun ThemeToggle(dark: Boolean, onSetDark: (Boolean) -> Unit) {
-    Row(Modifier.clip(CircleShape).background(Color.Black.copy(alpha = .18f)).padding(3.dp)) {
+    Row(Modifier.clip(CircleShape).background(ViColors.chipIdle).padding(3.dp)) {
         listOf(false to Res.string.wide_theme_light, true to Res.string.wide_theme_dark).forEach { (d, label) ->
             val sel = d == dark
-            Row(Modifier.clip(CircleShape).background(if (sel) Color.White else Color.Transparent).clickable { onSetDark(d) }.padding(horizontal = 12.dp, vertical = 6.dp),
+            Row(Modifier.clip(CircleShape).background(if (sel) VRed else Color.Transparent).clickable { onSetDark(d) }.padding(horizontal = 12.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                Ic(if (d) Res.drawable.ic_moon else Res.drawable.ic_sun, Modifier.size(14.dp), if (sel) VRed else Color.White)
-                Text(stringResource(label), Modifier.padding(start = 6.dp), color = if (sel) VRed else Color.White, fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold)
+                Ic(if (d) Res.drawable.ic_moon else Res.drawable.ic_sun, Modifier.size(14.dp), if (sel) Color.White else ViColors.ink)
+                Text(stringResource(label), Modifier.padding(start = 6.dp), color = if (sel) Color.White else ViColors.ink, fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
 }
 
+/** Tile: tinted rounded icon and label side by side on a card, lifting on hover. */
 @Composable
-private fun LibraryCard(onFiles: () -> Unit, onRoute: (Any) -> Unit, modifier: Modifier, fill: Boolean = false) {
-    WideCard(modifier) {
-        WideSectionTitle(stringResource(Res.string.wide_section_library))
-        Row(if (fill) Modifier.fillMaxWidth().weight(1f) else Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            LibraryTile(Res.drawable.ic_me_files, stringResource(Res.string.me_my_files), fill, onFiles)
-            LibraryTile(Res.drawable.ic_me_history, stringResource(Res.string.me_history), fill) { onRoute(Routes.History) }
-            LibraryTile(Res.drawable.ic_me_subs, stringResource(Res.string.me_subscription), fill) { onRoute(Routes.Subscriptions) }
-            LibraryTile(Res.drawable.ic_me_playlist, stringResource(Res.string.me_playlist), fill) { onRoute(Routes.Playlists) }
-        }
-    }
-}
-
-@Composable
-private fun RowScope.LibraryTile(icon: DrawableResource, label: String, fill: Boolean, onClick: () -> Unit) {
+private fun RowScope.ToolTile(icon: DrawableResource, label: String, tint: Color, onClick: () -> Unit) {
     val h = rememberHover()
-    val bg by animateColorAsState(if (h.hovered) ViColors.hover else ViColors.wideCanvas)
-    Column(
-        Modifier.weight(1f).then(if (fill) Modifier.fillMaxHeight() else Modifier).clip(RoundedCornerShape(16.dp)).background(bg).hover(h).clickable(onClick = onClick).padding(vertical = 18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+    val bg by animateColorAsState(if (h.hovered) ViColors.hover else ViColors.tileBg)
+    val shape = RoundedCornerShape(14.dp)
+    Row(
+        Modifier.weight(1f).height(64.dp).clip(shape).background(bg).border(1.dp, ViColors.wideHairline, shape).hover(h).clickable(onClick = onClick).padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(52.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.tintRed), contentAlignment = Alignment.Center) {
-            Ic(icon, Modifier.size(26.dp), ViColors.meRed, label)
+        Box(Modifier.size(38.dp).clip(RoundedCornerShape(11.dp)).background(tint.copy(alpha = .15f)), contentAlignment = Alignment.Center) {
+            Ic(icon, Modifier.size(20.dp), tint, label)
         }
-        Text(label, Modifier.padding(top = 12.dp), color = ViColors.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+        Text(label, Modifier.padding(start = 12.dp), color = ViColors.ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
     }
 }
-
-@Composable
-private fun RowScope.ToolTile(icon: DrawableResource, label: String, dot: Boolean, onClick: () -> Unit) {
-    val h = rememberHover()
-    val bg by animateColorAsState(if (h.hovered) ViColors.hover else Color.Transparent)
-    Column(
-        Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).background(bg).hover(h).clickable(onClick = onClick).padding(vertical = 14.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Box {
-            Box(Modifier.size(46.dp).clip(CircleShape).background(ViColors.wideCanvas).border(1.dp, ViColors.wideHairline, CircleShape), contentAlignment = Alignment.Center) {
-                Ic(icon, Modifier.size(22.dp), ViColors.ink, label)
-            }
-            if (dot) Box(Modifier.align(Alignment.TopEnd).size(10.dp).clip(CircleShape).background(ViColors.meRed))
-        }
-        Text(label, Modifier.padding(top = 10.dp), color = ViColors.ink, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1)
-    }
-}
-
 @Composable
 private fun SiteChip(name: String, icon: @Composable () -> Unit, color: Color, onClick: () -> Unit) {
     val h = rememberHover()

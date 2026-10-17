@@ -42,8 +42,8 @@ fun HelpScreen() {
     val nav = LocalAppNavigator.current
     var tab by remember { mutableIntStateOf(0) }
     val g = guides[tab]
-    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.white)) {
-        Box(Modifier.fillMaxWidth().height(50.dp).background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.surface)) {
+        Box(Modifier.fillMaxWidth().height(50.dp).background(ViColors.surface)) {
             Box(Modifier.padding(start = 16.dp).size(32.dp).align(Alignment.CenterStart).clickable { nav.back() }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_home_line, Modifier.size(30.dp), ViColors.ink) }
             Text(stringResource(Res.string.me_help_center), Modifier.align(Alignment.Center), fontWeight = FontWeight.Bold, fontSize = 19.sp, color = ViColors.ink)
             Box(Modifier.padding(start = 268.dp).size(32.dp).align(Alignment.CenterStart), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_reload, Modifier.size(28.dp), ViColors.ink) }
@@ -74,7 +74,7 @@ fun HelpScreen() {
         }
         Row(Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp, top = 6.dp).fillMaxWidth().height(43.dp).background(ViColors.meButtonRed).clickable { nav.go(Routes.Browser(g.url)) },
             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            if (g.svg != null) Svg(g.svg, Modifier.size(28.dp)) else Box(Modifier.size(28.dp).clip(RoundedCornerShape(6.dp)).background(ViColors.white), contentAlignment = Alignment.Center) { Ic(g.glyph!!, Modifier.size(22.dp), g.tint) }
+            if (g.svg != null) Svg(g.svg, Modifier.size(28.dp)) else Box(Modifier.size(28.dp).clip(RoundedCornerShape(6.dp)).background(ViColors.surface), contentAlignment = Alignment.Center) { Ic(g.glyph!!, Modifier.size(22.dp), g.tint) }
             Text(stringResource(Res.string.me_go_to, g.name), Modifier.padding(start = 12.dp), color = ViColors.white, fontSize = 17.sp)
         }
     }
@@ -88,7 +88,7 @@ fun FeedbackScreen() {
     val uri = androidx.compose.ui.platform.LocalUriHandler.current
     var open by remember { mutableStateOf(-1) }
     var writing by remember { mutableStateOf(false) }
-    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.surface)) {
         PageHeader(stringResource(Res.string.me_help_feedback), bold = false) { nav.back() }
         LazyColumn(Modifier.weight(1f)) {
             item(key = "band") {

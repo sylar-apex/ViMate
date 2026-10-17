@@ -28,7 +28,7 @@ actual fun PlatformWebView(startUrl: String, controller: BrowserController, call
     val uri = LocalUriHandler.current
     fun open() { runCatching { uri.openUri(startUrl) } }
     LaunchedEffect(startUrl) { open(); callbacks.onPageStarted(startUrl) }
-    Column(modifier.background(ViColors.white).padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier.background(ViColors.surface).padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(stringResource(Res.string.sites_external_note), color = ViColors.metaGrey, fontSize = 14.sp, textAlign = TextAlign.Center)
         TextButton(onClick = ::open) { Text(stringResource(Res.string.sites_open_again), color = VRed) }
     }

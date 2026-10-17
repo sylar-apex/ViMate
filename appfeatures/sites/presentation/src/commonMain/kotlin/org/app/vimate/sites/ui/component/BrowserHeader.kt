@@ -53,7 +53,7 @@ fun BrowserHeader(
     url: String, host: String, siteName: String, foundCount: Int, desktop: Boolean,
     canGoBack: Boolean, canGoForward: Boolean, menu: Boolean, onMenu: (Boolean) -> Unit, a: BrowserHeaderActions,
 ) {
-    Row(Modifier.fillMaxWidth().height(48.dp).shadow(2.dp).background(ViColors.white).padding(start = 4.dp, end = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(48.dp).shadow(2.dp).background(ViColors.surface).padding(start = 4.dp, end = 2.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(36.dp).clip(CircleShape).clickable(onClick = a.onHome), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_home_line, Modifier.size(22.dp), ViColors.ink, stringResource(Res.string.sites_home)) }
         Row(Modifier.weight(1f).padding(horizontal = 4.dp).height(34.dp).clip(CircleShape).background(ViColors.keypad).clickable(onClick = a.onEdit).padding(start = 12.dp, end = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
@@ -66,14 +66,14 @@ fun BrowserHeader(
         // Grabber: every downloadable link on this page (page DOM + sniffed network media).
         Box(Modifier.padding(horizontal = 2.dp).size(32.dp).clip(CircleShape).background(VRed).clickable(onClick = a.onGrab), contentAlignment = Alignment.Center) {
             Ic(Res.drawable.ic_grab, Modifier.size(19.dp), ViColors.white, stringResource(Res.string.sites_grab_files))
-            if (foundCount > 0) Box(Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp).size(15.dp).clip(CircleShape).background(ViColors.white).padding(1.5.dp).clip(CircleShape).background(ViColors.ink), contentAlignment = Alignment.Center) {
+            if (foundCount > 0) Box(Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp).size(15.dp).clip(CircleShape).background(ViColors.surface).padding(1.5.dp).clip(CircleShape).background(ViColors.ink), contentAlignment = Alignment.Center) {
                 Text("${minOf(foundCount, 99)}", color = ViColors.white, fontSize = 8.sp, lineHeight = 9.sp, fontWeight = FontWeight.Bold)
             }
         }
         Box(Modifier.size(36.dp).clip(CircleShape).clickable(onClick = a.onReload), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_reload, Modifier.size(20.dp), ViColors.ink, stringResource(Res.string.sites_reload)) }
         Box(Modifier.size(32.dp, 36.dp)) {
             Box(Modifier.fillMaxSize().clip(CircleShape).clickable { onMenu(true) }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_more_vert, Modifier.size(20.dp), ViColors.ink, stringResource(Res.string.sites_more)) }
-            DropdownMenu(menu, { onMenu(false) }, Modifier.width(210.dp), shape = RoundedCornerShape(14.dp), containerColor = ViColors.white, shadowElevation = 8.dp) {
+            DropdownMenu(menu, { onMenu(false) }, Modifier.width(210.dp), shape = RoundedCornerShape(14.dp), containerColor = ViColors.surface, shadowElevation = 8.dp) {
                 // Navigation row: back · forward · reload.
                 Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                     NavIcon(Res.drawable.ic_m_back, stringResource(Res.string.sites_back), canGoBack) { onMenu(false); a.onBack() }

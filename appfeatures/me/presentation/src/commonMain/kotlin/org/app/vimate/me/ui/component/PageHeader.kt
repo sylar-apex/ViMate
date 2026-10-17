@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 /** VidMate sub-page header: 50dp white, back chevron at x=16 (40dp), title at x=64, 1dp rule. */
 @Composable
 fun PageHeader(title: String, bold: Boolean = true, height: Int = 50, titleStart: Int = 8, titleSize: Float = 0f, onBack: () -> Unit) {
-    Row(Modifier.fillMaxWidth().height(height.dp).background(ViColors.white), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(height.dp).background(ViColors.surface), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.padding(start = 16.dp).size(40.dp).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
             Ic(Res.drawable.ic_back, Modifier.size(30.dp), ViColors.ink, stringResource(Res.string.me_back))
         }

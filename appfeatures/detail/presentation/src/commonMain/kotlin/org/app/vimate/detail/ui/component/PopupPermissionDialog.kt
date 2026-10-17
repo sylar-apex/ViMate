@@ -34,7 +34,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PopupPermissionDialog(onAllow: () -> Unit, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Column(Modifier.width(264.dp).clip(RoundedCornerShape(20.dp)).background(ViColors.white), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.width(264.dp).clip(RoundedCornerShape(20.dp)).background(ViColors.surface), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.fillMaxWidth().height(160.dp).background(Brush.verticalGradient(listOf(ViColors.detailPopupTop, ViColors.white)))) {
                 Box(Modifier.align(Alignment.TopEnd).padding(12.dp).size(24.dp).clickable(onClick = onDismiss), contentAlignment = Alignment.Center) {
                     Ic(Res.drawable.ic_c_close, Modifier.size(20.dp), ViColors.detailLikeDivider)

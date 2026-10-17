@@ -61,7 +61,7 @@ fun MusicContent(state: MusicContract.State, onEvent: (MusicContract.Event) -> U
             }
         }
         // Search pill 336x42dp at x=12, content centred.
-        Row(Modifier.padding(horizontal = 12.dp).fillMaxWidth().height(42.dp).clip(CircleShape).background(ViColors.white).clickable { nav.go(Routes.MusicSearch) },
+        Row(Modifier.padding(horizontal = 12.dp).fillMaxWidth().height(42.dp).clip(CircleShape).background(ViColors.surface).clickable { nav.go(Routes.MusicSearch) },
             horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Ic(Res.drawable.ic_search, Modifier.size(22.dp), ViColors.ink)
             Text(stringResource(Res.string.music_search_hint), Modifier.padding(start = 6.dp), color = ViColors.hint, fontSize = 15.3.sp, lineHeight = 21.sp)

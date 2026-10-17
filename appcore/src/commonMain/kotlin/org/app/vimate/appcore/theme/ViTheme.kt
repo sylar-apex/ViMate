@@ -43,5 +43,8 @@ fun isViDark(): Boolean {
 /** The app theme (POC VidTheme): VRed primary, light/dark/system from Settings › Theme. */
 @Composable
 fun ViTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = if (isViDark()) DarkColors else LightColors, content = content)
+    val dark = isViDark()
+    // Screens read ViColors directly; flip its neutrals before they compose.
+    ViColors.isDark = dark
+    MaterialTheme(colorScheme = if (dark) DarkColors else LightColors, content = content)
 }

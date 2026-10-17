@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_save">सेव करें</string>
+    <string name="detail_popup">पॉपअप</string>
+    <string name="detail_play_audio">ऑडियो चलाएँ</string>
+    <string name="detail_share">शेयर करें</string>
+    <string name="detail_download">डाउनलोड</string>
+    <string name="detail_comments">टिप्पणियाँ</string>
+    <string name="detail_login_comment">सार्वजनिक टिप्पणी के लिए लॉग इन करें</string>
+    <string name="detail_close">बंद करें</string>
+    <string name="detail_replies">%1$s जवाब</string>
+    <string name="detail_no_comments">कोई टिप्पणी नहीं</string>
+    <string name="detail_save_to_playlist">प्लेलिस्ट में सेव करें</string>
+    <string name="detail_saved_to">%1$s में सेव किया गया</string>
+    <string name="detail_saved">सेव हो गया</string>
+    <string name="detail_new_playlist">नई प्लेलिस्ट</string>
+    <string name="detail_create">बनाएँ</string>
+    <string name="detail_cancel">रद्द करें</string>
+    <string name="detail_popup_title">वीडियो फ़्लोटिंग विंडो में चलाएँ</string>
+    <string name="detail_allow_permission">अनुमति दें</string>
+    <string name="detail_playback_error">चलाने में त्रुटि: %1$s</string>
+    <string name="detail_collapse">छोटा करें</string>
+    <string name="detail_play">चलाएँ</string>
+    <string name="detail_next">अगला</string>
+    <string name="detail_fullscreen">फ़ुल स्क्रीन</string>
+    <string name="detail_play_audio_desc">ऑडियो चलाएँ</string>
+    <string name="detail_audio_hint">दूसरे ऐप इस्तेमाल करते समय या लॉक स्क्रीन पर\nऑडियो बैकग्राउंड में चल सकता है।</string>
+    <string name="detail_play_as_video">वीडियो की तरह चलाएँ</string>
+    <string name="detail_play_next">अगला चलाएँ</string>
+    <string name="detail_auto">ऑटो</string>
+</resources>

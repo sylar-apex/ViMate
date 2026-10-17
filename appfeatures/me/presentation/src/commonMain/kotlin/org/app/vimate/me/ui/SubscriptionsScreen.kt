@@ -39,7 +39,7 @@ fun SubscriptionsScreen(forceSignIn: Boolean = false, viewModel: LibraryViewMode
     val subs = state.subscriptions
     var channel by remember(subs.isEmpty()) { mutableStateOf(subs.firstOrNull()?.id) }
     val watchLater = stringResource(Res.string.me_watch_later)
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(stringResource(if (subs.isEmpty() || forceSignIn) Res.string.me_sign_in_with_youtube else Res.string.me_subscription), bold = false) { nav.back() }
         if (viewModel.signedIn && !forceSignIn) { AccountFeedList(MeUrls.FEED_SUBSCRIPTIONS, viewModel); return@Column }
         if (viewModel.signedIn && forceSignIn) { LaunchedEffect(Unit) { nav.back(); nav.go(Routes.AccountFeed(watchLater, MeUrls.FEED_WATCH_LATER)) }; return@Column }
@@ -82,7 +82,7 @@ fun SubscriptionsScreen(forceSignIn: Boolean = false, viewModel: LibraryViewMode
 @Composable
 fun AccountFeedScreen(title: String, browseId: String, viewModel: LibraryViewModel = koinViewModel()) {
     val nav = LocalAppNavigator.current
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(title) { nav.back() }
         AccountFeedList(browseId, viewModel)
     }

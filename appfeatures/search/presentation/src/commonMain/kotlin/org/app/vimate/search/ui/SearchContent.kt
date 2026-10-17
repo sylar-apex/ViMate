@@ -60,7 +60,7 @@ fun SearchContent(state: State, autoFocus: Boolean, onEvent: (Event) -> Unit) {
             Box(Modifier.padding(start = 12.dp).size(32.dp).clickable { nav.back() }, contentAlignment = Alignment.Center) {
                 Ic(Res.drawable.ic_back, Modifier.size(28.dp), ViColors.ink, stringResource(Res.string.search_back))
             }
-            Row(Modifier.weight(1f).padding(end = 12.dp).height(36.dp).clip(CircleShape).background(Color.White).padding(start = 13.dp, end = 4.dp),
+            Row(Modifier.weight(1f).padding(end = 12.dp).height(36.dp).clip(CircleShape).background(ViColors.surface).padding(start = 13.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
                     if (state.query.isEmpty()) Text(stringResource(Res.string.search_hint), color = ViColors.hint, fontSize = 15.sp, lineHeight = 19.sp, maxLines = 1)

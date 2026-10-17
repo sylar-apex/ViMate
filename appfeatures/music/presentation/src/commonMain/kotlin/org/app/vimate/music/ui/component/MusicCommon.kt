@@ -55,7 +55,7 @@ internal fun SongRow(v: Video, onPlay: () -> Unit, onDownload: (() -> Unit)? = n
 /** POC MeScreen PageHeader: 50dp white, back chevron at x=16 (40dp), title at x=64, 1dp rule. */
 @Composable
 internal fun PageHeader(title: String, onBack: () -> Unit) {
-    Row(Modifier.fillMaxWidth().height(50.dp).background(ViColors.white), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(50.dp).background(ViColors.surface), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.padding(start = 16.dp).size(40.dp).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
             Ic(Res.drawable.ic_back, Modifier.size(30.dp), ViColors.ink, stringResource(Res.string.music_back))
         }

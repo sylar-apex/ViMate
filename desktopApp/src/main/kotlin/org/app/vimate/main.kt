@@ -1,5 +1,15 @@
 package org.app.vimate
 
+import org.koin.mp.KoinPlatform
+import org.app.vimate.sharedlogic.settings.AppKeys
+import org.app.vimate.sharedlogic.platform.PlatformActions
+import org.app.vimate.sharedlogic.platform.HostSignals
+import org.app.kmediaplayer.settings.ObservableSettings
+import org.app.kdownloader.model.DownloadEvent
+import org.app.kdownloader.KDownloader
+import kotlinx.coroutines.flow.filterIsInstance
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -18,7 +28,7 @@ import org.app.vimate.shell.LaunchRequests
 private val WindowSize = DpSize(1280.dp, 820.dp)
 
 /**
- * Optional launch arguments: `--size=W,H` (dp), `--open=home|music|files|me|settings|sites|search|shorts` and `--url=<link>`.
+ * Optional launch arguments: `--size=W,H` (dp), `--open=home|music|files|me|settings|settings-others|sites|search|shorts` and `--url=<link>`.
  * Useful for checking the phone, tablet and desktop layouts of a page directly.
  */
 fun main(args: Array<String>) {
@@ -34,11 +44,22 @@ private fun runApp(args: Array<String>) = application {
     val size = opt["size"]?.split(",")?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }?.let { DpSize(it[0].dp, it[1].dp) } ?: WindowSize
     opt["open"]?.let { openArg(it) }?.let(LaunchRequests::post)
     opt["url"]?.let { LaunchRequests.post(LaunchRequest.OpenUrl(it)) }
+    LaunchedEffect(Unit) { notifyCompletedDownloads() }
     Window(
         onCloseRequest = ::exitApplication,
         title = "ViMate",
         state = rememberWindowState(size = size, position = WindowPosition(Alignment.Center)),
     ) {
+        // Copied Link Detection reads the clipboard whenever the window comes back to the front (Android: on resume).
+        DisposableEffect(window) {
+            val signals = KoinPlatform.getKoin().get<HostSignals>()
+            val focus = object : java.awt.event.WindowAdapter() {
+                override fun windowGainedFocus(e: java.awt.event.WindowEvent) = signals.onResume()
+            }
+            window.addWindowFocusListener(focus)
+            signals.onResume()
+            onDispose { window.removeWindowFocusListener(focus) }
+        }
         App(embeddedPlayer = true)
     }
 }
@@ -49,8 +70,19 @@ private fun openArg(name: String): LaunchRequest? = when (name) {
     "files" -> LaunchRequest.OpenTab(Tab.FILES)
     "me" -> LaunchRequest.OpenTab(Tab.ME)
     "settings" -> LaunchRequest.OpenPage(Routes.Settings)
+    "settings-others" -> LaunchRequest.OpenPage(Routes.SettingsGroup("Others"))
     "sites" -> LaunchRequest.OpenPage(Routes.Sites)
     "search" -> LaunchRequest.OpenPage(Routes.Search())
     "shorts" -> LaunchRequest.OpenPage(Routes.Shorts())
     else -> null
+}
+
+/** Settings › Download complete notification: a system notification per finished file (Android uses its download service). */
+private suspend fun notifyCompletedDownloads() {
+    val koin = KoinPlatform.getKoin()
+    val settings = koin.get<ObservableSettings>()
+    val platform = koin.get<PlatformActions>()
+    koin.get<KDownloader>().events.filterIsInstance<DownloadEvent.Completed>().collect { e ->
+        if (settings[AppKeys.completeNotify]) platform.notify("Download complete", e.task.fileName)
+    }
 }

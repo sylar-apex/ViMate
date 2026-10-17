@@ -63,7 +63,7 @@ internal fun SearchHome(history: List<String>, onPick: (String) -> Unit, onClear
 internal fun Chips(items: List<String>, hotCount: Int, onPick: (String) -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         items.forEachIndexed { i, t ->
-            Row(Modifier.height(26.dp).clip(CircleShape).background(Color.White).clickable { onPick(t) }.padding(horizontal = 12.dp),
+            Row(Modifier.height(26.dp).clip(CircleShape).background(ViColors.surface).clickable { onPick(t) }.padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 if (i < hotCount) Ic(Res.drawable.ic_fire, Modifier.padding(end = 4.dp).size(14.dp), ViColors.fire)
                 Text(t, fontSize = 12.2.sp, lineHeight = 17.7.sp, color = ViColors.ink)

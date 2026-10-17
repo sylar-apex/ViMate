@@ -103,8 +103,8 @@ fun MeContent(
             Box(Modifier.padding(start = 12.dp, end = 12.dp, top = 17.7.dp).fillMaxWidth().height(159.dp)) {
                 // Pale bubble that shows through VidMate's notch behind the day/night switch.
                 Box(Modifier.align(Alignment.TopEnd).padding(top = 9.dp).size(112.dp, 70.dp).clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    .background(Brush.horizontalGradient(listOf(ViColors.meBubble, ViColors.white))))
-                Column(Modifier.fillMaxSize().clip(NotchedCard).background(ViColors.white)) {
+                    .background(Brush.horizontalGradient(listOf(ViColors.meBubble, ViColors.surface))))
+                Column(Modifier.fillMaxSize().clip(NotchedCard).background(ViColors.surface)) {
                     Row(Modifier.fillMaxWidth().height(78.dp).padding(start = 12.dp, end = 11.dp), verticalAlignment = Alignment.CenterVertically) {
                         Row(Modifier.size(107.dp, 40.dp).border(2.dp, ViColors.ink, CircleShape).clip(CircleShape).clickable(onClick = onSignIn)
                             .padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -126,7 +126,7 @@ fun MeContent(
         item(key = "tools") {
             // Card 2: 336x150dp, 16dp below; 4x2 cells of 84x68dp, 28dp outline icons.
             LazyVerticalGrid(GridCells.Fixed(4), Modifier.padding(start = 12.dp, end = 12.dp, top = 16.3.dp).fillMaxWidth().height(150.dp)
-                .clip(RoundedCornerShape(20.dp)).background(ViColors.white).padding(top = 14.dp), userScrollEnabled = false) {
+                .clip(RoundedCornerShape(20.dp)).background(ViColors.surface).padding(top = 14.dp), userScrollEnabled = false) {
                 items(MeTool.entries, key = { it.name }) { t ->
                     Box(Modifier.height(68.dp)) { ToolCell(t.icon, stringResource(t.label), t.iconSize, t == MeTool.LIKE) { onTool(t) } }
                 }

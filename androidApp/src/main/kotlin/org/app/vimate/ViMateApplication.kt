@@ -29,6 +29,7 @@ class ViMateApplication : Application() {
         initKoin(this, AppModules)
         KoinPlatform.getKoin().configureApp()
         enableDownloadService()
+        QuickSearchNotification.bind(this, KoinPlatform.getKoin().get(), CoroutineScope(SupervisorJob() + Dispatchers.Default))
     }
 
     /** POC DownloadService: ongoing progress, "Download complete" per file (Settings), tap opens My Files. */

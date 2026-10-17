@@ -43,7 +43,7 @@ fun HistoryScreen(viewModel: LibraryViewModel = koinViewModel()) {
     var menu by remember { mutableStateOf(false) }
     if (sub != null) {
         BackHandler { sub = null }
-        Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+        Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
             PageHeader(stringResource(if (sub == "yt") Res.string.me_youtube_history else Res.string.me_website_history)) { sub = null }
             LazyColumn {
                 if (sub == "yt") {
@@ -64,7 +64,7 @@ fun HistoryScreen(viewModel: LibraryViewModel = koinViewModel()) {
         }
         return
     }
-    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding().background(ViColors.surface)) {
         PageHeader(stringResource(Res.string.me_history)) { nav.back() }
         Box(Modifier.fillMaxWidth().height(46.dp)) {
             Text(stringResource(Res.string.me_local_history), Modifier.padding(start = 12.dp).align(Alignment.CenterStart), fontSize = 13.sp, lineHeight = 19.sp, color = ViColors.ink)
@@ -98,7 +98,7 @@ fun HistoryScreen(viewModel: LibraryViewModel = koinViewModel()) {
         HistoryRow(Res.drawable.ic_h_youtube, stringResource(Res.string.me_youtube_history)) { sub = "yt" }
         HistoryRow(Res.drawable.ic_h_web, stringResource(Res.string.me_website_history)) { sub = "web" }
         Spacer(Modifier.weight(1f))
-        Row(Modifier.padding(start = 15.dp, end = 15.dp, bottom = 22.dp).fillMaxWidth().height(59.dp).shadow(2.dp).background(ViColors.white).padding(start = 10.dp, end = 10.dp),
+        Row(Modifier.padding(start = 15.dp, end = 15.dp, bottom = 22.dp).fillMaxWidth().height(59.dp).shadow(2.dp).background(ViColors.surface).padding(start = 10.dp, end = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.me_login_more), Modifier.weight(1f).padding(end = 12.dp), fontWeight = FontWeight.Bold, fontSize = 14.5.sp, lineHeight = 17.sp, color = ViColors.ink, maxLines = 2)
             Box(Modifier.size(73.dp, 31.dp).clip(RoundedCornerShape(3.dp)).background(ViColors.meTabRed).clickable { nav.go(Routes.GoogleLogin) }, contentAlignment = Alignment.Center) {

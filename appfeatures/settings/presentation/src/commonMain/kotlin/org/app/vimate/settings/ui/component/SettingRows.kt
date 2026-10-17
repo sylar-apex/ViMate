@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 /** 56dp white header with a soft shadow; back at x=16, 20sp bold title at x=60. */
 @Composable
 internal fun SettingsHeader(title: String, onBack: () -> Unit) {
-    Row(Modifier.fillMaxWidth().height(56.dp).shadow(3.dp).background(ViColors.white), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(56.dp).shadow(3.dp).background(ViColors.surface), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.padding(start = 16.dp).size(32.dp).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
             Ic(Res.drawable.ic_back, Modifier.size(30.dp), ViColors.ink, stringResource(Res.string.settings_back))
         }
@@ -35,7 +35,7 @@ internal fun SettingsHeader(title: String, onBack: () -> Unit) {
 /** White section; VidMate separates sections with 7dp of page grey. */
 @Composable
 internal fun Block(content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxWidth().background(ViColors.white), content = content)
+    Column(Modifier.fillMaxWidth().background(ViColors.surface), content = content)
     Spacer(Modifier.height(7.dp))
 }
 

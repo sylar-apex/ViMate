@@ -78,7 +78,7 @@ internal fun PrivateGate() {
     val existing = remember { files.privatePin }
     var entering by remember { mutableStateOf(existing.isNotEmpty()) }
     if (!entering) {
-        Column(Modifier.fillMaxSize().background(ViColors.white), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(Modifier.fillMaxSize().background(ViColors.surface), horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(42.dp))
             Svg("private_lock", Modifier.size(250.dp, 200.dp))
             Spacer(Modifier.height(8.dp))
@@ -105,7 +105,7 @@ internal fun PrivateGate() {
             else -> { error = Res.string.files_pin_mismatch; confirm = null; pin = "" }
         }
     }
-    Column(Modifier.fillMaxSize().background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface)) {
         Box(Modifier.fillMaxWidth().weight(1f)) {
             Row(Modifier.align(Alignment.TopCenter).padding(top = 120.dp).height(27.dp), verticalAlignment = Alignment.CenterVertically) {
                 val prompt = error ?: when { existing.isNotEmpty() -> Res.string.files_enter_password; confirm == null -> Res.string.files_set_the_password; else -> Res.string.files_confirm_password }
@@ -127,7 +127,7 @@ internal fun PrivateGate() {
             contentPadding = PaddingValues(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             items(keys, key = { it }) { k ->
-                Box(Modifier.height(48.dp).shadow(1.dp, RoundedCornerShape(2.dp)).background(ViColors.white, RoundedCornerShape(2.dp)).clickable {
+                Box(Modifier.height(48.dp).shadow(1.dp, RoundedCornerShape(2.dp)).background(ViColors.surface, RoundedCornerShape(2.dp)).clickable {
                     when (k) { "del" -> pin = pin.dropLast(1); "undo" -> { pin = ""; if (existing.isEmpty() && confirm == null) entering = false else confirm = null }; else -> press(k) }
                 }, contentAlignment = Alignment.Center) {
                     when (k) {
@@ -138,7 +138,7 @@ internal fun PrivateGate() {
                 }
             }
         }
-        Spacer(Modifier.height(94.dp).fillMaxWidth().background(ViColors.white))
+        Spacer(Modifier.height(94.dp).fillMaxWidth().background(ViColors.surface))
     }
 }
 

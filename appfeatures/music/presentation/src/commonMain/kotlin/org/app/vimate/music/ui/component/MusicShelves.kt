@@ -68,7 +68,7 @@ internal fun ShelfView(shelf: Shelf, onPlayAll: (List<Video>) -> Unit, onTap: (L
         // Quick picks: white 312x252dp cards (16dp gap) holding 4 rows of 60dp; next card peeks at x=340.
         LazyRow(contentPadding = PaddingValues(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             itemsIndexed(shelf.videos.chunked(4), key = { i, _ -> i }) { _, col ->
-                Column(Modifier.width(312.dp).height(252.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.white).padding(top = 10.dp)) {
+                Column(Modifier.width(312.dp).height(252.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.surface).padding(top = 10.dp)) {
                     // Fixed 4-row card (not a scrolling list).
                     col.forEach { v ->
                         QuickPickRow(v) { onTap(shelf.videos, shelf.videos.indexOf(v)) }
@@ -106,7 +106,7 @@ internal fun CollectionCard(c: Collection, tint: Color, onPlaySingle: (Video) ->
     val nav = LocalAppNavigator.current
     if (c.thumbnail.isEmpty()) {
         // Moods & genres buttons
-        Box(Modifier.width(160.dp).height(48.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.white)
+        Box(Modifier.width(160.dp).height(48.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.surface)
             .clickable { nav.go(Routes.MusicCollection(c.browseId, c.title, c.playlistId.ifEmpty { null })) }.padding(horizontal = 12.dp), contentAlignment = Alignment.CenterStart) {
             Text(c.title, fontWeight = FontWeight.SemiBold, maxLines = 1, color = ViColors.ink)
         }

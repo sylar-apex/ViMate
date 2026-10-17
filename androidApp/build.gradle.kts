@@ -41,6 +41,8 @@ android {
     buildTypes.getByName("debug") {
         // `-PdevInstall` installs next to an existing differently-signed build instead of replacing it.
         if (project.hasProperty("devInstall")) applicationIdSuffix = ".dev"
+        // `-Pabi=arm64-v8a` packs libVLC for one CPU only (~1/4 the size), for quick installs on a test device.
+        providers.gradleProperty("abi").orNull?.let { ndk { abiFilters += it } }
     }
     packaging {
         resources {

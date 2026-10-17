@@ -1,5 +1,6 @@
 package org.app.vimate
 
+import org.app.vimate.appcore.locale.ProvideAppLanguage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,7 @@ import org.app.vimate.shell.LaunchRequests
 import org.app.vimate.shell.MessageToast
 import org.app.vimate.shell.ShellLayoutSpec
 import org.app.vimate.shell.SideBar
+import org.app.vimate.shell.SidePage
 import org.app.vimate.shell.ToastState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -83,7 +85,7 @@ import org.koin.compose.koinInject
 @Composable
 fun App(embeddedPlayer: Boolean = false) {
     InstallImageLoader()
-    ViTheme {
+    ProvideAppLanguage { ViTheme {
         settingsVersion()
         val navController = rememberNavController()
         val nav = remember(navController) { AppNavigator(navController) }
@@ -99,6 +101,7 @@ fun App(embeddedPlayer: Boolean = false) {
                 }
             }
         }
+    }
     }
 }
 
@@ -149,7 +152,16 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
     Box(Modifier.fillMaxSize().background(if (wide) ViColors.wideCanvas else MaterialTheme.colorScheme.background)) {
         Row(Modifier.fillMaxSize()) {
             // Wide windows: permanent side bar on every page instead of the floating bottom bar.
-            if (wide) SideBar(nav.tab, onTabs, activeDownloads) { nav.home(it) }
+            if (wide) {
+                val page = when {
+                    dest == null -> null
+                    dest.hasRoute(Routes.Settings::class) || dest.hasRoute(Routes.SettingsGroup::class) -> SidePage.Settings
+                    dest.hasRoute(Routes.Shorts::class) -> SidePage.Shorts
+                    dest.hasRoute(Routes.Sites::class) -> SidePage.Sites
+                    else -> null
+                }
+                SideBar(nav.tab, onTabs, page, activeDownloads) { nav.home(it) }
+            }
             Column(Modifier.weight(1f).fillMaxHeight()) {
                 Box(Modifier.weight(1f)) { host() }
                 val queue by KMediaPlayer.queue.collectAsState()

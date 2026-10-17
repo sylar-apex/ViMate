@@ -22,6 +22,12 @@ interface PlatformActions {
 
     /** Asks the OS to refresh the home-screen widgets, after playback state changes. */
     fun refreshWidgets() {}
+
+    /** True when the app may show windows over other apps (the auto popup player); always false without one. */
+    fun canDrawOverlays(): Boolean = false
+
+    /** Opens the system screen that grants [canDrawOverlays]. */
+    fun requestOverlayPermission() {}
 }
 
 enum class HomeWidget { QUICK_ACTIONS, MUSIC }

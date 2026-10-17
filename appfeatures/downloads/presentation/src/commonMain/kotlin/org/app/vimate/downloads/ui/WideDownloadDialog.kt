@@ -89,7 +89,7 @@ internal fun WideDownloadDialog(v: Video, onDismiss: () -> Unit) {
     val info = state.data?.video
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Column(Modifier.width(460.dp).heightIn(max = 680.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.white).padding(16.dp)) {
+        Column(Modifier.width(460.dp).heightIn(max = 680.dp).clip(RoundedCornerShape(16.dp)).background(ViColors.surface).padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.downloads_dialog_title), Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = ViColors.ink)
                 Box(Modifier.size(26.dp).clip(CircleShape).clickable(onClick = onDismiss), contentAlignment = Alignment.Center) {
@@ -129,7 +129,7 @@ internal fun WideDownloadDialog(v: Video, onDismiss: () -> Unit) {
                     Text(stringResource(Res.string.downloads_save_to), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = ViColors.ink)
                     Text(location, fontSize = 11.sp, color = ViColors.metaGrey, maxLines = 1, overflow = TextOverflow.StartEllipsis)
                 }
-                Row(Modifier.clip(RoundedCornerShape(8.dp)).background(ViColors.white).clickable {
+                Row(Modifier.clip(RoundedCornerShape(8.dp)).background(ViColors.surface).clickable {
                     if (useCase.changeFolder()) location = useCase.location() else toast(changeToast)
                 }.padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(Res.string.downloads_change), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = ViColors.ink)

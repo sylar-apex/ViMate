@@ -7,4 +7,7 @@
         <item quantity="other">Downloading %1$d files</item>
     </plurals>
     <string name="dl_complete">Download complete</string>
+    <string name="quick_search_channel">Quick Search</string>
+    <string name="quick_search_title">Search ViMate</string>
+    <string name="quick_search_text">Search videos or paste a link</string>
 </resources>

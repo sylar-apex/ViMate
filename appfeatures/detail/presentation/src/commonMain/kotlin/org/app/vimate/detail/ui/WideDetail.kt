@@ -116,7 +116,7 @@ internal fun WideDetail(
             if (description.isNotBlank()) item(key = "description") { Description(description) }
             comments(commentCount, commentsToken)
         }
-        Column(Modifier.width(DetailLayoutSpec.SIDE_WIDTH).fillMaxHeight().clip(CardShape).background(ViColors.white)) {
+        Column(Modifier.width(DetailLayoutSpec.SIDE_WIDTH).fillMaxHeight().clip(CardShape).background(ViColors.surface)) {
             Row(Modifier.fillMaxWidth().padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.detail_related_videos), Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = ViColors.ink)
                 Text(stringResource(Res.string.detail_autoplay), Modifier.padding(end = 6.dp), fontSize = 12.sp, color = VRed)

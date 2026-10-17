@@ -1,5 +1,9 @@
 package org.app.vimate.sharedlogic.di
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import org.app.kmediaplayer.settings.ObservableSettings
 import org.app.vimate.sharedlogic.data.PrivateSession
 import org.app.vimate.sharedlogic.data.StoreFactory
@@ -20,8 +24,15 @@ import org.koin.dsl.module
 fun sharedLogicModule() = module {
     includes(platformDataModule(), downloadModule())
     single {
-        ObservableSettings(get<StoreFactory>().open("settings"), appSettingRegistries).also {
-            YouTube.gl = it[AppKeys.location]
+        ObservableSettings(get<StoreFactory>().open("settings"), appSettingRegistries).also { s ->
+            // Content settings shape every YouTube request; keep the client in step from launch and on each change.
+            fun sync() {
+                YouTube.gl = s[AppKeys.location]
+                YouTube.hl = hlOf(s[AppKeys.language])
+                YouTube.restricted = s[AppKeys.restricted]
+            }
+            sync()
+            CoroutineScope(SupervisorJob() + Dispatchers.Default).launch { s.version.collect { sync() } }
         }
     }
     single { Library(get()) }
@@ -36,3 +47,6 @@ fun sharedLogicModule() = module {
 
 /** Binds [StoreFactory], [org.app.vimate.sharedlogic.platform.PlatformActions] and the device library for the current platform. */
 expect fun platformDataModule(): Module
+
+/** YouTube `hl` for a language picked in Settings › Content. */
+private fun hlOf(language: String) = when (language) { "हिन्दी" -> "hi"; "Bahasa Indonesia" -> "id"; "Português" -> "pt"; "Español" -> "es"; else -> "en" }

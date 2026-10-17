@@ -125,7 +125,7 @@ private fun PasteBox(modifier: Modifier) {
     }
     Row(
         modifier.height(52.dp).shadow(6.dp, CircleShape, ambientColor = ViColors.cardShadow, spotColor = ViColors.cardShadow)
-            .clip(CircleShape).background(Color.White).padding(start = 20.dp, end = 6.dp),
+            .clip(CircleShape).background(ViColors.surface).padding(start = 20.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(Icons.Filled.Link, null, Modifier.size(19.dp), tint = ViColors.ink.copy(alpha = .7f))

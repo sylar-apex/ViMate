@@ -32,6 +32,8 @@ import org.app.vimate.sharedlogic.platform.WebCookies
 object YouTube {
     var hl = "en"
     var gl = "IN"
+    /** Settings › Restricted Mode: YouTube's own safety filter on recommendations, search and pages. */
+    var restricted = false
 
     val http: HttpClient = HttpClient(getHttpClientEngine()) {
         expectSuccess = false
@@ -87,6 +89,7 @@ object YouTube {
                     if (client !== WEB && client !== REMIX) visitorData?.let { put("visitorData", it) }
                     client.extra.forEach { (k, v) -> put(k, v) }
                 }
+                putJsonObject("user") { put("enableSafetyMode", restricted) }
             }
             JsonObject(emptyMap()).body().forEach { (k, v) -> put(k, v) }
         }

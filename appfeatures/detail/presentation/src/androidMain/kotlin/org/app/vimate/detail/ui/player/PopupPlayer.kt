@@ -75,16 +75,17 @@ object PopupPlayer {
         val pauseBmp = bmp(icons.pause); val playBmp = bmp(icons.play)
         // The page's engine keeps playing (libVLC); the popup only gives it a new surface.
         val p = KMediaPlayer.engine
-        if (p.title != qualityLabel || p.position <= 0) {
-            p.setItems(listOf(MediaFile(videoUrl.hashCode().toLong(), videoUrl, videoUrl, qualityLabel, 0, 0, 0,
-                extras = StreamExtras(audioUri = audioUrl, userAgent = YouTube.streamUA))), 0, positionMs)
-            p.prepare()
-        }
-        p.play()
+        // The page's video surface is already gone and its hardware decoder cannot move to a new one, so the popup
+        // reopens the stream on its own surface at the same position (a brief re-buffer, then playback continues).
+        p.setItems(listOf(MediaFile(videoUrl.hashCode().toLong(), videoUrl, videoUrl, qualityLabel, 0, 0, 0,
+            extras = StreamExtras(audioUri = audioUrl, userAgent = YouTube.streamUA))), 0, positionMs)
         val box = FrameLayout(app).apply { setBackgroundColor(Color.BLACK) }
         val surface = SurfaceView(app)
         box.addView(surface, FrameLayout.LayoutParams(-1, -1))
+        // libVLC sizes its picture from the view; report it once the overlay is laid out (and on zoom).
+        surface.addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ -> HybridEngine.onSurfaceSizeChanged(v.width, v.height) }
         HybridEngine.attachSurface(surface)
+        p.prepare(); p.play()
 
         // Controls layer (hidden until tapped).
         val ctl = FrameLayout(app).apply { setBackgroundColor(0x55000000); visibility = View.GONE }

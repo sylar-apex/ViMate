@@ -36,7 +36,7 @@ fun PlaylistsScreen(viewModel: LibraryViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val lists = state.playlists
     var create by remember { mutableStateOf(false) }
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(stringResource(Res.string.me_youtube_playlist), bold = false, height = 56, titleStart = 16, titleSize = 18f) { nav.back() }
         if (lists.isEmpty()) {
             // VidMate's sign-in intro (logos, title, subtitle), then the red Sign in bar at the bottom.
@@ -72,7 +72,7 @@ fun PlaylistDetailScreen(id: Long, viewModel: LibraryViewModel = koinViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { viewModel.effect.collectLatest { if (it is LibraryContract.Effect.Error) toast(it.message) } }
     val p = state.playlists.find { it.id == id } ?: return
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(p.name) { nav.back() }
         TextButton(onClick = { viewModel.setEvent(LibraryContract.Event.PlayAllAudio(p.videos)) }, Modifier.padding(start = 8.dp)) { Text(stringResource(Res.string.me_play_all_audio), color = VRed) }
         LazyColumn {

@@ -1,5 +1,9 @@
 package org.app.vimate.sites.ui
 
+import org.app.vimate.appres.resources.sites_blocked
+import org.app.vimate.sharedlogic.settings.AppKeys
+import org.app.kmediaplayer.settings.ObservableSettings
+import org.app.vimate.sites.logic.SiteFilter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -118,6 +122,9 @@ fun BrowserScreen(startUrl: String) {
     // Per-post download (Instagram): shortcode picked by the injected button → resolved media → sheet.
     var postCode by remember { mutableStateOf<String?>(null) }
     var lastNative by remember { mutableStateOf("" to 0L) }
+    // Sites Filter: an adult page is replaced by a notice.
+    val settings = koinInject<ObservableSettings>()
+    var blocked by remember { mutableStateOf(settings[AppKeys.hideAdultSites] && SiteFilter.isAdult(startUrl)) }
 
     fun add(u: String, mime: String) {
         val clean = MediaSniffer.clean(u) ?: return
@@ -134,7 +141,11 @@ fun BrowserScreen(startUrl: String) {
     val callbacks = WebCallbacks(
         onProgress = { progress = it },
         onTitle = { title = it },
-        onPageStarted = { u -> url = u; edit = u; found.clear() },
+        onPageStarted = { u ->
+            url = u; edit = u; found.clear()
+            if (settings[AppKeys.hideAdultSites] && SiteFilter.isAdult(u)) { blocked = true; web?.loadUrl("about:blank") }
+            else if (u != "about:blank") blocked = false
+        },
         onHistory = { u -> url = u; edit = u },
         onPageFinished = { u, t -> addSite(u, t) },
         onMediaRequest = { u -> add(u, MediaSniffer.mimeOf(u)) },
@@ -157,7 +168,7 @@ fun BrowserScreen(startUrl: String) {
         },
     )
     // Measured from VidMate: 50dp white header with shadow; home at x=16, bold centred site name, reload at x=268, menu at x=312.
-    Column(Modifier.fillMaxSize().background(ViColors.pocLightBackground).statusBarsPadding().background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.pocLightBackground).statusBarsPadding().background(ViColors.surface)) {
         BrowserHeader(
             url = url, host = hostOf(url) ?: url, siteName = siteName, foundCount = found.size, desktop = desktop,
             canGoBack = web?.canGoBack() == true, canGoForward = web?.canGoForward() == true, menu = menu, onMenu = { menu = it },
@@ -182,14 +193,18 @@ fun BrowserScreen(startUrl: String) {
         if (editing) Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(edit, { edit = it }, Modifier.weight(1f), singleLine = true, shape = RoundedCornerShape(24.dp), textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go), keyboardActions = KeyboardActions(onGo = {
-                    web?.loadUrl(typedToUrl(edit.trim()) { it.encodeURLParameter() })
+                    web?.loadUrl(typedToUrl(edit.trim()) { it.encodeURLParameter() }.let { if (settings[AppKeys.hideAdultSites]) SiteFilter.safeSearch(it) else it })
                     editing = false
                 }))
             IconButton(onClick = { editing = false }) { Icon(Icons.Default.Close, stringResource(Res.string.sites_close)) }
         }
         if (progress in 1..99) LinearProgressIndicator(progress = { progress / 100f }, Modifier.fillMaxWidth().height(2.dp), color = VRed, trackColor = ViColors.transparent, drawStopIndicator = {})
         Box(Modifier.weight(1f)) {
-            PlatformWebView(startUrl, controller, callbacks, Modifier.fillMaxSize())
+            // The native web view draws above Compose, so a blocked page hides it rather than covering it.
+            PlatformWebView(if (blocked) "about:blank" else startUrl, controller, callbacks, if (blocked) Modifier.size(0.dp) else Modifier.fillMaxSize())
+            if (blocked) Box(Modifier.fillMaxSize().background(ViColors.surface), contentAlignment = Alignment.Center) {
+                Text(stringResource(Res.string.sites_blocked), Modifier.padding(32.dp), color = ViColors.muted, fontSize = 15.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+            }
             // On YouTube the page's stream URLs are unusable; download via our own resolver for the current video/Short.
             val ytId = if ("youtube.com" in url || "youtu.be" in url) YouTube.idFromUrl(url) else null
             if (ytId != null) Box(Modifier.align(Alignment.BottomEnd).padding(end = 20.dp, bottom = 46.dp).size(54.dp).clip(CircleShape).background(VRed)

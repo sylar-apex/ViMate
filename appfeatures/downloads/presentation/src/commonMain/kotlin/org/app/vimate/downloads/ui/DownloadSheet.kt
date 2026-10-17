@@ -109,7 +109,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
         Column(Modifier.height(screenH - 164.dp).navigationBarsPadding()) {
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                 Spacer(Modifier.height(12.dp))
-                Column(Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(12.dp)).background(ViColors.white).padding(start = 12.dp, end = 12.dp, top = 12.dp)) {
+                Column(Modifier.fillMaxWidth().height(130.dp).clip(RoundedCornerShape(12.dp)).background(ViColors.surface).padding(start = 12.dp, end = 12.dp, top = 12.dp)) {
                     Row {
                         Box(Modifier.size(114.dp, 64.dp).clip(RoundedCornerShape(6.dp)).background(ViColors.pocDarkSurfaceVariant)) {
                             AsyncImage(v.thumbnail.ifEmpty { state.data?.video?.thumbnail }, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
@@ -139,7 +139,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(12.dp)).background(ViColors.white),
+                LazyVerticalGrid(GridCells.Fixed(2), Modifier.fillMaxWidth().weight(1f).clip(RoundedCornerShape(12.dp)).background(ViColors.surface),
                     contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 12.dp)) {
                     when {
                         state.loading -> item(span = { GridItemSpan(maxLineSpan) }) { Loading() }
@@ -160,7 +160,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
                     toast(addedToast)
                     onDismiss()
                 }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(18.dp).clip(CircleShape).background(ViColors.white), contentAlignment = Alignment.Center) {
+                    Box(Modifier.size(18.dp).clip(CircleShape).background(ViColors.surface), contentAlignment = Alignment.Center) {
                         Ic(Res.drawable.ic_d_download, Modifier.size(12.dp), ViColors.batchDownload)
                     }
                     Text(stringResource(Res.string.downloads_download), Modifier.padding(start = 6.dp), color = ViColors.white, fontSize = 15.5.sp, lineHeight = 19.sp)

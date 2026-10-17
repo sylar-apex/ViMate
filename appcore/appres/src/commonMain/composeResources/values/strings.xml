@@ -196,7 +196,6 @@
     <string name="wide_shorts">Shorts</string>
     <string name="wide_sites">All Sites</string>
     <string name="wide_settings">Settings</string>
-    <string name="wide_help">Help &amp; Feedback</string>
     <string name="wide_tagline">Video Downloader</string>
     <string name="wide_quick_access">Quick Access</string>
     <string name="wide_recommended">Recommended for you</string>
@@ -226,7 +225,6 @@
     <string name="wide_hero_watch">Watch now</string>
     <string name="wide_hero_badge">Trending now</string>
     <string name="wide_close">Close</string>
-    <string name="wide_settings_sub">Downloads, content and app preferences</string>
     <string name="wide_music_sub">Songs, charts and playlists from YouTube Music</string>
     <string name="wide_top_search_hint">Search or paste a link from YouTube, Instagram, Facebook, and 1000+ sites…</string>
     <string name="wide_banner_kicker">DOWNLOAD VIDEOS FROM</string>
@@ -240,7 +238,5 @@
     <string name="wide_see_all">See all</string>
     <string name="wide_site_tiktok">TikTok</string>
     <string name="wide_site_youtube">YouTube</string>
-    <string name="wide_premium_title">Premium Downloads</string>
-    <string name="wide_premium_sub">Fast · HD · Ad-free</string>
     <string name="wide_more_chips">More topics</string>
 </resources>

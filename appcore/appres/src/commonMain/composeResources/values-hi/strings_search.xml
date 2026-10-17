@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_hint">खोजें या URL डालें</string>
+    <string name="search_back">वापस</string>
+    <string name="search_clear">साफ़ करें</string>
+    <string name="search_tab_all">सभी</string>
+    <string name="search_tab_music">म्यूज़िक</string>
+    <string name="search_tab_playlist">प्लेलिस्ट</string>
+    <string name="search_tab_picture">तस्वीरें</string>
+    <string name="search_history">खोज इतिहास</string>
+    <string name="search_clear_history">इतिहास साफ़ करें</string>
+    <string name="search_hot">लोकप्रिय खोजें</string>
+    <string name="search_no_results">कोई नतीजा नहीं</string>
+</resources>

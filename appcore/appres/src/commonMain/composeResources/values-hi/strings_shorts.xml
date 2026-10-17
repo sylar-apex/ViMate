@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shorts_error">त्रुटि</string>
+    <string name="shorts_follow">+फ़ॉलो</string>
+    <string name="shorts_following">फ़ॉलो किया</string>
+    <string name="shorts_like">लाइक</string>
+    <string name="shorts_dislike">नापसंद</string>
+    <string name="shorts_comments">टिप्पणियाँ</string>
+    <string name="shorts_share">शेयर</string>
+    <string name="shorts_download">डाउनलोड</string>
+    <string name="shorts_more">और</string>
+    <string name="shorts_back">वापस</string>
+</resources>

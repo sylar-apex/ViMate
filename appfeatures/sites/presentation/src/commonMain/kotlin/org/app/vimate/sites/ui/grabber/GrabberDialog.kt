@@ -102,7 +102,7 @@ fun GrabberDialog(pageUrl: String, pageTitle: String, urls: List<String>, userAg
 
     Dialog(onDismissRequest = onClose, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Column(Modifier.fillMaxSize().background(ViColors.pocLightBackground)) {
-            Row(Modifier.fillMaxWidth().background(ViColors.white).statusBarsPadding().height(48.dp).padding(start = 4.dp, end = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().background(ViColors.surface).statusBarsPadding().height(48.dp).padding(start = 4.dp, end = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(40.dp).clickable(onClick = onClose), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_back, Modifier.size(28.dp), ViColors.ink, stringResource(Res.string.sites_back)) }
                 Column(Modifier.weight(1f).padding(start = 6.dp)) {
                     Text(stringResource(Res.string.grab_title), fontWeight = FontWeight.Bold, fontSize = 16.sp, lineHeight = 18.sp, color = ViColors.ink)
@@ -114,7 +114,7 @@ fun GrabberDialog(pageUrl: String, pageTitle: String, urls: List<String>, userAg
                 }
             }
             // Single-select type tabs (only types that exist, plus All).
-            LazyRow(Modifier.fillMaxWidth().background(ViColors.white), contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            LazyRow(Modifier.fillMaxWidth().background(ViColors.surface), contentPadding = PaddingValues(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 item(key = "all") { TypeChip(stringResource(Res.string.grab_all), items.size, filter == null) { filter = null } }
                 items(grabTypes.filter { (counts[it] ?: 0) > 0 }, key = { it.name }) { t -> TypeChip(t.label(), counts[t] ?: 0, filter == t) { filter = t } }
             }
@@ -145,7 +145,7 @@ fun GrabberDialog(pageUrl: String, pageTitle: String, urls: List<String>, userAg
                 }
             }
             // Bottom bar: count + size, red Download.
-            Row(Modifier.fillMaxWidth().background(ViColors.white).navigationBarsPadding().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().background(ViColors.surface).navigationBarsPadding().padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(stringResource(Res.string.grab_selected, selItems.size), fontSize = 14.sp, color = ViColors.ink, fontWeight = FontWeight.Bold)
                     Text(fmtSize(selItems.sumOf { it.size.coerceAtLeast(0) }), fontSize = 12.sp, color = ViColors.metaGrey)
@@ -170,7 +170,7 @@ private fun GrabCand(g: GrabItem) = org.app.vimate.sites.model.GrabCandidate(g.u
 
 @Composable
 private fun GrabRow(g: GrabItem, on: Boolean, onToggle: () -> Unit, onPreview: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(ViColors.white)
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(ViColors.surface)
         .then(if (on) Modifier.border(1.5.dp, VRed, RoundedCornerShape(12.dp)) else Modifier)
         .clickable(onClick = onPreview).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(52.dp).clip(RoundedCornerShape(8.dp)).background(ViColors.grabListThumb), contentAlignment = Alignment.Center) {

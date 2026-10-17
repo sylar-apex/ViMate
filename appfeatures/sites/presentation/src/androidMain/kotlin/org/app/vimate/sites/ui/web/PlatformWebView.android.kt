@@ -166,7 +166,7 @@ actual fun PlatformWebView(startUrl: String, controller: BrowserController, call
 
     popup?.let { p ->
         Dialog(onDismissRequest = { popup = null; p.destroy() }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-            Column(Modifier.fillMaxSize().background(ViColors.white)) {
+            Column(Modifier.fillMaxSize().background(ViColors.surface)) {
                 Row(Modifier.fillMaxWidth().height(50.dp).padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { popup = null; p.destroy() }) { Icon(Icons.Default.Close, stringResource(Res.string.sites_close)) }
                     Text(p.title.orEmpty().ifEmpty { stringResource(Res.string.sites_sign_in) }, fontWeight = FontWeight.Bold, fontSize = 17.sp, maxLines = 1)

@@ -44,7 +44,7 @@ fun JunkCleanScreen(viewModel: JunkViewModel = koinViewModel()) {
     val cleaned = s.cleaned
     val selected = s.selected
     val (num, unit) = fmtSize(if (cleaned) 0 else s.total).split(' ').let { it[0] to it.getOrElse(1) { "" } }
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         Column(Modifier.fillMaxWidth().height(172.dp).background(Brush.verticalGradient(listOf(ViColors.meJunkTop, ViColors.meJunkBottom)))) {
             Row(Modifier.height(54.dp).padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.padding(start = 10.dp).size(40.dp).clickable { nav.back() }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_back, Modifier.size(30.dp), ViColors.white, stringResource(Res.string.me_back)) }

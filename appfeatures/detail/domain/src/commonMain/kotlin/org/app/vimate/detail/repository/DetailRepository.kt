@@ -20,5 +20,7 @@ interface DetailRepository {
     fun saveToPlaylist(playlistId: Long, v: Video)
     fun createPlaylist(name: String): Long
     val autoPlay: Boolean
+    /** Settings › Auto Pop-up Play Videos: leaving the page hands a playing video to the popup window. */
+    val autoPopup: Boolean
     val onlineQuality: String
 }

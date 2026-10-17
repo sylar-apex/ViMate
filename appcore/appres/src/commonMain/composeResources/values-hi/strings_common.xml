@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="common_back">वापस</string>
+    <string name="common_save">सेव करें</string>
+    <string name="common_download">डाउनलोड</string>
+    <string name="common_more">और</string>
+    <string name="common_hot_videos">लोकप्रिय वीडियो</string>
+    <string name="common_retry">फिर से कोशिश करें</string>
+    <string name="common_network_error">नेटवर्क में गड़बड़ी</string>
+    <string name="common_share">शेयर करें</string>
+    <string name="shell_nav_home">होम</string>
+    <string name="shell_nav_music">म्यूज़िक</string>
+    <string name="shell_nav_files">मेरी फ़ाइलें</string>
+    <string name="shell_nav_me">मैं</string>
+    <string name="shell_clip_download">डाउनलोड</string>
+    <string name="shell_clip_dismiss">हटाएँ</string>
+    <string name="shell_clip_detected">लिंक मिला: %1$s</string>
+    <string name="common_play">चलाएँ</string>
+    <string name="common_error">त्रुटि</string>
+</resources>

@@ -43,7 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SearchBarRow(activeDownloads: Int) {
     val nav = LocalAppNavigator.current
     Row(Modifier.fillMaxWidth().height(50.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.padding(start = 12.dp).width(309.dp).height(36.dp).clip(CircleShape).background(Color.White)
+        Row(Modifier.padding(start = 12.dp).width(309.dp).height(36.dp).clip(CircleShape).background(ViColors.surface)
             .clickable { nav.go(Routes.Search()) }.padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Ic(Res.drawable.ic_search, Modifier.size(24.dp), ViColors.searchIcon)
             Text(stringResource(Res.string.home_search_hint), Modifier.padding(start = 6.dp).graphicsLayer(scaleX = 0.987f, transformOrigin = TransformOrigin(0f, .5f)),

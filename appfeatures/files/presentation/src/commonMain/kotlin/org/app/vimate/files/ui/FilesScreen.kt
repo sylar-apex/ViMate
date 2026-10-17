@@ -113,11 +113,11 @@ fun FilesScreen() {
                     val private = i == PRIVATE_TAB
                     Box(Modifier.fillMaxHeight().clickable { tab = i }) {
                         Row(Modifier.fillMaxHeight().padding(start = if (private) 10.dp else 17.dp, end = 17.dp), verticalAlignment = Alignment.CenterVertically) {
-                            if (private) Ic(Res.drawable.ic_lock, Modifier.padding(end = 4.dp).offset(y = (-1.3).dp).size(17.3.dp), if (sel) ViColors.black else ViColors.tabGrey)
+                            if (private) Ic(Res.drawable.ic_lock, Modifier.padding(end = 4.dp).offset(y = (-1.3).dp).size(17.3.dp), if (sel) ViColors.ink else ViColors.tabGrey)
                             Text(stringResource(t), fontSize = if (sel) 13.6.sp else 13.5.sp, lineHeight = 19.sp, fontWeight = if (sel) FontWeight.Bold else FontWeight.Normal,
-                                color = if (sel) ViColors.black else ViColors.tabGrey)
+                                color = if (sel) ViColors.ink else ViColors.tabGrey)
                         }
-                        if (sel) Box(Modifier.matchParentSize().padding(start = 10.dp, end = 10.dp, bottom = 1.dp).wrapContentHeight(Alignment.Bottom).height(3.dp).background(ViColors.black))
+                        if (sel) Box(Modifier.matchParentSize().padding(start = 10.dp, end = 10.dp, bottom = 1.dp).wrapContentHeight(Alignment.Bottom).height(3.dp).background(ViColors.ink))
                     }
                 }
             }

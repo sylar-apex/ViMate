@@ -1,5 +1,7 @@
 package org.app.vimate.settings.ui.wide
 
+import org.app.vimate.settings.domain.constant.SettingsGroups as G
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,8 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.app.vimate.appcore.adaptive.WideCard
-import org.app.vimate.appcore.adaptive.WideIconButton
-import org.app.vimate.appcore.adaptive.WidePage
 import org.app.vimate.appcore.adaptive.WideSpec
 import org.app.vimate.appcore.adaptive.hover
 import org.app.vimate.appcore.adaptive.rememberHover
@@ -41,7 +41,6 @@ import org.app.vimate.appcore.navigation.LocalAppNavigator
 import org.app.vimate.appcore.theme.VRed
 import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appres.resources.*
-import org.app.vimate.settings.domain.constant.SettingsGroups as G
 import org.app.vimate.settings.ui.SettingsGroupBody
 import org.app.vimate.settings.ui.groupTitles
 import org.app.vimate.settings.ui.settingsEntries
@@ -54,11 +53,9 @@ import org.jetbrains.compose.resources.stringResource
 fun SettingsWide(initial: String) {
     val nav = LocalAppNavigator.current
     var group by rememberSaveable(initial) { mutableStateOf(initial) }
-    WidePage(
-        stringResource(Res.string.settings_title), stringResource(Res.string.wide_settings_sub),
-        actions = { if (nav.canGoBack) WideIconButton(Res.drawable.ic_close, stringResource(Res.string.wide_close)) { nav.back() } },
-    ) {
-        Row(Modifier.fillMaxSize().padding(start = WideSpec.gutter, end = WideSpec.gutter, bottom = 24.dp), horizontalArrangement = Arrangement.spacedBy(WideSpec.gap)) {
+    // No page header: the side bar already names and leaves the page, so the group list and its panel start at the top.
+    Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding()) {
+        Row(Modifier.fillMaxSize().padding(start = WideSpec.gutter, end = WideSpec.gutter, top = 24.dp, bottom = 24.dp), horizontalArrangement = Arrangement.spacedBy(WideSpec.gap)) {
             WideCard(Modifier.width(300.dp), padding = 10.dp) {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     items(settingsEntries, key = { it.group }) { e -> GroupItem(e.icon, e.title, e.sub, group == e.group) { group = e.group } }
@@ -68,7 +65,7 @@ fun SettingsWide(initial: String) {
             WideCard(Modifier.weight(1f).widthIn(max = 860.dp).fillMaxSize(), padding = 0.dp) {
                 val title = if (group == G.ABOUT) stringResource(Res.string.settings_about) else groupTitles[group]?.let { stringResource(it) } ?: group
                 Text(title, Modifier.padding(start = 24.dp, top = 22.dp, bottom = 10.dp), color = ViColors.ink, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Box(Modifier.fillMaxWidth().weight(1f).background(ViColors.page)) { SettingsGroupBody(group) }
+                Box(Modifier.fillMaxWidth().weight(1f).background(ViColors.surface)) { SettingsGroupBody(group) }
             }
         }
     }

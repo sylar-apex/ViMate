@@ -16,5 +16,6 @@ class DetailRepositoryImpl(private val library: Library, private val settings: O
     override fun saveToPlaylist(playlistId: Long, v: Video) = library.saveToPlaylist(playlistId, v)
     override fun createPlaylist(name: String) = library.createPlaylist(name)
     override val autoPlay get() = settings[AppKeys.autoPlay]
+    override val autoPopup get() = settings[AppKeys.autoPopup]
     override val onlineQuality get() = settings[AppKeys.onlineQuality]
 }

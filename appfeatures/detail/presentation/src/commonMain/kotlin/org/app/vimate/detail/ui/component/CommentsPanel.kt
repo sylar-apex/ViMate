@@ -74,7 +74,7 @@ internal fun CommentsPanel(token: String, count: String, onClose: () -> Unit) {
     val comments by pager.comments.collectAsState()
     val loading by pager.loading.collectAsState()
     val grey = ViColors.metaGrey
-    Column(Modifier.fillMaxSize().background(ViColors.white)) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface)) {
         Box(Modifier.fillMaxWidth().height(46.dp)) {
             Row(Modifier.offset(x = 12.dp, y = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.detail_comments), fontWeight = FontWeight.Bold, fontSize = 17.sp, lineHeight = 21.7.sp, color = ViColors.ink)

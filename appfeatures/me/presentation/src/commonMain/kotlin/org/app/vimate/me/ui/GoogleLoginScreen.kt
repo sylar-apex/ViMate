@@ -40,7 +40,7 @@ fun GoogleLoginScreen() {
     val nav = LocalAppNavigator.current
     val toast = LocalToast.current
     val signedIn = stringResource(Res.string.me_signed_in)
-    Column(Modifier.fillMaxSize().background(ViColors.white).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
         PageHeader(stringResource(Res.string.me_sign_in), height = 56) { nav.back() }
         GoogleSignInWeb(MeUrls.GOOGLE_SIGN_IN, Modifier.fillMaxSize()) { toast(signedIn); nav.back() }
     }

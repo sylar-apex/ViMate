@@ -14,6 +14,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,6 +94,19 @@ fun DetailScreen(start: Video) {
     var showComments by remember { mutableStateOf(false) }
     var saveDialog by remember { mutableStateOf(false) }
     var popupAsk by remember { mutableStateOf(false) }
+    // Auto Pop-up: leaving the page while a video plays moves it to the floating popup (where the platform has one).
+    // Declared after the player, so it runs before the player's own dispose and can keep playback going.
+    val popupVideo by rememberUpdatedState(state.video ?: current)
+    val popupQuality by rememberUpdatedState(curQ)
+    DisposableEffect(Unit) {
+        onDispose {
+            val q = popupQuality
+            if (repo.autoPopup && popup.supported && popup.canDraw() && player.isPlaying && q != null) {
+                popup.show(popupVideo, q.url, q.audioUrl, q.label, player.currentPosition)
+                player.handOff()
+            }
+        }
+    }
     val errorText = stringResource(Res.string.detail_playback_error, "%s")
     fun playbackError(code: String) = toast(errorText.replace("%s", code))
 
@@ -166,7 +181,7 @@ fun DetailScreen(start: Video) {
         Box(Modifier.fillMaxWidth().background(ViColors.detailStatusBar).statusBarsPadding().background(Color.Black)) { playerArea(false) }
         // Below-player layout measured from VidMate (3px = 1dp).
         if (showComments && ctoken != null) CommentsPanel(ctoken, next.commentCount) { showComments = false }
-        else LazyColumn(Modifier.fillMaxSize().background(ViColors.white)) {
+        else LazyColumn(Modifier.fillMaxSize().background(ViColors.surface)) {
             item(key = "title") { DetailTitle(v, next?.likes.orEmpty()) }
             item(key = "actions") {
                 DetailActions { actions() }
