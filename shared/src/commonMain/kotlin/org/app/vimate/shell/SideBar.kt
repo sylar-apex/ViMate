@@ -18,6 +18,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,8 +59,8 @@ internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (In
     val nav = LocalAppNavigator.current
     Row(Modifier.fillMaxHeight()) {
         Column(
-            Modifier.width(ShellLayoutSpec.sideBarWidth).fillMaxHeight().background(ViColors.sideBarBg).statusBarsPadding()
-                .padding(horizontal = 14.dp),
+            Modifier.width(ShellLayoutSpec.sideBarWidth).fillMaxHeight().background(ViColors.sideBarTint).statusBarsPadding()
+                .padding(horizontal = 12.dp),
         ) {
             Brand()
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -71,6 +75,8 @@ internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (In
                 NavItem(Res.drawable.ic_shorts, Res.string.wide_shorts) { nav.go(Routes.Shorts()) }
                 NavItem(Res.drawable.ic_globe, Res.string.wide_sites) { nav.go(Routes.Sites) }
             }
+            PremiumCard { nav.go(Routes.SettingsGroup("Download")) }
+            Spacer(Modifier.height(14.dp))
             Box(Modifier.fillMaxWidth().height(1.dp).background(ViColors.wideHairline))
             Spacer(Modifier.height(8.dp))
             NavItem(Res.drawable.ic_settings, Res.string.wide_settings) { nav.go(Routes.Settings) }
@@ -83,15 +89,15 @@ internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (In
 
 @Composable
 private fun Brand() {
-    Row(Modifier.padding(start = 6.dp, top = 22.dp, bottom = 26.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.padding(start = 6.dp, top = 18.dp, bottom = 20.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
-            Modifier.size(38.dp).clip(RoundedCornerShape(11.dp))
+            Modifier.size(34.dp).clip(RoundedCornerShape(10.dp))
                 .background(Brush.linearGradient(listOf(ViColors.brandLight, VRed))),
             contentAlignment = Alignment.Center,
-        ) { Ic(Res.drawable.ic_play_fill, Modifier.size(22.dp), Color.White) }
+        ) { Ic(Res.drawable.ic_play_fill, Modifier.size(19.dp), Color.White) }
         Column(Modifier.padding(start = 12.dp)) {
-            Text(stringResource(Res.string.app_name), fontSize = 19.sp, lineHeight = 22.sp, fontWeight = FontWeight.Bold, color = ViColors.ink)
-            Text(stringResource(Res.string.wide_tagline), fontSize = 11.5.sp, lineHeight = 14.sp, color = ViColors.sectionLabel)
+            Text(stringResource(Res.string.app_name), fontSize = 17.sp, lineHeight = 20.sp, fontWeight = FontWeight.Bold, color = ViColors.ink)
+            Text(stringResource(Res.string.wide_tagline), fontSize = 10.5.sp, lineHeight = 13.sp, color = ViColors.sectionLabel)
         }
     }
 }
@@ -99,8 +105,8 @@ private fun Brand() {
 @Composable
 private fun Section(label: StringResource) {
     Text(
-        stringResource(label).uppercase(), Modifier.padding(start = 14.dp, top = 22.dp, bottom = 8.dp),
-        fontSize = 11.sp, letterSpacing = 1.sp, fontWeight = FontWeight.SemiBold, color = ViColors.sectionLabel,
+        stringResource(label).uppercase(), Modifier.padding(start = 12.dp, top = 18.dp, bottom = 6.dp),
+        fontSize = 10.sp, letterSpacing = 1.sp, fontWeight = FontWeight.SemiBold, color = ViColors.sectionLabel,
     )
 }
 
@@ -117,17 +123,37 @@ private fun NavItem(icon: DrawableResource, label: StringResource, selected: Boo
     val tint = if (selected) VRed else ViColors.ink
     val text = stringResource(label)
     Row(
-        Modifier.padding(vertical = 2.dp).fillMaxWidth().height(42.dp).clip(RoundedCornerShape(12.dp)).background(bg)
-            .hover(h).clickable(onClick = onClick).padding(horizontal = 14.dp),
+        Modifier.padding(vertical = 1.dp).fillMaxWidth().height(38.dp).clip(RoundedCornerShape(10.dp)).background(bg)
+            .hover(h).clickable(onClick = onClick).padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Ic(icon, Modifier.size(21.dp), tint, text)
+        Ic(icon, Modifier.size(19.dp), tint, text)
         Text(
-            text, Modifier.weight(1f).padding(start = 14.dp), color = tint, fontSize = 14.5.sp,
+            text, Modifier.weight(1f).padding(start = 12.dp), color = tint, fontSize = 13.5.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium, maxLines = 1,
         )
         if (badge > 0) Box(Modifier.size(20.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
             Text("$badge", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+/** Promo card above Settings: fast, HD, ad-free downloads; opens the download settings. */
+@Composable
+private fun PremiumCard(onClick: () -> Unit) {
+    val h = rememberHover()
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Brush.linearGradient(listOf(ViColors.premiumStart, ViColors.premiumEnd)))
+            .hover(h).clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.WorkspacePremium, null, Modifier.size(24.dp), tint = ViColors.crown)
+        Column(Modifier.weight(1f).padding(start = 10.dp)) {
+            Text(stringResource(Res.string.wide_premium_title), color = ViColors.ink, fontSize = 13.sp, lineHeight = 16.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(Res.string.wide_premium_sub), Modifier.padding(top = 2.dp), color = ViColors.sectionLabel, fontSize = 11.sp)
+        }
+        Box(Modifier.size(26.dp).clip(CircleShape).background(if (h.hovered) VRed else Color.White), contentAlignment = Alignment.Center) {
+            Icon(Icons.Filled.ChevronRight, null, Modifier.size(18.dp), tint = if (h.hovered) Color.White else ViColors.ink)
         }
     }
 }

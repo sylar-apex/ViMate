@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.app.vimate.appcore.adaptive.WideSpec
 import org.app.vimate.appcore.adaptive.WideVideoCard
+import org.app.vimate.appcore.adaptive.bleed
+import org.app.vimate.appcore.navigation.Routes
 import org.app.vimate.appcore.component.ErrorBox
 import org.app.vimate.appcore.component.Loading
 import org.app.vimate.appcore.navigation.LocalAppNavigator
@@ -47,7 +49,6 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
 
     Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding()) {
         WideTopBar(state.activeDownloads)
-        WideChips(state.chip) { onEvent(Event.SelectChip(it)) }
         LazyVerticalGrid(
             GridCells.Adaptive(WideHomeSpec.cardMin), Modifier.fillMaxSize(), grid,
             contentPadding = PaddingValues(start = WideHomeSpec.gutter, end = WideHomeSpec.gutter, bottom = WideSpec.bottomInset),
@@ -56,13 +57,14 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
         ) {
             item(key = "header", span = { GridItemSpan(maxLineSpan) }) {
                 Column {
-                    state.feed.firstOrNull()?.let { v -> Box(Modifier.padding(top = 10.dp)) { HeroCard(v) { nav.download(v) } } }
-                    SectionTitle(Res.string.wide_quick_access)
+                    HomeBanner()
+                    Box(Modifier.padding(top = 18.dp).bleed(WideHomeSpec.gutter)) { WideChips(state.chip) { onEvent(Event.SelectChip(it)) } }
+                    SeeAllTitle(Res.string.wide_quick_access) { nav.go(Routes.Sites) }
                     QuickSites()
-                    SectionTitle(Res.string.wide_recommended, last = true)
+                    SeeAllTitle(Res.string.wide_recommended, last = true) { nav.go(Routes.Search()) }
                 }
             }
-            items(state.feed.drop(1), key = { it.id }) { v -> WideVideoCard(v, onDownload = { nav.download(v) }) }
+            items(state.feed, key = { it.id }) { v -> WideVideoCard(v, onDownload = { nav.download(v) }) }
             item(key = "footer", span = { GridItemSpan(maxLineSpan) }) {
                 when {
                     state.loading -> Loading()
@@ -71,12 +73,4 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
             }
         }
     }
-}
-
-@Composable
-private fun SectionTitle(text: StringResource, last: Boolean = false) {
-    Text(
-        stringResource(text), Modifier.padding(top = 22.dp, bottom = if (last) 0.dp else 14.dp),
-        fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.Bold, color = ViColors.ink,
-    )
 }

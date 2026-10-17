@@ -56,7 +56,7 @@ fun WideVideoCard(v: Video, onDownload: () -> Unit, onMenu: (() -> Unit)? = null
     val h = rememberHover()
     val lift by animateDpAsState(if (h.hovered) 14.dp else 0.dp)
     val zoom by animateFloatAsState(if (h.hovered) 1.05f else 1f)
-    val shape = RoundedCornerShape(16.dp)
+    val shape = RoundedCornerShape(12.dp)
     Column(Modifier.fillMaxWidth().hover(h).clickable(interactionSource = h.source, indication = null) { onOpen(v) }) {
         Box(
             Modifier.fillMaxWidth().aspectRatio(16f / 9)
@@ -71,7 +71,6 @@ fun WideVideoCard(v: Video, onDownload: () -> Unit, onMenu: (() -> Unit)? = null
                     }
                     Row(Modifier.align(Alignment.TopEnd).padding(10.dp)) {
                         GlassButton(Res.drawable.ic_download, stringResource(Res.string.common_download), onDownload)
-                        GlassButton(Res.drawable.ic_more_vert, stringResource(Res.string.common_more)) { onMenu?.invoke() ?: nav.download(v) }
                     }
                 }
             }
@@ -81,15 +80,18 @@ fun WideVideoCard(v: Video, onDownload: () -> Unit, onMenu: (() -> Unit)? = null
                 color = Color.White, fontSize = 12.sp, lineHeight = 16.sp, fontWeight = FontWeight.SemiBold,
             )
         }
-        Row(Modifier.padding(top = 12.dp, end = 4.dp)) {
-            Avatar(v.channelAvatar, 36)
-            Column(Modifier.padding(start = 12.dp)) {
-                Text(v.title, color = ViColors.ink, fontSize = 15.sp, lineHeight = 20.sp, fontWeight = FontWeight.SemiBold,
+        Row(Modifier.padding(top = 10.dp)) {
+            Avatar(v.channelAvatar, 32)
+            Column(Modifier.weight(1f).padding(start = 10.dp)) {
+                Text(v.title, color = ViColors.ink, fontSize = 13.5.sp, lineHeight = 18.sp, fontWeight = FontWeight.SemiBold,
                     maxLines = 2, overflow = TextOverflow.Ellipsis)
-                Text(v.channel, Modifier.padding(top = 4.dp), color = ViColors.metaGrey, fontSize = 13.sp, lineHeight = 17.sp,
+                Text(v.channel, Modifier.padding(top = 3.dp), color = ViColors.metaGrey, fontSize = 12.sp, lineHeight = 16.sp,
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
                 val meta = listOf(v.views, v.published).filter { it.isNotEmpty() }.joinToString("  •  ")
-                if (meta.isNotEmpty()) Text(meta, color = ViColors.metaGrey, fontSize = 13.sp, lineHeight = 17.sp, maxLines = 1)
+                if (meta.isNotEmpty()) Text(meta, color = ViColors.metaGrey, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1)
+            }
+            Box(Modifier.size(30.dp).clip(CircleShape).clickable { onMenu?.invoke() ?: nav.download(v) }, contentAlignment = Alignment.Center) {
+                Ic(Res.drawable.ic_more_vert, Modifier.size(18.dp), ViColors.ink, stringResource(Res.string.common_more))
             }
         }
     }
