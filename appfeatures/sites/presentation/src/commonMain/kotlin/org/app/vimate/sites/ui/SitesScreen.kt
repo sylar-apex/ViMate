@@ -109,6 +109,28 @@ import org.app.vimate.sites.ui.constant.SiteKind
 import org.app.vimate.sites.ui.constant.SiteTile
 import org.app.vimate.sites.ui.constant.siteTiles
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import org.app.vimate.sites.ui.constant.SiteTag
+import org.jetbrains.compose.resources.StringResource
+import org.app.vimate.appres.resources.sites_view_all
+import org.app.vimate.appres.resources.sites_wide_subtitle
+import org.app.vimate.appres.resources.site_tag_videos
+import org.app.vimate.appres.resources.site_tag_shorts
+import org.app.vimate.appres.resources.site_tag_playlists
+import org.app.vimate.appres.resources.site_tag_reels
+import org.app.vimate.appres.resources.site_tag_stories
+import org.app.vimate.appres.resources.site_tag_pins
+import org.app.vimate.appres.resources.site_tag_search
+import org.app.vimate.appres.resources.site_tag_songs
+import org.app.vimate.appres.resources.site_tag_albums
+import org.app.vimate.appres.resources.site_tag_podcasts
+import org.app.vimate.appres.resources.site_tag_talks
+import org.app.vimate.appres.resources.site_tag_spotlight
+import org.app.vimate.appres.resources.site_tag_posts
 import org.koin.compose.koinInject
 
 private val PageBg = Color(0xFFF7F8FB)
@@ -163,16 +185,19 @@ fun SitesContent(
     var adding by remember { mutableStateOf<SiteGroup?>(null) }
     var removing by remember { mutableStateOf<CustomShortcut?>(null) }
     val kind = chip.toKind()
-    Column(Modifier.fillMaxSize().background(PageBg)) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(PageBg)) {
+        // Desktop / tablets: horizontal brand cards and the search beside the title; phones keep VidMate's tiles.
+        val wide = maxWidth >= WIDE_MIN
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(112.dp),
+            columns = GridCells.Adaptive(if (wide) 230.dp else 112.dp),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(start = 22.dp, end = 22.dp, top = 18.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                SitesHero(query, { query = it }, { submitSearch(query, onSearch); query = "" }, onBack)
+                if (wide) WideHero(query, { query = it }) { submitSearch(query, onSearch); query = "" }
+                else SitesHero(query, { query = it }, { submitSearch(query, onSearch); query = "" }, onBack)
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 ChipRow(chip) { chip = it }
@@ -186,16 +211,22 @@ fun SitesContent(
                 }
             }
             visible.forEach { (group, cells) ->
-                item(key = "h_$group", span = { GridItemSpan(maxLineSpan) }) { SectionHeader(group) { adding = group } }
-                items(cells, key = { cellKey(group, it) }) { cell ->
+                item(key = "h_$group", span = { GridItemSpan(maxLineSpan) }) {
+                    if (wide) WideSectionHeader(group, onAdd = { adding = group }, onViewAll = group.homeKind()?.takeIf { chip == Chip.All }?.let { k -> { chip = Chip.entries.first { it.toKind() == k } } })
+                    else SectionHeader(group) { adding = group }
+                }
+                items(if (wide) cells - SiteCell.Add else cells, key = { cellKey(group, it) }) { cell ->
                     when (cell) {
-                        is SiteCell.BuiltIn -> SiteCard(cell.tile.name, onOpen = { onOpen(cell.tile) }) { SiteLogo(cell.tile, 40.dp) }
-                        is SiteCell.Custom -> SiteCard(
+                        is SiteCell.BuiltIn -> if (wide) WideSiteCard(cell.tile.name.replace('\n', ' '), cell.tile.tags.tagLine(), cell.tile.brand, { onOpen(cell.tile) }) { SiteLogo(cell.tile, 44.dp) }
+                            else SiteCard(cell.tile.name, onOpen = { onOpen(cell.tile) }) { SiteLogo(cell.tile, 40.dp) }
+                        is SiteCell.Custom -> if (wide) WideSiteCard(cell.shortcut.name, cell.shortcut.url.removePrefix("https://").removePrefix("www."), Purple,
+                            { onOpen(SiteTile(cell.shortcut.name, cell.shortcut.url, group = group)) }, onRemove = { removing = cell.shortcut }) { LetterLogo(cell.shortcut.name) }
+                        else SiteCard(
                             cell.shortcut.name,
                             onOpen = { onOpen(SiteTile(cell.shortcut.name, cell.shortcut.url, group = group)) },
                             onRemove = { removing = cell.shortcut },
                         ) { LetterLogo(cell.shortcut.name) }
-                        SiteCell.Add -> AddCard { adding = group }
+                        SiteCell.Add -> AddCard(if (wide) 72.dp else 112.dp) { adding = group }
                     }
                 }
             }
@@ -340,9 +371,23 @@ private fun SiteCard(name: String, onOpen: () -> Unit, onRemove: (() -> Unit)? =
 }
 
 @Composable
-private fun AddCard(onClick: () -> Unit) {
+private fun AddCard(height: Dp, onClick: () -> Unit) {
+    val wide = height < 100.dp
+    if (wide) return Row(
+        Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(14.dp)).drawBehind {
+            drawRoundRect(
+                color = Color(0xFFD5D8DE),
+                style = Stroke(width = 1.4.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(7.dp.toPx(), 5.dp.toPx()))),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()),
+            )
+        }.clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(Icons.Filled.Add, stringResource(Res.string.sites_add_shortcut), tint = Color(0xFF9AA0A8), modifier = Modifier.size(18.dp))
+        Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 6.dp), fontSize = 13.sp, color = Color(0xFF6B7280), fontWeight = FontWeight.Medium)
+    }
     Column(
-        Modifier.fillMaxWidth().height(112.dp).clip(RoundedCornerShape(16.dp)).drawBehind {
+        Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(16.dp)).drawBehind {
             drawRoundRect(
                 color = Color(0xFFD5D8DE),
                 style = Stroke(width = 1.4.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(7.dp.toPx(), 5.dp.toPx()))),
@@ -484,4 +529,91 @@ private fun cellKey(group: SiteGroup, cell: SiteCell): String = when (cell) {
     is SiteCell.BuiltIn -> "b_${group}_${cell.tile.url}"
     is SiteCell.Custom -> "c_${group}_${cell.shortcut.url}"
     SiteCell.Add -> "add_$group"
+}
+
+private val WIDE_MIN = 840.dp
+
+/** Wide header: title and subtitle on the left, the search / link box on the right. */
+@Composable
+private fun WideHero(query: String, onQuery: (String) -> Unit, onSubmit: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(stringResource(Res.string.sites_title), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1C1C1E), lineHeight = 32.sp)
+            Text(stringResource(Res.string.sites_wide_subtitle), Modifier.padding(top = 2.dp), fontSize = 14.sp, color = Subtitle)
+        }
+        SearchBar(query, onQuery, onSubmit, Modifier.padding(start = 24.dp).widthIn(max = 560.dp))
+    }
+}
+
+/** Section mark, title and subtitle, with + Add Site and View All (jumps to that section's filter chip). */
+@Composable
+private fun WideSectionHeader(group: SiteGroup, onAdd: () -> Unit, onViewAll: (() -> Unit)?) {
+    Row(Modifier.fillMaxWidth().padding(top = 14.dp, bottom = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        SectionMark(group)
+        Column(Modifier.padding(start = 12.dp).weight(1f)) {
+            Text(group.title(), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF1C1C1E))
+            Text(group.subtitle(), fontSize = 13.sp, color = Subtitle)
+        }
+        Row(
+            Modifier.clip(RoundedCornerShape(10.dp)).clickable(onClick = onAdd).padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Filled.Add, null, Modifier.size(16.dp), tint = Accent)
+            Text(stringResource(Res.string.sites_add_site), Modifier.padding(start = 4.dp), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Accent)
+        }
+        if (onViewAll != null) Row(
+            Modifier.padding(start = 6.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.white).border(1.dp, CardLine, RoundedCornerShape(10.dp)).clickable(onClick = onViewAll)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(stringResource(Res.string.sites_view_all), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1C1C1E))
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.padding(start = 2.dp).size(18.dp), tint = Color(0xFF1C1C1E))
+        }
+    }
+}
+
+/** Horizontal site card on a light brand tint: logo, name, what it offers and a chevron; custom shortcuts add Remove. */
+@Composable
+private fun WideSiteCard(name: String, line: String, brand: Color, onOpen: () -> Unit, onRemove: (() -> Unit)? = null, logo: @Composable () -> Unit) {
+    var menu by remember { mutableStateOf(false) }
+    val shape = RoundedCornerShape(14.dp)
+    Row(
+        Modifier.fillMaxWidth().height(72.dp).clip(shape).background(ViColors.white).background(brand.copy(alpha = 0.06f)).border(1.dp, brand.copy(alpha = 0.12f), shape)
+            .clickable(onClick = onOpen).padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        logo()
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(name, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF1C1C1E), maxLines = 1, overflow = TextOverflow.Ellipsis)
+            if (line.isNotEmpty()) Text(line, Modifier.padding(top = 2.dp), fontSize = 12.sp, lineHeight = 15.sp, color = Color(0xFF6B7280), maxLines = 2, overflow = TextOverflow.Ellipsis)
+        }
+        Box {
+            Box(Modifier.size(30.dp).clip(CircleShape).background(ViColors.white).clickable { if (onRemove != null) menu = true else onOpen() }, contentAlignment = Alignment.Center) {
+                Icon(if (onRemove != null) Icons.Filled.MoreVert else Icons.AutoMirrored.Filled.KeyboardArrowRight, null, Modifier.size(18.dp), tint = Color(0xFF1C1C1E))
+            }
+            DropdownMenu(menu, { menu = false }, containerColor = ViColors.white) {
+                DropdownMenuItem(text = { Text(stringResource(Res.string.sites_open)) }, onClick = { menu = false; onOpen() })
+                if (onRemove != null) DropdownMenuItem(text = { Text(stringResource(Res.string.sites_remove)) }, onClick = { menu = false; onRemove() })
+            }
+        }
+    }
+}
+
+@Composable
+private fun List<SiteTag>.tagLine(): String = map { stringResource(it.label()) }.joinToString(", ")
+
+private fun SiteTag.label(): StringResource = when (this) {
+    SiteTag.Videos -> Res.string.site_tag_videos
+    SiteTag.Shorts -> Res.string.site_tag_shorts
+    SiteTag.Playlists -> Res.string.site_tag_playlists
+    SiteTag.Reels -> Res.string.site_tag_reels
+    SiteTag.Stories -> Res.string.site_tag_stories
+    SiteTag.Pins -> Res.string.site_tag_pins
+    SiteTag.Search -> Res.string.site_tag_search
+    SiteTag.Songs -> Res.string.site_tag_songs
+    SiteTag.Albums -> Res.string.site_tag_albums
+    SiteTag.Podcasts -> Res.string.site_tag_podcasts
+    SiteTag.Talks -> Res.string.site_tag_talks
+    SiteTag.Spotlight -> Res.string.site_tag_spotlight
+    SiteTag.Posts -> Res.string.site_tag_posts
 }

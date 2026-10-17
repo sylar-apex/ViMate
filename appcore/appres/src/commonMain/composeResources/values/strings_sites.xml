@@ -80,4 +80,19 @@
     <string name="sitesheet_free">%1$s FREE/%2$s</string>
     <string name="sitesheet_change">Change</string>
     <string name="sitesheet_download">DOWNLOAD</string>
+    <string name="site_tag_videos">Videos</string>
+    <string name="site_tag_shorts">Shorts</string>
+    <string name="site_tag_playlists">Playlists</string>
+    <string name="site_tag_reels">Reels</string>
+    <string name="site_tag_stories">Stories</string>
+    <string name="site_tag_pins">Pins</string>
+    <string name="site_tag_search">Search</string>
+    <string name="site_tag_songs">Songs</string>
+    <string name="site_tag_albums">Albums</string>
+    <string name="site_tag_podcasts">Podcasts</string>
+    <string name="site_tag_talks">Talks</string>
+    <string name="site_tag_spotlight">Spotlight</string>
+    <string name="site_tag_posts">Posts</string>
+    <string name="sites_view_all">View All</string>
+    <string name="sites_wide_subtitle">Download videos from your favorite websites</string>
 </resources>
