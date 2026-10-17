@@ -41,6 +41,18 @@ class AppNavigator(private val nav: NavController) {
     private val history = mutableStateListOf(Place(Tab.HOME, null))
     private var index by mutableIntStateOf(0)
 
+    /**
+     * Title-bar refresh: reloads the browser page, else opens the current page again as a fresh back-stack
+     * entry. A new entry gets new view models, so every API call of that page runs again.
+     */
+    fun refresh() {
+        webNav?.let { it.reload(); return }
+        val route = history.getOrNull(index)?.route
+        if (route != null && nav.previousBackStackEntry != null) {
+            nav.popBackStack(); nav.navigate(route)
+        } else nav.navigate(Routes.Tabs) { popUpTo(Routes.Tabs) { inclusive = true } }
+    }
+
     /** The in-app browser while it is open: the arrows step through its own pages first. */
     var webNav by mutableStateOf<WebNav?>(null)
 
@@ -104,6 +116,7 @@ interface WebNav {
     fun canForward(): Boolean
     fun back()
     fun forward()
+    fun reload()
 }
 
 val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> { error("no AppNavigator") }

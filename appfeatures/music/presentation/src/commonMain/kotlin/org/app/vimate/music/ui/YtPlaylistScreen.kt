@@ -1,5 +1,6 @@
 package org.app.vimate.music.ui
 
+import org.app.vimate.appcore.component.ShimmerBlock
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.Icons
@@ -111,7 +112,7 @@ fun YtPlaylistContent(listId: String, state: YtPlaylistContract.State, onEvent: 
                         }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(22.dp), ViColors.white) }
                     }
                 }
-                Text(stringResource(Res.string.music_videos_count, p.videos.size), Modifier.padding(13.dp), fontSize = 15.sp, color = ViColors.metaGrey)
+                if (!(p.loading && p.videos.isEmpty())) Text(stringResource(Res.string.music_videos_count, p.videos.size), Modifier.padding(13.dp), fontSize = 15.sp, color = ViColors.metaGrey)
             }
             if (state.loading) item { Loading() }
             state.error?.let { e -> item { ErrorBox(e.text()) { onEvent(YtPlaylistContract.Event.Retry) } } }
@@ -146,8 +147,12 @@ private fun WidePlaylist(listId: String, p: YtPlaylistContract.State, onEvent: (
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
                 Box(Modifier.fillMaxWidth().aspectRatio(16f / 9).clip(RoundedCornerShape(14.dp)).background(ViColors.black)) {
                     if (cover != null) AsyncImage(cover, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    else ShimmerBlock(Modifier.fillMaxSize(), 14.dp)
                 }
-                Text(p.title, Modifier.padding(top = 14.dp), fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp, color = Color.White, maxLines = 3)
+                if (p.loading && p.title.isEmpty()) {
+                    ShimmerBlock(Modifier.padding(top = 16.dp).fillMaxWidth(.8f).height(22.dp))
+                    ShimmerBlock(Modifier.padding(top = 10.dp).fillMaxWidth(.45f).height(14.dp))
+                } else Text(p.title, Modifier.padding(top = 14.dp), fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp, color = Color.White, maxLines = 3)
                 if (p.owner.isNotEmpty()) Text(p.owner, Modifier.padding(top = 8.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = .9f))
                 Text(stringResource(Res.string.music_videos_count, p.videos.size), Modifier.padding(top = 4.dp), fontSize = 13.sp, color = Color.White.copy(alpha = .7f))
                 Row(Modifier.padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -166,7 +171,7 @@ private fun WidePlaylist(listId: String, p: YtPlaylistContract.State, onEvent: (
                 onAll = { picked = if (picked.size == p.videos.size) emptySet() else p.videos.map { it.id }.toSet() },
                 onCancel = { selecting = false }, onDownload = { if (picked.isNotEmpty()) dialog = true })
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 20.dp)) {
-                if (p.loading) item { Loading() }
+                if (p.loading) items(8) { PlaceholderRow() }
                 p.error?.let { e -> item { ErrorBox(e.text()) { onEvent(YtPlaylistContract.Event.Retry) } } }
                 itemsIndexed(p.videos, key = { _, v -> v.id }) { i, v ->
                     val on = v.id in picked
@@ -228,6 +233,20 @@ private fun NumberedRow(n: Int, v: Video, checked: Boolean?, onOpen: () -> Unit,
         }
         if (checked == null) Box(Modifier.size(30.dp).clip(CircleShape).clickable(onClick = onDownload), contentAlignment = Alignment.Center) {
             Ic(Res.drawable.ic_download, Modifier.size(17.dp), ViColors.ink)
+        }
+    }
+}
+
+/** Loading row shaped like [NumberedRow]: number slot, 150dp thumbnail, two title lines and meta. */
+@Composable
+private fun PlaceholderRow() {
+    Row(Modifier.fillMaxWidth().padding(vertical = 7.dp, horizontal = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.width(30.dp))
+        ShimmerBlock(Modifier.width(150.dp).aspectRatio(16f / 9))
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
+            ShimmerBlock(Modifier.fillMaxWidth(.85f).height(13.dp))
+            ShimmerBlock(Modifier.fillMaxWidth(.6f).height(13.dp))
+            ShimmerBlock(Modifier.fillMaxWidth(.3f).height(10.dp))
         }
     }
 }

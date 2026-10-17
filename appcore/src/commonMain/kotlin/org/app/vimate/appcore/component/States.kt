@@ -25,9 +25,8 @@ import org.app.vimate.appres.resources.common_retry
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun Loading(modifier: Modifier = Modifier) = Box(modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(color = VRed)
-}
+/** Loading placeholder used across the app: a shimmering list skeleton. */
+fun Loading(modifier: Modifier = Modifier) = ShimmerList(4, modifier)
 
 @Composable
 fun ErrorBox(msg: String, retry: () -> Unit) = Column(Modifier.fillMaxWidth().padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {

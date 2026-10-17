@@ -1,5 +1,8 @@
 package org.app.vimate.shell
 
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.foundation.layout.fillMaxSize
 import org.koin.compose.koinInject
 import org.app.vimate.sites.logic.SiteFilter
@@ -73,7 +76,7 @@ internal fun TitleBar(activeDownloads: Int) {
     }
     Box(Modifier.fillMaxWidth().height(38.dp).padding(start = 80.dp, end = 10.dp)) {
         // Arrows and search centred in the window; Downloads and Me pinned to the end.
-        Row(Modifier.align(Alignment.Center).widthIn(max = 600.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.align(Alignment.Center).widthIn(max = 640.dp), verticalAlignment = Alignment.CenterVertically) {
             Arrow(Icons.AutoMirrored.Filled.ArrowBack, nav.canGoHistoryBack) { nav.historyBack() }
             Arrow(Icons.AutoMirrored.Filled.ArrowForward, nav.canGoForward) { nav.forward() }
             SearchField(Modifier.padding(start = 6.dp).weight(1f)) { q ->
@@ -83,6 +86,7 @@ internal fun TitleBar(activeDownloads: Int) {
                     else "https://www.google.com/search?q=" + q.encodeURLParameter(spaceToPlus = true)
                 nav.open(if (settings[AppKeys.hideAdultSites]) SiteFilter.safeSearch(url) else url)
             }
+            Arrow(Icons.Filled.Refresh, true) { nav.refresh() }
         }
         Row(Modifier.align(Alignment.CenterEnd), verticalAlignment = Alignment.CenterVertically) {
             Small(Res.drawable.ic_download, activeDownloads) { nav.home(Tab.FILES) }
@@ -100,10 +104,11 @@ private fun Arrow(icon: ImageVector, enabled: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun Small(icon: DrawableResource, badge: Int, onClick: () -> Unit) {
-    Box(Modifier.size(28.dp).clip(RoundedCornerShape(6.dp)).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+    // Badge is a pill beside the icon so counts like 228 stay readable (99+ above that).
+    Row(Modifier.height(28.dp).clip(RoundedCornerShape(6.dp)).clickable(onClick = onClick).padding(horizontal = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Ic(icon, Modifier.size(16.dp), ViColors.ink)
-        if (badge > 0) Box(Modifier.align(Alignment.TopEnd).padding(2.dp).size(14.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
-            Text("$badge", color = Color.White, fontSize = 8.sp)
+        if (badge > 0) Box(Modifier.padding(start = 4.dp).height(15.dp).clip(CircleShape).background(VRed).padding(horizontal = 4.dp), contentAlignment = Alignment.Center) {
+            Text(if (badge > 99) "99+" else "$badge", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold, style = TextStyle(lineHeight = 9.sp, lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.Both)))
         }
     }
 }

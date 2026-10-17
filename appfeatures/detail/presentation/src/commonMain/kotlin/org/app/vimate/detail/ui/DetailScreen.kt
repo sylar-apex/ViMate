@@ -1,5 +1,6 @@
 package org.app.vimate.detail.ui
 
+import org.app.vimate.appcore.component.shimmer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -143,7 +144,7 @@ fun DetailScreen(start: Video) {
                 state.infoError != null -> EmbedPlayer(current.id, current.thumbnail)
                 else -> Box(Modifier.fillMaxWidth().aspectRatio(DetailLayoutSpec.PLAYER_RATIO)) {
                     Thumb(current.thumbnail, Modifier.fillMaxSize(), corner = 0)
-                    CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color.White)
+                    Box(Modifier.fillMaxSize().shimmer().background(Color.Black.copy(alpha = .35f)))
                 }
             }
     }

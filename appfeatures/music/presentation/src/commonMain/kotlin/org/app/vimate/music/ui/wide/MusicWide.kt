@@ -1,5 +1,6 @@
 package org.app.vimate.music.ui.wide
 
+import org.app.vimate.appcore.component.ShimmerCardGrid
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -74,7 +75,7 @@ internal fun MusicWide(state: MusicContract.State, onEvent: (MusicContract.Event
     ) {
         WideTabs(state.tabLabels, state.tab, Modifier.padding(start = WideSpec.gutter, bottom = 8.dp)) { onEvent(MusicContract.Event.SelectTab(it)) }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = WideSpec.bottomInset)) {
-            if (state.loading) item { Loading() }
+            if (state.loading) item { Box(Modifier.padding(horizontal = WideSpec.gutter)) { ShimmerCardGrid(4, 2) } }
             state.error?.let { e -> item { ErrorBox(e.text()) { onEvent(MusicContract.Event.Retry) } } }
             itemsIndexed(state.shelves, key = { i, s -> "$i${s.title}" }) { _, shelf ->
                 ShelfWide(shelf, { onEvent(MusicContract.Event.PlayAll(it)) }, { l, i -> onEvent(MusicContract.Event.Tap(l, i)) }, { onEvent(MusicContract.Event.PlaySingle(it)) })

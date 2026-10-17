@@ -1,5 +1,7 @@
 package org.app.vimate.home.ui.wide
 
+import androidx.compose.foundation.layout.BoxWithConstraints
+import org.app.vimate.appcore.component.ShimmerCardGrid
 import org.app.vimate.appcore.adaptive.LocalInTitleBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -69,7 +71,8 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
             items(state.feed, key = { it.id }) { v -> WideVideoCard(v, onDownload = { nav.download(v) }) }
             item(key = "footer", span = { GridItemSpan(maxLineSpan) }) {
                 when {
-                    state.loading -> Loading()
+                    // Placeholder cards in the feed's own column count, so loading looks like the content.
+                    state.loading -> BoxWithConstraints { ShimmerCardGrid(((maxWidth + WideHomeSpec.gapX) / (WideHomeSpec.cardMin + WideHomeSpec.gapX)).toInt().coerceAtLeast(1), if (state.feed.isEmpty()) 2 else 1, WideHomeSpec.gapX) }
                     state.error != null -> ErrorBox(state.error!!) { onEvent(Event.Retry) }
                 }
             }

@@ -143,6 +143,7 @@ fun BrowserScreen(startUrl: String) {
             override fun canForward() = w.canGoForward()
             override fun back() = w.goBack()
             override fun forward() = w.goForward()
+            override fun reload() = w.reload()
         }
         onDispose { nav.webNav = null }
     }

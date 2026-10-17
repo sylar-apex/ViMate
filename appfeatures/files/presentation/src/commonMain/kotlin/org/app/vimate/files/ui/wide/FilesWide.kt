@@ -1,5 +1,8 @@
 package org.app.vimate.files.ui.wide
 
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import org.jetbrains.compose.resources.StringResource
@@ -56,20 +59,18 @@ import coil3.compose.AsyncImage
 import org.app.kmediaplayer.platform.PlatformMedia
 import org.app.vimate.appcore.adaptive.WideButton
 import org.app.vimate.appcore.adaptive.WideCard
-import org.app.vimate.appcore.adaptive.WideIconButton
-import org.app.vimate.appcore.adaptive.WidePage
 import org.app.vimate.appcore.adaptive.WideSpec
 import org.app.vimate.appcore.adaptive.hover
 import org.app.vimate.appcore.adaptive.rememberHover
 import org.app.vimate.appcore.component.Ic
 import org.app.vimate.appcore.navigation.LocalAppNavigator
-import org.app.vimate.appcore.navigation.Routes
 import org.app.vimate.appcore.navigation.Tab
 import org.app.vimate.appcore.theme.VRed
 import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appres.resources.*
 import org.app.vimate.files.ui.component.DoneActions
 import org.app.vimate.files.ui.component.LocalTab
+import org.app.vimate.files.ui.component.FilesSearchField
 import org.app.vimate.files.ui.component.inQueueOrder
 import org.app.vimate.files.ui.component.PrivateGate
 import org.app.vimate.files.usecase.FilesUseCase
@@ -90,13 +91,8 @@ internal fun FilesWide() {
     val stat = remember { files.storage() }
     val all by files.tasks.collectAsState()
     val activeCount = all.count { !it.hidden && it.state != TaskState.Done }
-    WidePage(
-        stringResource(Res.string.files_title),
-        actions = {
-            WideIconButton(Res.drawable.ic_junk, stringResource(Res.string.files_junk)) { nav.go(Routes.JunkClean) }
-            WideIconButton(Res.drawable.ic_m_setting, stringResource(Res.string.files_setting)) { nav.go(Routes.SettingsGroup("Download")) }
-        },
-    ) {
+    // No page header: the side bar names the page; storage, tabs and lists start at the top.
+    Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding().padding(top = 20.dp)) {
         StorageBar(stat.usedBytes, stat.totalBytes, Modifier.padding(start = WideSpec.gutter, bottom = 12.dp))
         FilesTabs(tab, activeCount, Modifier.padding(start = WideSpec.gutter, bottom = 12.dp)) { tab = it }
         when (tab) {
@@ -142,8 +138,9 @@ private fun FilesTabs(selected: Int, activeCount: Int, modifier: Modifier, onSel
                 .clickable { onSelect(i) }.padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Ic(icon, Modifier.size(15.dp), fg)
                 Text(stringResource(label), Modifier.padding(start = 6.dp), color = fg, fontSize = 12.5.sp, fontWeight = if (sel) FontWeight.SemiBold else FontWeight.Medium)
-                if (i == 0 && activeCount > 0) Box(Modifier.padding(start = 6.dp).size(17.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
-                    Text("$activeCount", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                // Pill that grows with the number ("228" fits; above 999 shows "999+").
+                if (i == 0 && activeCount > 0) Box(Modifier.padding(start = 6.dp).height(17.dp).clip(CircleShape).background(VRed).padding(horizontal = 5.dp), contentAlignment = Alignment.Center) {
+                    Text(if (activeCount > 999) "999+" else "$activeCount", color = Color.White, fontSize = 10.sp, style = TextStyle(lineHeight = 10.sp, lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.Both)), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -163,7 +160,8 @@ private fun DownloadsWide() {
     val nav = LocalAppNavigator.current
     val open = openDetail()
     val all by files.tasks.collectAsState()
-    val visible = all.filter { !it.hidden }
+    var query by rememberSaveable { mutableStateOf("") }
+    val visible = all.filter { !it.hidden && (query.isBlank() || it.title.contains(query.trim(), ignoreCase = true)) }
     val active = visible.filter { it.state != TaskState.Done }.inQueueOrder()
     var sort by rememberSaveable { mutableStateOf(Sort.Newest) }
     var grid by rememberSaveable { mutableStateOf(false) }
@@ -173,6 +171,17 @@ private fun DownloadsWide() {
         contentPadding = PaddingValues(start = WideSpec.gutter, end = WideSpec.gutter, bottom = WideSpec.bottomInset),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // Same toolbar as Videos / Music: search, sort, grid / list.
+        item(key = "search") {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                FilesSearchField(query, { query = it }, Modifier.weight(1f))
+                Box(Modifier.padding(start = 8.dp)) { SortMenu(sort) { sort = it } }
+                Row(Modifier.padding(start = 8.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle).padding(3.dp)) {
+                    ViewToggle(Res.drawable.ic_v_grid, stringResource(Res.string.wide_files_grid), grid) { grid = true }
+                    ViewToggle(Res.drawable.ic_v_list, stringResource(Res.string.wide_files_list), !grid) { grid = false }
+                }
+            }
+        }
         if (active.isNotEmpty()) item(key = "active") {
             WideCard(Modifier.fillMaxWidth(), padding = 12.dp) {
                 val anyRunning = active.any { it.state == TaskState.Running || it.state == TaskState.Queued }
@@ -187,13 +196,7 @@ private fun DownloadsWide() {
         }
         item(key = "done") {
             WideCard(Modifier.fillMaxWidth(), padding = 16.dp) {
-                SectionHeader("${stringResource(Res.string.wide_files_library)} (${done.size})") {
-                    SortMenu(sort) { sort = it }
-                    Row(Modifier.padding(start = 8.dp).clip(RoundedCornerShape(7.dp)).background(ViColors.chipIdle).padding(2.dp)) {
-                        ViewToggle(Res.drawable.ic_v_grid, stringResource(Res.string.wide_files_grid), grid) { grid = true }
-                        ViewToggle(Res.drawable.ic_v_list, stringResource(Res.string.wide_files_list), !grid) { grid = false }
-                    }
-                }
+                SectionHeader("${stringResource(Res.string.wide_files_library)} (${done.size})") {}
                 when {
                     done.isEmpty() -> Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         Box(Modifier.size(64.dp).clip(CircleShape).background(ViColors.tintRed), contentAlignment = Alignment.Center) {
@@ -263,7 +266,7 @@ private fun TextAction(icon: DrawableResource?, label: String, onClick: () -> Un
 private fun SortMenu(sort: Sort, onSort: (Sort) -> Unit) {
     var open by remember { mutableStateOf(false) }
     Box {
-        Row(Modifier.height(28.dp).clip(RoundedCornerShape(7.dp)).background(ViColors.chipIdle).clickable { open = true }.padding(horizontal = 10.dp),
+        Row(Modifier.height(38.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle).clickable { open = true }.padding(horizontal = 12.dp),
             verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(sort.label), color = ViColors.ink, fontSize = 12.sp)
             Ic(Res.drawable.ic_chevron_down, Modifier.padding(start = 4.dp).size(12.dp), ViColors.ink)
@@ -276,7 +279,7 @@ private fun SortMenu(sort: Sort, onSort: (Sort) -> Unit) {
 
 @Composable
 private fun ViewToggle(icon: DrawableResource, label: String, selected: Boolean, onClick: () -> Unit) {
-    Box(Modifier.size(28.dp, 24.dp).clip(RoundedCornerShape(5.dp)).background(if (selected) ViColors.detailDownloadPill else Color.Transparent).clickable(onClick = onClick),
+    Box(Modifier.size(32.dp).clip(RoundedCornerShape(7.dp)).background(if (selected) ViColors.detailDownloadPill else Color.Transparent).clickable(onClick = onClick),
         contentAlignment = Alignment.Center) {
         Ic(icon, Modifier.size(14.dp), if (selected) VRed else ViColors.ink, label)
     }
@@ -290,7 +293,10 @@ private fun ActiveRowWide(t: VidTask) {
         verticalAlignment = Alignment.CenterVertically) {
         Thumb(t.thumbnail, Modifier.width(120.dp).aspectRatio(16f / 9), corner = 8, duration = t.duration)
         Column(Modifier.weight(1f).padding(horizontal = 14.dp)) {
-            Text(t.title, color = ViColors.ink, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                KindTag(t)
+                Text(t.title, Modifier.padding(start = 8.dp).weight(1f), color = ViColors.ink, fontSize = 13.sp, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
             val speed = dl.speedOf(t.id)
             val status = when (t.state) {
                 TaskState.Running -> buildList {
@@ -396,4 +402,14 @@ private fun DownloadCard(t: VidTask, list: List<VidTask>) {
 private fun Badge(text: String) {
     Text(text, Modifier.clip(RoundedCornerShape(4.dp)).background(ViColors.shade60).padding(horizontal = 4.dp, vertical = 1.dp),
         color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
+}
+
+/** "VIDEO · 720P" / "AUDIO · 48K" chip; the quality is the one asked for until the download resolves it. */
+@Composable
+private fun KindTag(t: VidTask) {
+    val audio = t.kind == Kind.Music
+    val c = if (audio) Color(0xFF8B5CF6) else Color(0xFF3B82F6)
+    val label = (if (audio) "AUDIO" else "VIDEO") + if (t.quality.isNotEmpty()) " · ${t.quality.uppercase()}" else ""
+    Text(label, Modifier.clip(RoundedCornerShape(5.dp)).background(c.copy(alpha = .18f)).padding(horizontal = 6.dp, vertical = 2.dp),
+        color = c, fontSize = 10.sp, fontWeight = FontWeight.Bold)
 }

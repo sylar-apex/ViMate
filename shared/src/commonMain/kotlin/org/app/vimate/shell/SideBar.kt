@@ -1,5 +1,7 @@
 package org.app.vimate.shell
 
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -128,8 +130,8 @@ private fun NavItem(icon: DrawableResource, label: StringResource, selected: Boo
             text, Modifier.weight(1f).padding(start = 12.dp), color = tint, fontSize = 13.5.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium, maxLines = 1,
         )
-        if (badge > 0) Box(Modifier.size(20.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
-            Text("$badge", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        if (badge > 0) Box(Modifier.height(20.dp).clip(CircleShape).background(VRed).padding(horizontal = 6.dp), contentAlignment = Alignment.Center) {
+            Text(if (badge > 999) "999+" else "$badge", color = Color.White, fontSize = 11.sp, style = TextStyle(lineHeight = 11.sp, lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.Both)), fontWeight = FontWeight.SemiBold)
         }
     }
 }
