@@ -1,5 +1,6 @@
 package org.app.vimate.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.app.vimate.appcore.adaptive.readableWidth
 import org.app.vimate.appcore.navigation.Routes
+import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.sharedlogic.yt.Video
 
 /*
@@ -18,9 +20,9 @@ import org.app.vimate.sharedlogic.yt.Video
 
 // Tab pages (Routes.Tabs, POC nav.tab 0..3)
 @Composable internal fun HomeTab() = org.app.vimate.home.ui.HomeScreen()
-@Composable internal fun MusicTab() = Readable { org.app.vimate.music.ui.MusicScreen() }
-@Composable internal fun FilesTab() = Readable { org.app.vimate.files.ui.FilesScreen() }
-@Composable internal fun MeTab() = Readable { org.app.vimate.me.ui.MeScreen() }
+@Composable internal fun MusicTab() = org.app.vimate.music.ui.MusicScreen()
+@Composable internal fun FilesTab() = org.app.vimate.files.ui.FilesScreen()
+@Composable internal fun MeTab() = org.app.vimate.me.ui.MeScreen()
 
 // Sub-pages
 @Composable internal fun SearchRoute(r: Routes.Search) = org.app.vimate.search.ui.SearchScreen(r.query)
@@ -43,8 +45,8 @@ import org.app.vimate.sharedlogic.yt.Video
 @Composable internal fun BoostRoute() = Readable { org.app.vimate.me.ui.BoostScreen() }
 @Composable internal fun HelpRoute() = Readable { org.app.vimate.me.ui.HelpScreen() }
 @Composable internal fun FeedbackRoute() = Readable { org.app.vimate.me.ui.FeedbackScreen() }
-@Composable internal fun SettingsRoute() = Readable { org.app.vimate.settings.ui.SettingsScreen() }
-@Composable internal fun SettingsGroupRoute(r: Routes.SettingsGroup) = Readable { org.app.vimate.settings.ui.SettingsGroupScreen(r.group) }
+@Composable internal fun SettingsRoute() = org.app.vimate.settings.ui.SettingsScreen()
+@Composable internal fun SettingsGroupRoute(r: Routes.SettingsGroup) = org.app.vimate.settings.ui.SettingsGroupScreen(r.group)
 @Composable internal fun PrivateRoute() = Readable { org.app.vimate.files.ui.PrivateScreen() }
 @Composable internal fun AppsRoute() = Readable { org.app.vimate.me.ui.AppsScreen() }
 
@@ -57,7 +59,7 @@ private val DETAIL_WIDTH = 960.dp
 /** Phone-style pages stay phone-width and centred on tablets and desktop; the feed screens use grids instead. */
 @Composable
 private fun Readable(max: Dp = 720.dp, content: @Composable () -> Unit) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    Box(Modifier.fillMaxSize().background(ViColors.wideCanvas), contentAlignment = Alignment.TopCenter) {
         Box(Modifier.readableWidth(max).fillMaxHeight()) { content() }
     }
 }

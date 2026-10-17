@@ -33,7 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.WindowClass
 import org.app.vimate.appcore.component.Ic
+import org.app.vimate.me.ui.wide.MeWide
 import org.app.vimate.appcore.component.LocalToast
 import org.app.vimate.appcore.component.hotVideos
 import org.app.vimate.appcore.component.rememberShareText
@@ -92,6 +95,8 @@ fun MeContent(
     hot: List<Video>, dark: Boolean, onSetDark: (Boolean) -> Unit, onSignIn: () -> Unit, onFiles: () -> Unit,
     onRoute: (Any) -> Unit, onTool: (MeTool) -> Unit, onDownload: (Video) -> Unit, onSite: (String) -> Unit,
 ) {
+    if (LocalWindowClass.current != WindowClass.Compact)
+        return MeWide(hot, dark, onSetDark, onSignIn, onFiles, onRoute, onTool, onDownload, onSite)
     LazyColumn(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding(), contentPadding = PaddingValues(bottom = 80.dp)) {
         item(key = "profile") {
             // Card 1: 336x159dp at (12, 17.7): sign-in pill, theme switch, 1dp rule, 4 red shortcuts.

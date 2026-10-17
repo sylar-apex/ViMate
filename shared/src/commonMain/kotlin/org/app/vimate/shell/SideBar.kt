@@ -48,7 +48,7 @@ private val tabLabels = mapOf(
 
 /**
  * Permanent left navigation for wide windows (tablet landscape, desktop, web); replaces [BottomBar].
- * Brand at the top, the four tabs, then Library / Explore shortcuts and Settings at the bottom.
+ * Brand at the top, the four tabs, then Explore shortcuts and Settings at the bottom.
  */
 @Composable
 internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (Int) -> Unit) {
@@ -67,10 +67,6 @@ internal fun SideBar(tab: Int, onTabs: Boolean, activeDownloads: Int, onTab: (In
                         badge = if (item == MainTab.FILES) activeDownloads else 0,
                     ) { onTab(item.index) }
                 }
-                Section(Res.string.wide_section_library)
-                NavItem(Res.drawable.ic_me_history, Res.string.wide_history) { nav.go(Routes.History) }
-                NavItem(Res.drawable.ic_me_playlist, Res.string.wide_playlists) { nav.go(Routes.Playlists) }
-                NavItem(Res.drawable.ic_me_subs, Res.string.wide_subscriptions) { nav.go(Routes.Subscriptions) }
                 Section(Res.string.wide_section_explore)
                 NavItem(Res.drawable.ic_shorts, Res.string.wide_shorts) { nav.go(Routes.Shorts()) }
                 NavItem(Res.drawable.ic_globe, Res.string.wide_sites) { nav.go(Routes.Sites) }

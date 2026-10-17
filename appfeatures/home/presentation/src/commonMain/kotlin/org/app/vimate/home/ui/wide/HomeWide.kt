@@ -1,6 +1,7 @@
 package org.app.vimate.home.ui.wide
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.app.vimate.appcore.adaptive.WideSpec
 import org.app.vimate.appcore.adaptive.WideVideoCard
 import org.app.vimate.appcore.component.ErrorBox
 import org.app.vimate.appcore.component.Loading
@@ -48,18 +50,19 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
         WideChips(state.chip) { onEvent(Event.SelectChip(it)) }
         LazyVerticalGrid(
             GridCells.Adaptive(WideHomeSpec.cardMin), Modifier.fillMaxSize(), grid,
-            contentPadding = PaddingValues(start = WideHomeSpec.gutter, end = WideHomeSpec.gutter, bottom = 40.dp),
+            contentPadding = PaddingValues(start = WideHomeSpec.gutter, end = WideHomeSpec.gutter, bottom = WideSpec.bottomInset),
             horizontalArrangement = Arrangement.spacedBy(WideHomeSpec.gapX),
             verticalArrangement = Arrangement.spacedBy(WideHomeSpec.gapY),
         ) {
             item(key = "header", span = { GridItemSpan(maxLineSpan) }) {
                 Column {
+                    state.feed.firstOrNull()?.let { v -> Box(Modifier.padding(top = 10.dp)) { HeroCard(v) { nav.download(v) } } }
                     SectionTitle(Res.string.wide_quick_access)
                     QuickSites()
                     SectionTitle(Res.string.wide_recommended, last = true)
                 }
             }
-            items(state.feed, key = { it.id }) { v -> WideVideoCard(v, onDownload = { nav.download(v) }) }
+            items(state.feed.drop(1), key = { it.id }) { v -> WideVideoCard(v, onDownload = { nav.download(v) }) }
             item(key = "footer", span = { GridItemSpan(maxLineSpan) }) {
                 when {
                     state.loading -> Loading()

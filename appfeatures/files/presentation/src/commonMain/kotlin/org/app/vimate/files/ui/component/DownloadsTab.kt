@@ -172,18 +172,6 @@ internal fun ActiveRow(t: VidTask, selecting: Boolean, checked: Boolean, onCheck
 @Composable
 internal fun DoneRow(t: VidTask, list: List<VidTask>, selecting: Boolean = false, checked: Boolean = false, onCheck: (Boolean) -> Unit = {}) {
     val files = koinInject<FilesUseCase>()
-    val dl = files.downloads
-    val nav = LocalAppNavigator.current
-    val toast = LocalToast.current
-    var menu by remember { mutableStateOf(false) }
-    var rename by remember { mutableStateOf(false) }
-    var confirmDelete by remember { mutableStateOf(false) }
-    val unhideToShare = stringResource(Res.string.files_unhide_to_share)
-    val movedOut = stringResource(Res.string.files_moved_out)
-    val movedIn = stringResource(Res.string.files_moved_in)
-    val converting = stringResource(Res.string.files_converting)
-    val converted = stringResource(Res.string.files_converted)
-    val convertFailed = stringResource(Res.string.files_convert_failed)
     Row(Modifier.fillMaxWidth().height(88.dp).clickable { if (selecting) onCheck(!checked) else files.playTask(t, list) }.padding(start = 12.dp, top = 9.dp)) {
         if (selecting) Checkbox(checked, onCheck)
         Box(Modifier.size(124.dp, 70.dp).clip(RoundedCornerShape(6.dp)).background(if (t.kind == Kind.Music) VRed else ViColors.pocDarkSurfaceVariant)) {
@@ -208,21 +196,40 @@ internal fun DoneRow(t: VidTask, list: List<VidTask>, selecting: Boolean = false
                 MetaBar(); MetaText(PlatformMedia.formatDate(t.finishedAt.takeIf { it > 0 } ?: t.createdAt, "yyyy-MM-dd"))
             }
         }
-        Box(Modifier.padding(top = 9.dp, end = 12.dp)) {
-            Box(Modifier.size(24.dp).clickable { menu = true }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_more_thin, Modifier.size(20.dp), ViColors.fileMore, stringResource(Res.string.files_more)) }
-            VMenu(menu, { menu = false }, 186, buildList {
-                add(Triple(Res.drawable.ic_m_share, stringResource(Res.string.files_share)) { if (!files.shareTask(t)) toast(unhideToShare) })
-                add(Triple(Res.drawable.ic_m_hide, stringResource(if (t.hidden) Res.string.files_unhide else Res.string.files_hide)) { dl.setHidden(t.id, !t.hidden); toast(if (t.hidden) movedOut else movedIn) })
-                add(Triple(Res.drawable.ic_m_trash, stringResource(Res.string.files_delete)) { confirmDelete = true })
-                if (t.kind == Kind.Video) {
-                    add(Triple(Res.drawable.ic_m_music, stringResource(Res.string.files_play_as_music)) { files.playTask(t, list, asMusic = true) })
-                    add(Triple(Res.drawable.ic_m_convert, stringResource(Res.string.files_convert)) { toast(converting); dl.convertToMusic(t.id) { ok -> toast(if (ok) converted else convertFailed) } })
-                }
-                if (t.pageUrl.isNotEmpty()) add(Triple(Res.drawable.ic_m_goto, stringResource(Res.string.files_goto)) { nav.open(t.pageUrl) })
-                add(Triple(Res.drawable.ic_m_rename, stringResource(Res.string.files_rename)) { rename = true })
-                t.videoId?.let { vid -> add(Triple(Res.drawable.ic_m_hd, stringResource(Res.string.files_other_res)) { nav.downloadFor = Video(vid, t.title, thumbnail = t.thumbnail) }) }
-            }, offset = DpOffset((-160).dp, (-30).dp))
-        }
+        Box(Modifier.padding(top = 9.dp, end = 12.dp)) { DoneActions(t, list) }
+    }
+}
+
+/** ⋮ button of a finished download with its POC menu (share, hide, delete, play as music, convert, go to page, rename, other resolutions). */
+@Composable
+internal fun DoneActions(t: VidTask, list: List<VidTask>, tint: androidx.compose.ui.graphics.Color = ViColors.fileMore) {
+    val files = koinInject<FilesUseCase>()
+    val dl = files.downloads
+    val nav = LocalAppNavigator.current
+    val toast = LocalToast.current
+    var menu by remember { mutableStateOf(false) }
+    var rename by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    val unhideToShare = stringResource(Res.string.files_unhide_to_share)
+    val movedOut = stringResource(Res.string.files_moved_out)
+    val movedIn = stringResource(Res.string.files_moved_in)
+    val converting = stringResource(Res.string.files_converting)
+    val converted = stringResource(Res.string.files_converted)
+    val convertFailed = stringResource(Res.string.files_convert_failed)
+    Box {
+        Box(Modifier.size(24.dp).clickable { menu = true }, contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_more_thin, Modifier.size(20.dp), tint, stringResource(Res.string.files_more)) }
+        VMenu(menu, { menu = false }, 186, buildList {
+            add(Triple(Res.drawable.ic_m_share, stringResource(Res.string.files_share)) { if (!files.shareTask(t)) toast(unhideToShare) })
+            add(Triple(Res.drawable.ic_m_hide, stringResource(if (t.hidden) Res.string.files_unhide else Res.string.files_hide)) { dl.setHidden(t.id, !t.hidden); toast(if (t.hidden) movedOut else movedIn) })
+            add(Triple(Res.drawable.ic_m_trash, stringResource(Res.string.files_delete)) { confirmDelete = true })
+            if (t.kind == Kind.Video) {
+                add(Triple(Res.drawable.ic_m_music, stringResource(Res.string.files_play_as_music)) { files.playTask(t, list, asMusic = true) })
+                add(Triple(Res.drawable.ic_m_convert, stringResource(Res.string.files_convert)) { toast(converting); dl.convertToMusic(t.id) { ok -> toast(if (ok) converted else convertFailed) } })
+            }
+            if (t.pageUrl.isNotEmpty()) add(Triple(Res.drawable.ic_m_goto, stringResource(Res.string.files_goto)) { nav.open(t.pageUrl) })
+            add(Triple(Res.drawable.ic_m_rename, stringResource(Res.string.files_rename)) { rename = true })
+            t.videoId?.let { vid -> add(Triple(Res.drawable.ic_m_hd, stringResource(Res.string.files_other_res)) { nav.downloadFor = Video(vid, t.title, thumbnail = t.thumbnail) }) }
+        }, offset = DpOffset((-160).dp, (-30).dp))
     }
     if (rename) {
         var name by remember { mutableStateOf(t.title) }

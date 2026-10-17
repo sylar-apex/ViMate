@@ -24,6 +24,9 @@ import org.app.vimate.appcore.theme.VRed
 import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appres.resources.*
 import org.app.vimate.settings.domain.constant.SettingsGroups as G
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.WindowClass
+import org.app.vimate.settings.ui.wide.SettingsWide
 import org.app.vimate.settings.ui.component.*
 import org.app.vimate.sharedlogic.settings.AppKeys
 import org.jetbrains.compose.resources.DrawableResource
@@ -33,9 +36,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 // Geometry measured from VidMate 6.0302 settings (3px = 1dp).
 
-private data class Entry(val icon: DrawableResource, val group: String, val title: StringResource, val sub: StringResource)
+internal data class Entry(val icon: DrawableResource, val group: String, val title: StringResource, val sub: StringResource)
 
-private val entries = listOf(
+internal val settingsEntries = listOf(
     Entry(Res.drawable.ic_s_globe, G.CONTENT, Res.string.settings_content, Res.string.settings_content_sub),
     Entry(Res.drawable.ic_s_dl, G.DOWNLOAD, Res.string.settings_download, Res.string.settings_download_sub),
     Entry(Res.drawable.ic_s_bell, G.PUSH, Res.string.settings_push, Res.string.settings_push_sub),
@@ -45,12 +48,13 @@ private val entries = listOf(
 
 @Composable
 fun SettingsScreen() {
+    if (LocalWindowClass.current != WindowClass.Compact) return SettingsWide(G.DOWNLOAD)
     val nav = LocalAppNavigator.current
     Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding()) {
         Box(Modifier.background(ViColors.white)) { SettingsHeader(stringResource(Res.string.settings_title)) { nav.back() } }
         Spacer(Modifier.height(7.dp))
         LazyColumn(Modifier.background(ViColors.white), userScrollEnabled = false) {
-            itemsIndexed(entries, key = { _, e -> e.group }) { i, e ->
+            itemsIndexed(settingsEntries, key = { _, e -> e.group }) { i, e ->
                 androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth().height(81.dp).clickable { nav.go(Routes.SettingsGroup(e.group)) }.padding(start = 15.dp, end = 13.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     Ic(e.icon, Modifier.size(24.dp), ViColors.ink)
@@ -59,7 +63,7 @@ fun SettingsScreen() {
                         Text(stringResource(e.sub), Modifier.padding(top = 6.dp), fontSize = 12.5.sp, lineHeight = 16.sp, color = ViColors.setSub, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
-                if (i < entries.lastIndex) Box(Modifier.padding(start = 60.dp, end = 13.dp).fillMaxWidth().height(0.7.dp).background(ViColors.setRule))
+                if (i < settingsEntries.lastIndex) Box(Modifier.padding(start = 60.dp, end = 13.dp).fillMaxWidth().height(0.7.dp).background(ViColors.setRule))
             }
         }
         Spacer(Modifier.height(7.dp))
@@ -71,7 +75,7 @@ fun SettingsScreen() {
     }
 }
 
-private val groupTitles = mapOf(
+internal val groupTitles = mapOf(
     G.CONTENT to Res.string.settings_content, G.DOWNLOAD to Res.string.settings_download, G.PUSH to Res.string.settings_push,
     G.WIDGETS to Res.string.settings_widgets, G.OTHERS to Res.string.settings_others,
 )
@@ -82,8 +86,20 @@ private val locationNames = mapOf(
 )
 
 @Composable
-fun SettingsGroupScreen(group: String, viewModel: SettingsViewModel = koinViewModel()) {
+fun SettingsGroupScreen(group: String) {
+    if (LocalWindowClass.current != WindowClass.Compact) return SettingsWide(group)
     val nav = LocalAppNavigator.current
+    Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding()) {
+        val title = if (group == G.ABOUT) stringResource(Res.string.settings_about)
+            else stringResource(Res.string.settings_group_title, groupTitles[group]?.let { stringResource(it) } ?: group)
+        Box(Modifier.background(ViColors.white)) { SettingsHeader(title) { nav.back() } }
+        SettingsGroupBody(group)
+    }
+}
+
+/** The rows of one settings group (shared by the phone page and the wide two-pane layout). */
+@Composable
+internal fun SettingsGroupBody(group: String, viewModel: SettingsViewModel = koinViewModel()) {
     val toast = LocalToast.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val cleared = stringResource(Res.string.settings_pin_cleared)
@@ -94,10 +110,7 @@ fun SettingsGroupScreen(group: String, viewModel: SettingsViewModel = koinViewMo
     val always = stringResource(Res.string.settings_always); val never = stringResource(Res.string.settings_never)
     val sysLang = stringResource(Res.string.settings_system_language); val off = stringResource(Res.string.settings_off)
     key(state.version) {
-        Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding()) {
-            val title = if (group == G.ABOUT) stringResource(Res.string.settings_about)
-                else stringResource(Res.string.settings_group_title, groupTitles[group]?.let { stringResource(it) } ?: group)
-            Box(Modifier.background(ViColors.white)) { SettingsHeader(title) { nav.back() } }
+        Column {
             LazyColumn(Modifier.padding(top = 3.dp)) {
                 item(key = group) {
                     when (group) {

@@ -189,9 +189,6 @@
     <string name="wide_me">Me</string>
     <string name="wide_section_library">Library</string>
     <string name="wide_section_explore">Explore</string>
-    <string name="wide_history">History</string>
-    <string name="wide_playlists">Playlists</string>
-    <string name="wide_subscriptions">Subscriptions</string>
     <string name="wide_shorts">Shorts</string>
     <string name="wide_sites">All sites</string>
     <string name="wide_settings">Settings</string>
@@ -200,4 +197,20 @@
     <string name="wide_quick_access">Quick access</string>
     <string name="wide_recommended">Recommended for you</string>
     <string name="wide_search_hint">Search videos or paste a link</string>
+    <string name="wide_section_tools">Tools</string>
+    <string name="wide_me_welcome">Welcome to ViMate</string>
+    <string name="wide_me_signin_sub">Sign in with YouTube to sync your subscriptions and playlists.</string>
+    <string name="wide_theme_light">Light</string>
+    <string name="wide_theme_dark">Dark</string>
+    <string name="wide_files_sub">%1$s of %2$s used</string>
+    <string name="wide_files_empty_title">No downloads yet</string>
+    <string name="wide_files_empty_sub">Videos and music you download will appear here.</string>
+    <string name="wide_files_browse">Browse videos</string>
+    <string name="wide_files_downloading">Downloading</string>
+    <string name="wide_files_library">Downloaded</string>
+    <string name="wide_hero_watch">Watch now</string>
+    <string name="wide_hero_badge">Trending now</string>
+    <string name="wide_close">Close</string>
+    <string name="wide_settings_sub">Downloads, content and app preferences</string>
+    <string name="wide_music_sub">Songs, charts and playlists from YouTube Music</string>
 </resources>

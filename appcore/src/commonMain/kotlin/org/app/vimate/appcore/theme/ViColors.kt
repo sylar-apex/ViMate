@@ -44,6 +44,8 @@ object ViColors {
     val chipIdle = Color(0xFFEFEFF2)
     val cardShadow = Color(0x26000000)
     val brandLight = Color(0xFFFF5A5F)
+    val brandDark = Color(0xFFC81E25)
+    val tintRed = Color(0x14EB2D33)
     val sheet = Color(0xFFF6F7F9)
     val gap = Color(0xFFEDEDED)
     val hotSites = Color(0xFFF6F6F6)

@@ -13,6 +13,8 @@ sealed interface LaunchRequest {
     data class OpenVideo(val id: String) : LaunchRequest
     /** ACTION_VIEW link or the first url of ACTION_SEND text: YouTube → Detail, else Browser. */
     data class OpenUrl(val url: String) : LaunchRequest
+    /** Any [org.app.vimate.appcore.navigation.Routes] page, e.g. from a desktop launch argument. */
+    data class OpenPage(val route: Any) : LaunchRequest
 }
 
 /** Hand-off from the host (Android intents, desktop args) to the shell. */

@@ -30,7 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.WindowClass
 import org.app.vimate.appcore.component.BackBar
+import org.app.vimate.files.ui.wide.FilesWide
 import org.app.vimate.appcore.component.Ic
 import org.app.vimate.appcore.component.VMenu
 import org.app.vimate.appcore.navigation.LocalAppNavigator
@@ -76,6 +79,7 @@ private const val PRIVATE_TAB = 3
 /** POC FilesScreen: "My Files" header (junk + menu), Downloads / Videos / Music / Private tabs. */
 @Composable
 fun FilesScreen() {
+    if (LocalWindowClass.current != WindowClass.Compact) return FilesWide()
     val nav = LocalAppNavigator.current
     val files = koinInject<FilesUseCase>()
     var tab by rememberSaveable { mutableIntStateOf(0) }

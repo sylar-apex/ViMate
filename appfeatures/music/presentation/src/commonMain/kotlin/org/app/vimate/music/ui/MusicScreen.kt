@@ -18,7 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.WindowClass
 import org.app.vimate.appcore.component.ErrorBox
+import org.app.vimate.music.ui.wide.MusicWide
 import org.app.vimate.appcore.component.Ic
 import org.app.vimate.appcore.component.Loading
 import org.app.vimate.appcore.navigation.LocalAppNavigator
@@ -47,6 +50,7 @@ fun MusicScreen(viewModel: MusicViewModel = koinViewModel()) {
 
 @Composable
 fun MusicContent(state: MusicContract.State, onEvent: (MusicContract.Event) -> Unit) {
+    if (LocalWindowClass.current != WindowClass.Compact) return MusicWide(state, onEvent)
     val nav = LocalAppNavigator.current
     Column(Modifier.fillMaxSize().background(ViColors.page).statusBarsPadding()) {
         // Header 53dp: 24sp bold title at x=12, 32dp downloads icon at x=316.

@@ -49,6 +49,7 @@ import org.app.vimate.appcore.navigation.LocalAppNavigator
 import org.app.vimate.appcore.navigation.Routes
 import org.app.vimate.appcore.navigation.Tab
 import org.app.vimate.appcore.theme.VRed
+import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appcore.theme.ViTheme
 import org.app.vimate.appres.resources.Res
 import org.app.vimate.appres.resources.shell_clip_detected
@@ -126,6 +127,7 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
                     if (!same) nav.go(Routes.Detail.of(Video(r.id, "")))
                 }
                 is LaunchRequest.OpenUrl -> nav.open(r.url)
+                is LaunchRequest.OpenPage -> nav.go(r.route)
             }
         }
     }
@@ -144,7 +146,7 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
     val wide = LocalWindowClass.current.isWide
     val items by downloads.tasks.collectAsState()
     val activeDownloads = items.count { it.state != TaskState.Done && it.state != TaskState.Failed }
-    Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Box(Modifier.fillMaxSize().background(if (wide) ViColors.wideCanvas else MaterialTheme.colorScheme.background)) {
         Row(Modifier.fillMaxSize()) {
             // Wide windows: permanent side bar on every page instead of the floating bottom bar.
             if (wide) SideBar(nav.tab, onTabs, activeDownloads) { nav.home(it) }
