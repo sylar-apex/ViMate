@@ -6,7 +6,7 @@ import org.koin.core.Koin
 import org.koin.dsl.module
 
 fun playerDomainModule() = module {
-    single { ViMatePlayerHost(get(), get(), get(), get()) }
+    single { ViMatePlayerHost() }
 }
 
 /** Hands the app's settings store and [ViMatePlayerHost] to the media player library. Call once after Koin starts. */
