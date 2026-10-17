@@ -16,7 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.WindowClass
 import org.app.vimate.appcore.adaptive.feedColumns
+import org.app.vimate.home.ui.wide.HomeWide
 import org.app.vimate.appcore.component.ErrorBox
 import org.app.vimate.appcore.component.Loading
 import org.app.vimate.appcore.component.VideoCard
@@ -31,6 +34,7 @@ import org.app.vimate.home.viewmodel.HomeContract.State
 // Geometry measured from VidMate 6.0302 at 480dpi (3px = 1dp).
 @Composable
 fun HomeContent(state: State, onEvent: (Event) -> Unit) {
+    if (LocalWindowClass.current != WindowClass.Compact) return HomeWide(state, onEvent)
     val nav = LocalAppNavigator.current
     val list = remember(state.chip) { LazyGridState() }
     val nearEnd by remember(list) { derivedStateOf { (list.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) >= list.layoutInfo.totalItemsCount - 4 } }

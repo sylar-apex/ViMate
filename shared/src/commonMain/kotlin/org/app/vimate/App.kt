@@ -147,7 +147,7 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Row(Modifier.fillMaxSize()) {
             // Wide windows: permanent side bar on every page instead of the floating bottom bar.
-            if (wide) SideBar(nav.tab, activeDownloads) { nav.home(it) }
+            if (wide) SideBar(nav.tab, onTabs, activeDownloads) { nav.home(it) }
             Column(Modifier.weight(1f).fillMaxHeight()) {
                 Box(Modifier.weight(1f)) { host() }
                 val queue by KMediaPlayer.queue.collectAsState()

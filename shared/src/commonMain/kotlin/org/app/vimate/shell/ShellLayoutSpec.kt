@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.sp
 /** Sizes of the app shell: bottom bar, mini player offset, toast. */
 object ShellLayoutSpec {
     val navHeight = 52.dp
-    val sideBarWidth = 220.dp
+    val sideBarWidth = 248.dp
     /** POC: the mini player sits 67dp above the bottom on the tabs, over the floating bar. */
     val miniAboveBar = 67.dp
     val toastAboveNav = 80.dp

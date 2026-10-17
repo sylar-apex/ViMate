@@ -30,7 +30,7 @@ import org.app.vimate.appres.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-private val shortcuts: List<Triple<StringResource, String, String>> = listOf(
+internal val shortcuts: List<Triple<StringResource, String, String>> = listOf(
     Triple(Res.string.home_site_youtube, "site_youtube", "https://m.youtube.com"),
     Triple(Res.string.home_site_instagram, "site_instagram", "https://www.instagram.com"),
     Triple(Res.string.home_site_facebook, "site_facebook", "https://m.facebook.com"),
@@ -44,26 +44,11 @@ internal fun SiteShortcuts() {
     Row(Modifier.fillMaxWidth().height(87.dp)) {
         shortcuts.forEach { (label, icon, url) ->
             LogoShortcut(stringResource(label), Modifier.weight(1f), onClick = { nav.go(Routes.Browser(url)) }) {
-                when (icon) {
-                    "site_google" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.logoTile), contentAlignment = Alignment.Center) { Svg(icon, Modifier.size(25.7.dp)) }
-                    "site_youtube" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(9.dp)).background(ViColors.ytShortcut), contentAlignment = Alignment.Center) {
-                        Box(Modifier.size(20.dp, 14.dp).clip(RoundedCornerShape(4.dp)).background(Color.White), contentAlignment = Alignment.Center) {
-                            Ic(Res.drawable.ic_yt_play, Modifier.size(12.dp), ViColors.ytShortcut)
-                        }
-                    }
-                    "site_facebook" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(9.dp)).background(ViColors.fbShortcut), contentAlignment = Alignment.BottomCenter) {
-                        Ic(Res.drawable.ic_fb_f, Modifier.offset(x = 2.dp, y = 2.dp).size(28.dp), Color.White)
-                    }
-                    else -> Svg(icon, Modifier.size(36.dp))
-                }
+                ShortcutLogo(icon)
             }
         }
         LogoShortcut(stringResource(Res.string.home_site_sites), Modifier.weight(1f), onClick = { nav.go(Routes.Sites) }) {
-            // 2x2 mosaic of site logos on a light tile, like VidMate's "Sites".
-            Column(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.logoTile).padding(3.dp), verticalArrangement = Arrangement.SpaceBetween) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Svg("site_facebook", Modifier.size(14.dp)); Svg("site_twitter", Modifier.size(14.dp)) }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Svg("site_pinterest", Modifier.size(14.dp)); Svg("site_youtube", Modifier.size(14.dp)) }
-            }
+            SitesMosaic()
         }
     }
 }
@@ -73,5 +58,31 @@ internal fun LogoShortcut(name: String, modifier: Modifier, onClick: () -> Unit,
     Column(modifier.fillMaxHeight().clickable(onClick = onClick).padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) { logo() }
         Text(name, fontSize = 11.5.sp, lineHeight = 16.sp, color = ViColors.muted, modifier = Modifier.padding(top = 7.dp), maxLines = 1)
+    }
+}
+
+/** 36dp logo of a [shortcuts] entry, drawn as on VidMate. */
+@Composable
+internal fun ShortcutLogo(icon: String) {
+    when (icon) {
+        "site_google" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.logoTile), contentAlignment = Alignment.Center) { Svg(icon, Modifier.size(25.7.dp)) }
+        "site_youtube" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(9.dp)).background(ViColors.ytShortcut), contentAlignment = Alignment.Center) {
+            Box(Modifier.size(20.dp, 14.dp).clip(RoundedCornerShape(4.dp)).background(Color.White), contentAlignment = Alignment.Center) {
+                Ic(Res.drawable.ic_yt_play, Modifier.size(12.dp), ViColors.ytShortcut)
+            }
+        }
+        "site_facebook" -> Box(Modifier.size(36.dp).clip(RoundedCornerShape(9.dp)).background(ViColors.fbShortcut), contentAlignment = Alignment.BottomCenter) {
+            Ic(Res.drawable.ic_fb_f, Modifier.offset(x = 2.dp, y = 2.dp).size(28.dp), Color.White)
+        }
+        else -> Svg(icon, Modifier.size(36.dp))
+    }
+}
+
+@Composable
+internal fun SitesMosaic() {
+    // 2x2 mosaic of site logos on a light tile, like VidMate's "Sites".
+    Column(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.logoTile).padding(3.dp), verticalArrangement = Arrangement.SpaceBetween) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Svg("site_facebook", Modifier.size(14.dp)); Svg("site_twitter", Modifier.size(14.dp)) }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Svg("site_pinterest", Modifier.size(14.dp)); Svg("site_youtube", Modifier.size(14.dp)) }
     }
 }

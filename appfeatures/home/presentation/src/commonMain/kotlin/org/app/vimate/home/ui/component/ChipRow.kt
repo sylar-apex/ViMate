@@ -35,7 +35,7 @@ import org.app.vimate.appres.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 /** Chip labels in [org.app.vimate.home.constant.HOME_CHIP_TOPICS] order. */
-private val chipLabels = listOf(
+internal val chipLabels = listOf(
     Res.string.home_chip_all, Res.string.home_chip_music, Res.string.home_chip_jukebox, Res.string.home_chip_playlists,
     Res.string.home_chip_1990s, Res.string.home_chip_movies, Res.string.home_chip_comedy, Res.string.home_chip_news,
     Res.string.home_chip_gaming, Res.string.home_chip_bhojpuri, Res.string.home_chip_punjabi,
