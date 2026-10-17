@@ -2,6 +2,12 @@ package org.app.vimate.search.ui.component
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.ui.Modifier
+import org.app.vimate.appcore.adaptive.feedColumns
+import org.app.vimate.appcore.adaptive.readableWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import org.app.vimate.appcore.component.Empty
@@ -21,12 +27,12 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun SearchResults(state: State, onEvent: (Event) -> Unit) {
     val nav = LocalAppNavigator.current
-    LazyColumn {
-        itemsIndexed(state.results, key = { _, v -> v.id }) { i, v ->
+    LazyVerticalGrid(feedColumns()) {
+        gridItemsIndexed(state.results, key = { _, v -> v.id }) { i, v ->
             if (i >= state.results.size - 3) LaunchedEffect(state.results.size) { onEvent(Event.LoadMore) }
             VideoCard(v, onDownload = { nav.download(v) })
         }
-        item(key = "footer") {
+        item(key = "footer", span = { GridItemSpan(maxLineSpan) }) {
             if (state.loading) Loading()
             else if (state.error != null) ErrorBox(state.error!!) { onEvent(Event.Retry) }
             else if (state.results.isEmpty()) Empty(stringResource(Res.string.search_no_results))
@@ -39,7 +45,7 @@ internal fun SearchResults(state: State, onEvent: (Event) -> Unit) {
 internal fun MusicResults(state: State, onEvent: (Event) -> Unit) {
     val nav = LocalAppNavigator.current
     val networkError = stringResource(Res.string.common_network_error)
-    LazyColumn {
+    LazyColumn(Modifier.readableWidth()) {
         itemsIndexed(state.songs, key = { i, v -> "${v.id}_$i" }) { i, v ->
             SongRow(v, onPlay = { onEvent(Event.PlaySong(i)) }, onDownload = { nav.download(v) })
         }

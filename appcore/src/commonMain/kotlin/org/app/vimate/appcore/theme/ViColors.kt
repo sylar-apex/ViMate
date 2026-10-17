@@ -31,6 +31,8 @@ object ViColors {
     val chipDark = Color(0xFF1C1C1E)
     val selected = Color(0xFFDBEBF5)
     val navBar = Color(0xFFFCFCFC)
+    /** Selected row in the wide-window side bar. */
+    val sideBarSelected = Color(0xFFFDECEC)
     val sheet = Color(0xFFF6F7F9)
     val gap = Color(0xFFEDEDED)
     val hotSites = Color(0xFFF6F6F6)

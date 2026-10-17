@@ -3,6 +3,8 @@ package org.app.vimate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -37,6 +39,8 @@ import org.app.kmediaplayer.KMediaPlayer
 import org.app.kmediaplayer.ui.music.MiniPlayer
 import org.app.kmediaplayer.ui.music.NowPlayingScreen
 import org.app.kmediaplayer.ui.settings.settingsVersion
+import org.app.vimate.appcore.adaptive.LocalWindowClass
+import org.app.vimate.appcore.adaptive.ProvideWindowClass
 import org.app.vimate.appcore.component.LocalToast
 import org.app.vimate.appcore.component.clickableNoRipple
 import org.app.vimate.appcore.image.InstallImageLoader
@@ -65,6 +69,7 @@ import org.app.vimate.shell.LaunchRequest
 import org.app.vimate.shell.LaunchRequests
 import org.app.vimate.shell.MessageToast
 import org.app.vimate.shell.ShellLayoutSpec
+import org.app.vimate.shell.SideBar
 import org.app.vimate.shell.ToastState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -87,8 +92,10 @@ fun App(embeddedPlayer: Boolean = false) {
             LocalAppNavigator provides nav,
             LocalToast provides toast::show,
         ) {
-            Root(nav, toast, embeddedPlayer) {
-                PSBNavHost(navController, startDestination = Routes.Tabs, isAnimationEnabled = false) { appNavGraph { nav.tab } }
+            ProvideWindowClass {
+                Root(nav, toast, embeddedPlayer) {
+                    PSBNavHost(navController, startDestination = Routes.Tabs, isAnimationEnabled = false) { appNavGraph { nav.tab } }
+                }
             }
         }
     }
@@ -134,19 +141,26 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
         }
     }
 
+    val wide = LocalWindowClass.current.isWide
+    val items by downloads.tasks.collectAsState()
+    val activeDownloads = items.count { it.state != TaskState.Done && it.state != TaskState.Failed }
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        Column(Modifier.fillMaxSize()) {
-            Box(Modifier.weight(1f)) { host() }
-            val queue by KMediaPlayer.queue.collectAsState()
-            val hideMini = dest != null && (dest.hasRoute(Routes.Shorts::class) || dest.hasRoute(Routes.Detail::class))
-            if (queue.isNotEmpty() && !hideMini)
-                Box(Modifier.clickableNoRipple { launcher.nowPlaying.value = true }.padding(bottom = if (onTabs) ShellLayoutSpec.miniAboveBar else 0.dp)) { MiniPlayer() }
-            if (!onTabs) Spacer(Modifier.navigationBarsPadding())
+        Row(Modifier.fillMaxSize()) {
+            // Wide windows: permanent side bar on every page instead of the floating bottom bar.
+            if (wide) SideBar(nav.tab, activeDownloads) { nav.home(it) }
+            Column(Modifier.weight(1f).fillMaxHeight()) {
+                Box(Modifier.weight(1f)) { host() }
+                val queue by KMediaPlayer.queue.collectAsState()
+                val hideMini = dest != null && (dest.hasRoute(Routes.Shorts::class) || dest.hasRoute(Routes.Detail::class))
+                val barBelow = onTabs && !wide
+                if (queue.isNotEmpty() && !hideMini)
+                    Box(Modifier.clickableNoRipple { launcher.nowPlaying.value = true }.padding(bottom = if (barBelow) ShellLayoutSpec.miniAboveBar else 0.dp)) { MiniPlayer() }
+                if (!barBelow) Spacer(Modifier.navigationBarsPadding())
+            }
         }
         // Floating bar over the content, as in VidMate (content scrolls underneath).
-        if (onTabs) Box(Modifier.align(Alignment.BottomCenter)) {
-            val items by downloads.tasks.collectAsState()
-            BottomBar(nav.tab, items.count { it.state != TaskState.Done && it.state != TaskState.Failed }) { nav.tab = it }
+        if (onTabs && !wide) Box(Modifier.align(Alignment.BottomCenter)) {
+            BottomBar(nav.tab, activeDownloads) { nav.tab = it }
         }
         clip?.let { url ->
             Snackbar(
@@ -157,7 +171,7 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
         }
         nav.downloadFor?.let { v -> DownloadSheetSlot(v) { nav.downloadFor = null } }
         if (nowPlaying) Surface(Modifier.fillMaxSize()) { NowPlayingScreen { launcher.nowPlaying.value = false } }
-        MessageToast(events, toast, aboveNav = onTabs)
+        MessageToast(events, toast, aboveNav = onTabs && !wide)
         if (embeddedPlayer) EmbeddedPlayer()
     }
     BackHandler(enabled = nav.canGoBack || nav.tab != Tab.HOME || nowPlaying) {
