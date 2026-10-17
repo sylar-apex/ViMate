@@ -26,6 +26,8 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.app.vimate"
             packageVersion = "1.0.0"
+            // JavaFX (in-app browser) needs the Swing interop module in the bundled runtime.
+            modules("jdk.unsupported", "jdk.unsupported.desktop", "jdk.jsobject", "java.net.http")
         }
     }
 }
