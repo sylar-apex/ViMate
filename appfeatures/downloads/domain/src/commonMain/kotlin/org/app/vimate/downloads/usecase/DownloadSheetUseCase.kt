@@ -32,6 +32,16 @@ class DownloadSheetUseCase(
 
     fun storage(): StorageInfo = platform.storageInfo()
 
+    /** Where downloads are saved now. */
+    fun location(): String = downloads.location()
+
+    /** Opens the platform folder picker and saves the choice; false when the platform has no picker or it was cancelled. */
+    fun changeFolder(): Boolean {
+        val picked = platform.pickFolder() ?: return false
+        settings[AppKeys.downloadFolder] = picked
+        return true
+    }
+
     fun enqueue(v: Video, info: VideoInfo, o: DownloadOption, title: String) {
         downloads.enqueue(VidTask(
             id = nowMs(), title = title.trim().ifEmpty { info.video.title }, ext = o.ext, kind = o.kind,

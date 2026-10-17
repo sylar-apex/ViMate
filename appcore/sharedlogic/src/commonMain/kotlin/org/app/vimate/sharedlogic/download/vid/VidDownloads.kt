@@ -60,6 +60,9 @@ interface VidDownloads {
     val tasks: StateFlow<List<VidTask>>
     fun speedOf(id: Long): Long
     fun enqueue(task: VidTask)
+
+    /** Folder finished downloads are saved to, for display. */
+    fun location(): String
     fun pause(id: Long)
     fun resume(id: Long)
     fun pauseAll()

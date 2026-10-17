@@ -17,6 +17,9 @@ interface PlatformActions {
     fun clearCache(): Long
     fun storageInfo(): StorageInfo
 
+    /** Lets the user choose a download folder; returns its absolute path, or null when unsupported or cancelled. */
+    fun pickFolder(): String? = null
+
     /** Asks the OS to refresh the home-screen widgets, after playback state changes. */
     fun refreshWidgets() {}
 }

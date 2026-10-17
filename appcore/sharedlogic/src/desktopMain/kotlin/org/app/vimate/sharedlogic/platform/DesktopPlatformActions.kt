@@ -1,6 +1,9 @@
 package org.app.vimate.sharedlogic.platform
 
+import java.awt.FileDialog
+import java.awt.Frame
 import java.awt.Toolkit
+import javax.swing.JFileChooser
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.io.File
@@ -29,6 +32,22 @@ class DesktopPlatformActions : PlatformActions {
         val freed = cache.walkTopDown().filter { it.isFile }.sumOf { it.length() }
         cache.deleteRecursively()
         return freed
+    }
+
+    override fun pickFolder(): String? {
+        // Native macOS folder sheet; Swing chooser elsewhere.
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            System.setProperty("apple.awt.fileDialogForDirectories", "true")
+            try {
+                val dialog = FileDialog(null as Frame?, "Choose download folder", FileDialog.LOAD)
+                dialog.isVisible = true
+                return dialog.directory?.let { dir -> dialog.file?.let { File(dir, it).path } }
+            } finally {
+                System.setProperty("apple.awt.fileDialogForDirectories", "false")
+            }
+        }
+        val chooser = JFileChooser().apply { fileSelectionMode = JFileChooser.DIRECTORIES_ONLY; dialogTitle = "Choose download folder" }
+        return if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) chooser.selectedFile.path else null
     }
 
     override fun storageInfo(): StorageInfo {

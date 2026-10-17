@@ -2,7 +2,7 @@
 <resources>
     <string name="downloads_ok">OK</string>
     <string name="downloads_rename">Rename</string>
-    <string name="downloads_path">Path:/storage/e…%1$s/download/</string>
+    <string name="downloads_path">Path: %1$s</string>
     <string name="downloads_free">%1$s FREE/%2$s</string>
     <string name="downloads_change">Change</string>
     <string name="downloads_change_toast">Change the folder name in Settings › Download</string>

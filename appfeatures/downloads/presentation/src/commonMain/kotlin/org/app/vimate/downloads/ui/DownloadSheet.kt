@@ -89,7 +89,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
     val opts = remember(state.data) { state.data?.let(useCase::options) }
     LaunchedEffect(opts) { if (selected == null && opts != null) selected = useCase.defaultOption(opts) }
     val stat = remember { useCase.storage() }
-    val folder = remember { useCase.folder() }
+    var location by remember { mutableStateOf(useCase.location()) }
     val blue = ViColors.link
     val changeToast = stringResource(Res.string.downloads_change_toast)
     val addedToast = stringResource(Res.string.downloads_added)
@@ -120,7 +120,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
                     Row(Modifier.padding(top = 12.dp).fillMaxWidth().height(30.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(13.5.dp, 15.dp).clip(RoundedCornerShape(3.dp)).background(ViColors.ink), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(10.dp), ViColors.white) }
                         Column(Modifier.weight(1f).padding(start = 18.5.dp)) {
-                            Text(stringResource(Res.string.downloads_path, folder.takeLast(4)), maxLines = 1, overflow = TextOverflow.Ellipsis,
+                            Text(stringResource(Res.string.downloads_path, location), maxLines = 1, softWrap = false, overflow = TextOverflow.StartEllipsis,
                                 fontSize = 11.6.sp, lineHeight = 16.3.sp, color = ViColors.ink, modifier = Modifier.width(230.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(Res.string.downloads_free, fmtSize(stat.freeBytes).replace(" ", ""), fmtSize(stat.totalBytes).replace(" ", "")), fontSize = 11.5.sp, lineHeight = 13.7.sp, color = ViColors.metaGrey)
@@ -130,7 +130,7 @@ fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
                                 }
                             }
                         }
-                        Text(stringResource(Res.string.downloads_change), Modifier.clickable { toast(changeToast) }, color = blue, fontSize = 12.1.sp, lineHeight = 16.sp)
+                        Text(stringResource(Res.string.downloads_change), Modifier.clickable { if (useCase.changeFolder()) location = useCase.location() else toast(changeToast) }, color = blue, fontSize = 12.1.sp, lineHeight = 16.sp)
                     }
                 }
                 Spacer(Modifier.height(12.dp))

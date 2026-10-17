@@ -24,6 +24,9 @@ import org.app.kmediaplayer.settings.ObservableSettings
 import org.app.kmediaplayer.util.nowMs
 import org.app.vimate.sharedlogic.download.option.Kind
 import org.app.vimate.sharedlogic.settings.AppKeys
+import org.app.kdownloader.model.Folder
+import org.app.kdownloader.model.MediaType
+import org.app.kdownloader.model.Destination
 import org.app.vimate.sharedlogic.yt.YouTube
 
 /**
@@ -60,6 +63,8 @@ class KVidDownloads(
     override fun speedOf(id: Long): Long = dl.tasks.value.firstOrNull { VidTaskMapper.vidId(it) == id }?.speedBytesPerSec ?: 0
 
     override fun enqueue(task: VidTask) { dl.enqueue(VidTaskMapper.toRequest(task)) }
+
+    override fun location(): String = dl.locationOf(Destination(MediaType.VIDEO, Folder.DOWNLOADS))
 
     override fun pause(id: Long) { sid(id)?.let(dl::pause) }
 
@@ -127,8 +132,11 @@ class KVidDownloads(
     companion object {
         const val UA = "com.google.android.apps.youtube.vr.oculus/1.62.27 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip"
 
-        /** POC: `Download/<folder>/download`. */
-        fun folder(settings: ObservableSettings) = "${settings[AppKeys.downloadFolder]}/download"
+        /** POC: `Download/<folder>/download`; a picked absolute folder is used as is. */
+        fun folder(settings: ObservableSettings): String {
+            val f = settings[AppKeys.downloadFolder]
+            return if (f.startsWith("/") || Regex("^[A-Za-z]:[\\\\/]").containsMatchIn(f)) f else "$f/download"
+        }
     }
 }
 
