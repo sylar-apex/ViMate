@@ -5,3 +5,8 @@ PRODUCT_BUNDLE_IDENTIFIER=org.app.vimate.ViMate$(TEAM_ID)
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0
+// libVLC for iOS (MobileVLCKit, static), fetched into iosApp/Frameworks by :kmediaplayer:core:prepareVlcKit.
+VLCKIT = $(SRCROOT)/Frameworks/MobileVLCKit.xcframework
+FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) $(VLCKIT)/ios-arm64_armv7_armv7s
+FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) $(VLCKIT)/ios-arm64_i386_x86_64-simulator
+OTHER_LDFLAGS = $(inherited) -framework MobileVLCKit -lc++ -liconv -lbz2 -lz -lxml2 -framework AudioToolbox -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework CoreText -framework CoreGraphics -framework QuartzCore -framework OpenGLES -framework VideoToolbox -framework Security -framework UIKit

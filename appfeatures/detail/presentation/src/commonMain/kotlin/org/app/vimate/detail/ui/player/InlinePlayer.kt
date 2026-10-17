@@ -5,6 +5,12 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -86,6 +92,7 @@ fun InlinePlayer(
     audioMode: Boolean = false,
     onPlayAsVideo: () -> Unit = {},
     onQuality: (Quality) -> Unit = {},
+    wide: Boolean = false,
 ) {
     var visible by remember { mutableStateOf(true) }
     var playing by remember { mutableStateOf(player.isPlaying) }
@@ -131,7 +138,69 @@ fun InlinePlayer(
             return@Box
         }
         if (buffering) CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color.White)
-        if (visible) {
+        if (visible && wide) {
+            // Desktop / tablet: controls anchored to the edges so they scale with the player instead of phone offsets.
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(ViColors.shade40, Color.Transparent, Color.Transparent, ViColors.shade60))))
+            Row(Modifier.align(Alignment.TopStart).fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(32.dp).clip(CircleShape).clickable(onClick = onCollapse), contentAlignment = Alignment.Center) {
+                    Ic(Res.drawable.ic_p_chev, Modifier.size(22.dp), Color.White, stringResource(Res.string.detail_collapse))
+                }
+                Spacer(Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box { WideAutoplay(autoNext, onAutoNext) }
+                    Box(Modifier.size(28.dp, 17.dp).border(1.3.dp, if (cc) Color.White else ViColors.playerCcOff, RoundedCornerShape(3.dp))
+                        .clickable(enabled = captions) { cc = !cc }, contentAlignment = Alignment.Center) {
+                        Text(stringResource(Res.string.detail_cc), color = if (cc) Color.White else ViColors.playerCcOff, fontSize = 11.sp, lineHeight = 12.sp)
+                    }
+                    Box {
+                        Text(quality?.label ?: stringResource(Res.string.detail_auto), Modifier.clickable { menu = "q" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 13.sp)
+                        DropdownMenu(menu == "q", { menu = null }) {
+                            LazyColumn(Modifier.width(160.dp).heightIn(max = 360.dp)) {
+                                items(qualities, key = { it.label + it.url }) { q ->
+                                    DropdownMenuItem(text = { Text(q.label) }, onClick = { quality = q; menu = null },
+                                        trailingIcon = { if (q == quality) Icon(Icons.Filled.Check, null) })
+                                }
+                            }
+                        }
+                    }
+                    Box {
+                        Text(speedText, Modifier.clickable { menu = "s" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 13.sp)
+                        DropdownMenu(menu == "s", { menu = null }) {
+                            LazyColumn(Modifier.width(120.dp).heightIn(max = 360.dp)) {
+                                items(DetailLayoutSpec.SPEEDS, key = { it }) { sp ->
+                                    DropdownMenuItem(text = { Text("${sp}x") }, onClick = { speed = sp; player.setPlaybackSpeed(sp); menu = null })
+                                }
+                            }
+                        }
+                    }
+                    Box(Modifier.size(24.dp).clickable(onClick = onAudioOnly), contentAlignment = Alignment.Center) {
+                        Ic(Res.drawable.ic_p_audio, Modifier.size(20.dp), Color.White, stringResource(Res.string.detail_play_audio_desc))
+                    }
+                }
+            }
+            Row(Modifier.align(Alignment.Center), horizontalArrangement = Arrangement.spacedBy(28.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(60.dp).clip(CircleShape).background(ViColors.shade40).clickable { if (playing) player.pause() else player.play() }, contentAlignment = Alignment.Center) {
+                    Ic(if (playing) Res.drawable.ic_p_pause else Res.drawable.ic_p_play, Modifier.size(40.dp), Color.White, stringResource(Res.string.detail_play))
+                }
+                Box(Modifier.size(44.dp).clip(CircleShape).clickable(onClick = onNext), contentAlignment = Alignment.Center) {
+                    Ic(Res.drawable.ic_p_next, Modifier.size(32.dp), Color.White, stringResource(Res.string.detail_next))
+                }
+            }
+            Row(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(40.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                val frac = if (dur > 0) (pos.toFloat() / dur).coerceIn(0f, 1f) else 0f
+                Text(YouTube.formatDuration(pos / 1000), color = Color.White, fontSize = 12.sp)
+                BoxWithConstraints(Modifier.weight(1f).fillMaxHeight().padding(horizontal = 12.dp)
+                    .pointerInput(dur) { detectTapGestures { o -> if (dur > 0) { val t = (o.x / size.width * dur).toLong(); player.seekTo(t); pos = t } } }) {
+                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth().height(3.dp).clip(CircleShape).background(ViColors.playerSeekTrack))
+                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth(frac).height(3.dp).clip(CircleShape).background(ViColors.playerSeekBlue))
+                    Box(Modifier.align(Alignment.CenterStart).offset(x = (maxWidth - 12.dp) * frac).size(12.dp).clip(CircleShape).background(ViColors.playerSeekBlue))
+                }
+                Text(YouTube.formatDuration(dur / 1000), color = Color.White, fontSize = 12.sp)
+                Box(Modifier.padding(start = 12.dp).size(28.dp).clickable(onClick = onFullscreen), contentAlignment = Alignment.Center) {
+                    Ic(Res.drawable.ic_p_full, Modifier.size(18.dp), Color.White, stringResource(Res.string.detail_fullscreen))
+                }
+            }
+        } else if (visible) {
             Box(Modifier.fillMaxSize().background(ViColors.shade40))
             // Top row measured from VidMate (dp from the player's top-left, row centred at y=22).
             Box(Modifier.offset(x = 14.dp, y = 8.dp).size(28.dp).clickable(onClick = onCollapse), contentAlignment = Alignment.Center) {
@@ -189,6 +258,15 @@ fun InlinePlayer(
                     Ic(Res.drawable.ic_p_full, Modifier.size(20.dp), Color.White, stringResource(Res.string.detail_fullscreen))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun WideAutoplay(on: Boolean, onChange: (Boolean) -> Unit) {
+    Box(Modifier.size(36.dp, 16.dp).clip(CircleShape).background(if (on) ViColors.playerAutoplayOn else ViColors.playerAutoplayOff).clickable { onChange(!on) }) {
+        Box(Modifier.align(if (on) Alignment.CenterEnd else Alignment.CenterStart).size(16.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
+            Ic(Res.drawable.ic_p_play, Modifier.size(10.dp), ViColors.playerAutoplayGlyph)
         }
     }
 }

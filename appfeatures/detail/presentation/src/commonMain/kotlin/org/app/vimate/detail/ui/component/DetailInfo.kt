@@ -83,7 +83,7 @@ internal fun CommentsCard(count: String, first: Comment?, enabled: Boolean, onOp
                 Text(stringResource(Res.string.detail_comments), fontSize = 14.8.sp, lineHeight = 19.sp, color = ViColors.ink)
                 if (count.isNotEmpty()) Text(stringResource(Res.string.detail_comments_count, count), fontSize = 14.8.sp, lineHeight = 19.sp, color = ViColors.metaGrey)
             }
-            Ic(Res.drawable.ic_selector, Modifier.offset(x = 310.5.dp, y = 7.5.dp).size(19.dp), ViColors.ink)
+            Ic(Res.drawable.ic_selector, Modifier.align(Alignment.TopEnd).padding(top = 7.5.dp, end = 6.5.dp).size(19.dp), ViColors.ink)
             Box(Modifier.offset(x = 10.dp, y = 37.7.dp)) {
                 val who = first?.author.orEmpty().removePrefix("@")
                 if (first?.avatar.isNullOrEmpty()) Box(Modifier.size(32.dp).clip(CircleShape).background(ViColors.detailCommentLetter), contentAlignment = Alignment.Center) {

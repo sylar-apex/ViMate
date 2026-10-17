@@ -54,7 +54,7 @@ import org.app.vimate.sharedlogic.yt.Video
 @Composable
 internal fun DownloadSheetSlot(video: Video, onDismiss: () -> Unit) = org.app.vimate.downloads.ui.DownloadSheet(video, onDismiss)
 
-private val DETAIL_WIDTH = 960.dp
+private val DETAIL_WIDTH = 1280.dp
 
 /** Phone-style pages stay phone-width and centred on tablets and desktop; the feed screens use grids instead. */
 @Composable

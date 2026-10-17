@@ -11,3 +11,7 @@ data class Channel(val id: String, val name: String, val avatar: String = "")
 
 @Serializable
 data class SiteVisit(val url: String, val title: String, val time: Long)
+
+/** A user-added site shortcut. [group] is `Favorite` or `Entertainment`. */
+@Serializable
+data class CustomShortcut(val name: String, val url: String, val group: String)

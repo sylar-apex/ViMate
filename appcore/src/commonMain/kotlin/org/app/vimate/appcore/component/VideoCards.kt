@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -115,9 +114,9 @@ fun VideoRow(v: Video, onClick: () -> Unit, trailing: @Composable () -> Unit = {
     Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Thumb(v.thumbnail, Modifier.width(150.dp).aspectRatio(16f / 9), corner = 10, duration = v.duration)
         Column(Modifier.weight(1f).padding(horizontal = 10.dp)) {
-            Text(v.title, maxLines = 2, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Medium, fontSize = 14.sp)
-            Text(listOf(v.channel, v.views).filter { it.isNotEmpty() }.joinToString(" · "), fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f), maxLines = 1)
+            Text(v.title, maxLines = 2, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.Medium, fontSize = 13.5.sp, lineHeight = 18.sp, color = ViColors.ink)
+            Text(listOf(v.channel, v.views).filter { it.isNotEmpty() }.joinToString(" · "), Modifier.padding(top = 4.dp), fontSize = 12.sp,
+                color = ViColors.metaGrey, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         trailing()
     }

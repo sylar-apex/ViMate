@@ -9,6 +9,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import org.app.vimate.appcore.navigation.Routes
 import org.app.vimate.appcore.navigation.Tab
+import org.app.kmediaplayer.desktop.DesktopPlayback
 import org.app.vimate.di.initApp
 import org.app.vimate.sites.ui.web.DesktopWebRuntime
 import org.app.vimate.shell.LaunchRequest
@@ -22,6 +23,8 @@ private val WindowSize = DpSize(1280.dp, 820.dp)
  */
 fun main(args: Array<String>) {
     DesktopWebRuntime.start()
+    // Load libVLC off the UI thread so the window never waits for it.
+    Thread({ DesktopPlayback.engine }, "libvlc-init").apply { isDaemon = true }.start()
     runApp(args)
 }
 

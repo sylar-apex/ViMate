@@ -30,12 +30,10 @@ import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.datasource.DefaultHttpDataSource
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.MergingMediaSource
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import org.app.kmediaplayer.KMediaPlayer
+import org.app.kmediaplayer.android.hybrid.HybridEngine
+import org.app.kmediaplayer.model.MediaFile
+import org.app.kmediaplayer.model.StreamExtras
 import org.app.vimate.sharedlogic.yt.Video
 import org.app.vimate.sharedlogic.yt.YouTube
 
@@ -48,7 +46,7 @@ data class PopupIcons(val close: Painter, val pause: Painter, val play: Painter,
  */
 object PopupPlayer {
     private var root: FrameLayout? = null
-    private var player: ExoPlayer? = null
+    private var surface: SurfaceView? = null
     private var video: Video? = null
     private val main = Handler(Looper.getMainLooper())
     /** MainActivity.EXTRA_VIDEO. */
@@ -75,16 +73,18 @@ object PopupPlayer {
         fun dp(x: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, x, dm).toInt()
         fun bmp(p: Painter) = p.bitmap(dp(48f), dm.density)
         val pauseBmp = bmp(icons.pause); val playBmp = bmp(icons.play)
-        val http = DefaultHttpDataSource.Factory().setUserAgent(YouTube.streamUA).setAllowCrossProtocolRedirects(true)
-        fun src(u: String) = ProgressiveMediaSource.Factory(http).createMediaSource(MediaItem.fromUri(u))
-        val p = ExoPlayer.Builder(app).build().apply {
-            setMediaSource(if (audioUrl != null) MergingMediaSource(src(videoUrl), src(audioUrl)) else src(videoUrl), positionMs)
-            prepare(); play()
+        // The page's engine keeps playing (libVLC); the popup only gives it a new surface.
+        val p = KMediaPlayer.engine
+        if (p.title != qualityLabel || p.position <= 0) {
+            p.setItems(listOf(MediaFile(videoUrl.hashCode().toLong(), videoUrl, videoUrl, qualityLabel, 0, 0, 0,
+                extras = StreamExtras(audioUri = audioUrl, userAgent = YouTube.streamUA))), 0, positionMs)
+            p.prepare()
         }
+        p.play()
         val box = FrameLayout(app).apply { setBackgroundColor(Color.BLACK) }
         val surface = SurfaceView(app)
         box.addView(surface, FrameLayout.LayoutParams(-1, -1))
-        p.setVideoSurfaceView(surface)
+        HybridEngine.attachSurface(surface)
 
         // Controls layer (hidden until tapped).
         val ctl = FrameLayout(app).apply { setBackgroundColor(0x55000000); visibility = View.GONE }
@@ -124,7 +124,7 @@ object PopupPlayer {
             lp.width = dp(if (big) 180f else 280f); lp.height = dp(if (big) 103f else 158f); wm.updateViewLayout(box, lp)
         }
         icon(icons.full, 24f, Gravity.BOTTOM or Gravity.END, 8f, 6f) {
-            PopupResume.resume = v.id to p.currentPosition
+            PopupResume.resume = v.id to p.position
             app.packageManager.getLaunchIntentForPackage(app.packageName)?.let { launch ->
                 app.startActivity(launch.putExtra(EXTRA_VIDEO, v.id).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP))
             }
@@ -137,7 +137,7 @@ object PopupPlayer {
             override fun run() {
                 val d = p.duration.takeIf { it > 0 } ?: 0
                 val w = track.width
-                if (d > 0 && w > 0) (dot.layoutParams as FrameLayout.LayoutParams).let { it.leftMargin = dp(40f) + (w * p.currentPosition / d).toInt() - dp(6f); dot.layoutParams = it }
+                if (d > 0 && w > 0) (dot.layoutParams as FrameLayout.LayoutParams).let { it.leftMargin = dp(40f) + (w * p.position / d).toInt() - dp(6f); dot.layoutParams = it }
                 playBtn.setImageBitmap(if (p.isPlaying) pauseBmp else playBmp)
                 if (root != null) main.postDelayed(this, 500)
             }
@@ -157,14 +157,14 @@ object PopupPlayer {
         }
         surface.setOnTouchListener(drag)
         ctl.setOnTouchListener(drag)
-        p.addListener(object : Player.Listener {})
         wm.addView(box, lp)
-        root = box; player = p; video = v
+        root = box; this.surface = surface; video = v
         main.post(tick)
     }
 
     fun close() {
-        player?.release(); player = null
+        surface?.let { HybridEngine.detachSurface(it); KMediaPlayer.engine.pause() }
+        surface = null
         root?.let { runCatching { it.context.getSystemService(WindowManager::class.java).removeView(it) } }
         root = null
     }

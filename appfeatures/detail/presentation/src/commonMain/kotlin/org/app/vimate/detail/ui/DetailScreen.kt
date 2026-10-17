@@ -2,6 +2,7 @@ package org.app.vimate.detail.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -98,8 +99,7 @@ fun DetailScreen(start: Video) {
     val next = state.next
     fun playNext() = vm.setEvent(DetailContract.Event.PlayNext)
 
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-        Box(Modifier.fillMaxWidth().background(ViColors.detailStatusBar).statusBarsPadding().background(Color.Black)) {
+    val playerArea: @Composable (Boolean) -> Unit = { wide ->
             val data = state.info
             when {
                 data != null && data.video.id == current.id -> {
@@ -109,7 +109,7 @@ fun DetailScreen(start: Video) {
                     val pref = remember { repo.onlineQuality }
                     val ordered = remember(qualities) { buildQualities.ordered(qualities, pref) }
                     InlinePlayer(player, ordered, data.captions.isNotEmpty(), autoNext, { autoNext = it }, ::playNext,
-                        onAudioOnly = { audioMode = !audioMode },
+                        onAudioOnly = { audioMode = !audioMode }, wide = wide,
                         audioMode = audioMode, onPlayAsVideo = { audioMode = false }, onQuality = { curQ = it },
                         onFullscreen = { player.pause(); scope.launch { runCatching { launcher.video(v) }.onFailure { toast(it.message ?: "") } } },
                         onCollapse = { nav.back() },
@@ -131,31 +131,41 @@ fun DetailScreen(start: Video) {
                     CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color.White)
                 }
             }
-        }
-        // Below-player layout measured from VidMate (3px = 1dp).
-        val ctoken = next?.commentsToken
-        if (showComments && ctoken != null) CommentsPanel(ctoken, next.commentCount) { showComments = false }
-        else LazyColumn(Modifier.fillMaxSize().background(ViColors.white)) {
-            item(key = "title") { DetailTitle(v, next?.likes.orEmpty()) }
-            item(key = "actions") {
-                DetailActions {
+    }
+    val ctoken = next?.commentsToken
+    val actions: @Composable () -> Unit = {
                     DetailAction(Res.drawable.ic_d_save, stringResource(Res.string.detail_save)) { nav.go(Routes.YtSignIn) }
-                    DetailAction(Res.drawable.ic_d_popup, stringResource(Res.string.detail_popup)) {
-                        if (!popup.supported) return@DetailAction
+                    if (popup.supported) DetailAction(Res.drawable.ic_d_popup, stringResource(Res.string.detail_popup)) {
                         if (!popup.canDraw()) popupAsk = true
-                        else curQ?.let { q -> popup.show(v, q.url, q.audioUrl, q.label, player.currentPosition); player.pause(); nav.back() }
+                        else curQ?.let { q -> popup.show(v, q.url, q.audioUrl, q.label, player.currentPosition); player.handOff(); nav.back() }
                     }
                     DetailAction(Res.drawable.ic_d_audio, stringResource(Res.string.detail_play_audio), if (audioMode) VRed else ViColors.ink) {
                         audioMode = !audioMode; if (!player.isPlaying) player.play()
                     }
                     DetailAction(Res.drawable.ic_d_share, stringResource(Res.string.detail_share)) { share("${v.title}\n${v.url}") }
                     DetailAction(Res.drawable.ic_d_download, stringResource(Res.string.detail_download), VRed) { nav.download(v) }
-                }
+    }
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    if (maxWidth >= DetailLayoutSpec.WIDE_MIN) WideDetail(
+        player = { playerArea(true) }, v = v, likes = next?.likes.orEmpty(), actions = actions,
+        comments = { CommentsCard(next?.commentCount.orEmpty(), state.firstComment, ctoken != null) { showComments = true } },
+        commentsPanel = if (showComments && ctoken != null) ({ CommentsPanel(ctoken, next.commentCount) { showComments = false } }) else null,
+        related = next?.related.orEmpty(), loading = state.nextLoading,
+    ) else
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        Box(Modifier.fillMaxWidth().background(ViColors.detailStatusBar).statusBarsPadding().background(Color.Black)) { playerArea(false) }
+        // Below-player layout measured from VidMate (3px = 1dp).
+        if (showComments && ctoken != null) CommentsPanel(ctoken, next.commentCount) { showComments = false }
+        else LazyColumn(Modifier.fillMaxSize().background(ViColors.white)) {
+            item(key = "title") { DetailTitle(v, next?.likes.orEmpty()) }
+            item(key = "actions") {
+                DetailActions { actions() }
             }
             item(key = "comments") { CommentsCard(next?.commentCount.orEmpty(), state.firstComment, ctoken != null) { showComments = true } }
             items(next?.related.orEmpty(), key = { "r" + it.id }) { r -> VideoCard(r, onDownload = { nav.download(r) }, aspect = DetailLayoutSpec.RELATED_RATIO) }
             item(key = "loading") { if (state.nextLoading) Loading() }
         }
+    }
     }
     if (saveDialog) SaveToPlaylistDialog(v) { saveDialog = false }
     if (popupAsk) PopupPermissionDialog(onAllow = { popupAsk = false; popup.requestPermission() }) { popupAsk = false }

@@ -15,6 +15,15 @@ class Library(stores: StoreFactory) {
     val playlists = PersistedList(store, "playlists", Playlist.serializer())
     val subscriptions = PersistedList(store, "subscriptions", Channel.serializer())
     val favoriteSites = PersistedList(store, "fav_sites", String.serializer())
+    val customShortcuts = PersistedList(store, "custom_shortcuts", CustomShortcut.serializer(), limit = 80)
+
+    fun addShortcut(name: String, url: String, group: String) = customShortcuts.update { list ->
+        list.filterNot { it.url == url && it.group == group } + CustomShortcut(name, url, group)
+    }
+
+    fun removeShortcut(url: String, group: String) = customShortcuts.update { list ->
+        list.filterNot { it.url == url && it.group == group }
+    }
 
     fun addWatched(v: Video) = watchHistory.update { listOf(v) + it.filter { o -> o.id != v.id } }
     fun addSearch(q: String) = searches.update { listOf(q) + it.filter { o -> !o.equals(q, true) } }

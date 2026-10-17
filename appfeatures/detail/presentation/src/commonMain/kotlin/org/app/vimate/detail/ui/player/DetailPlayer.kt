@@ -24,6 +24,8 @@ interface DetailPlayer {
     fun load(q: Quality, positionMs: Long)
     fun addListener(l: DetailPlayerListener)
     fun removeListener(l: DetailPlayerListener)
+    /** Another view (the popup) continues this playback, so leaving the page must not pause it. */
+    fun handOff() {}
 }
 
 /** A player owned by the composable; released (or paused, for the shared engine) when it leaves composition. */
