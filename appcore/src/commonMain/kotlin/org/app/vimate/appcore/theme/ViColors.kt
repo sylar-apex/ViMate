@@ -177,6 +177,8 @@ object ViColors {
     // Detail page + inline/popup player (POC ui/DetailScreen.kt, ui/InlinePlayer.kt)
     val detailStatusBar = Color(0xFF303030)
     val detailLikePill = Color(0xFFF2F2F2)
+    /** Soft red behind the wide video page's Download and Post buttons. */
+    val detailDownloadPill = Color(0xFFFDECEC)
     val detailLikeDivider = Color(0xFFBDBDBD)
     val detailRule = Color(0xFFF5F5F5)
     val detailCommentLetter = Color(0xFFEF7510)
@@ -203,6 +205,8 @@ object ViColors {
     val playerVinylLabel = Color(0xFFE8173A)
     // VidMate POC Shorts / Sites / Browser / Grabber / SiteSheet
     val shortsFollowing = Color(0x66FFFFFF)
+    /** Round buttons beside the Short on wide windows. */
+    val shortsRailButton = Color(0x33FFFFFF)
     val shortsFollow = Color(0xFFE53935)
     val shortsProgress = Color(0x55FFFFFF)
     val sitesRule = Color(0xFFE6E6E6)

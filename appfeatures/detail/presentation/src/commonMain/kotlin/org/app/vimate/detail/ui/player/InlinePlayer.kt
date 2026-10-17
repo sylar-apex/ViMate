@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import org.app.vimate.appcore.theme.VRed
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
@@ -17,13 +19,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -127,6 +126,8 @@ fun InlinePlayer(
     LaunchedEffect(visible, playing) { if (visible && playing) { delay(DetailLayoutSpec.HIDE_CONTROLS_MS); visible = false } }
 
     val speedText = "${speed.toString().removeSuffix(".0")}x"
+    // The menu lists qualities highest first with Auto last, whatever order playback preference picked.
+    val menuQualities = remember(qualities) { qualities.sortedWith(compareByDescending { it.label.takeWhile(Char::isDigit).toIntOrNull() ?: -1 }) }
     Box(Modifier.fillMaxWidth().aspectRatio(DetailLayoutSpec.PLAYER_RATIO).background(Color.Black).clickable(interactionSource = null, indication = null) { visible = !visible }) {
         VideoSurface(player, Modifier.fillMaxSize())
         if (audioMode) {
@@ -138,66 +139,60 @@ fun InlinePlayer(
             return@Box
         }
         if (buffering) CircularProgressIndicator(Modifier.align(Alignment.Center), color = Color.White)
-        if (visible && wide) {
-            // Desktop / tablet: controls anchored to the edges so they scale with the player instead of phone offsets.
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(ViColors.shade40, Color.Transparent, Color.Transparent, ViColors.shade60))))
-            Row(Modifier.align(Alignment.TopStart).fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(32.dp).clip(CircleShape).clickable(onClick = onCollapse), contentAlignment = Alignment.Center) {
-                    Ic(Res.drawable.ic_p_chev, Modifier.size(22.dp), Color.White, stringResource(Res.string.detail_collapse))
-                }
-                Spacer(Modifier.weight(1f))
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box { WideAutoplay(autoNext, onAutoNext) }
-                    Box(Modifier.size(28.dp, 17.dp).border(1.3.dp, if (cc) Color.White else ViColors.playerCcOff, RoundedCornerShape(3.dp))
-                        .clickable(enabled = captions) { cc = !cc }, contentAlignment = Alignment.Center) {
-                        Text(stringResource(Res.string.detail_cc), color = if (cc) Color.White else ViColors.playerCcOff, fontSize = 11.sp, lineHeight = 12.sp)
-                    }
-                    Box {
-                        Text(quality?.label ?: stringResource(Res.string.detail_auto), Modifier.clickable { menu = "q" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 13.sp)
-                        DropdownMenu(menu == "q", { menu = null }) {
-                            LazyColumn(Modifier.width(160.dp).heightIn(max = 360.dp)) {
-                                items(qualities, key = { it.label + it.url }) { q ->
-                                    DropdownMenuItem(text = { Text(q.label) }, onClick = { quality = q; menu = null },
-                                        trailingIcon = { if (q == quality) Icon(Icons.Filled.Check, null) })
-                                }
+        if (wide && (visible || !playing)) {
+            // Desktop / tablet, YouTube-style: setting chips top right, big play button while paused,
+            // full-width red seek bar over a play / next / time / fullscreen row. Autoplay lives in the related column.
+            Box(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(110.dp).background(Brush.verticalGradient(listOf(Color.Transparent, ViColors.shade60))))
+            Row(Modifier.align(Alignment.TopEnd).padding(12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                if (captions) Chip(stringResource(Res.string.detail_cc), selected = cc) { cc = !cc }
+                Box {
+                    Chip("${quality?.label ?: stringResource(Res.string.detail_auto)} ▾") { menu = "q" }
+                    DropdownMenu(menu == "q", { menu = null }) {
+                        Column(Modifier.width(160.dp)) {
+                            menuQualities.forEach { q ->
+                                DropdownMenuItem(text = { Text(q.label) }, onClick = { quality = q; menu = null },
+                                    trailingIcon = { if (q == quality) Icon(Icons.Filled.Check, null) })
                             }
                         }
                     }
-                    Box {
-                        Text(speedText, Modifier.clickable { menu = "s" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 13.sp)
-                        DropdownMenu(menu == "s", { menu = null }) {
-                            LazyColumn(Modifier.width(120.dp).heightIn(max = 360.dp)) {
-                                items(DetailLayoutSpec.SPEEDS, key = { it }) { sp ->
-                                    DropdownMenuItem(text = { Text("${sp}x") }, onClick = { speed = sp; player.setPlaybackSpeed(sp); menu = null })
-                                }
+                }
+                Box {
+                    Chip(speedText) { menu = "s" }
+                    DropdownMenu(menu == "s", { menu = null }) {
+                        Column(Modifier.width(120.dp)) {
+                            DetailLayoutSpec.SPEEDS.forEach { sp ->
+                                DropdownMenuItem(text = { Text("${sp}x") }, onClick = { speed = sp; player.setPlaybackSpeed(sp); menu = null })
                             }
                         }
                     }
-                    Box(Modifier.size(24.dp).clickable(onClick = onAudioOnly), contentAlignment = Alignment.Center) {
-                        Ic(Res.drawable.ic_p_audio, Modifier.size(20.dp), Color.White, stringResource(Res.string.detail_play_audio_desc))
-                    }
+                }
+                Box(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.shade60).clickable(onClick = onAudioOnly), contentAlignment = Alignment.Center) {
+                    Ic(Res.drawable.ic_p_audio, Modifier.size(18.dp), Color.White, stringResource(Res.string.detail_play_audio_desc))
                 }
             }
-            Row(Modifier.align(Alignment.Center), horizontalArrangement = Arrangement.spacedBy(28.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(60.dp).clip(CircleShape).background(ViColors.shade40).clickable { if (playing) player.pause() else player.play() }, contentAlignment = Alignment.Center) {
-                    Ic(if (playing) Res.drawable.ic_p_pause else Res.drawable.ic_p_play, Modifier.size(40.dp), Color.White, stringResource(Res.string.detail_play))
-                }
-                Box(Modifier.size(44.dp).clip(CircleShape).clickable(onClick = onNext), contentAlignment = Alignment.Center) {
-                    Ic(Res.drawable.ic_p_next, Modifier.size(32.dp), Color.White, stringResource(Res.string.detail_next))
-                }
+            if (!playing && !buffering) Box(Modifier.align(Alignment.Center).size(68.dp).clip(CircleShape).background(ViColors.shade60).clickable { player.play() }, contentAlignment = Alignment.Center) {
+                Ic(Res.drawable.ic_p_play, Modifier.size(40.dp), Color.White, stringResource(Res.string.detail_play))
             }
-            Row(Modifier.align(Alignment.BottomStart).fillMaxWidth().height(40.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.align(Alignment.BottomStart).fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp)) {
                 val frac = if (dur > 0) (pos.toFloat() / dur).coerceIn(0f, 1f) else 0f
-                Text(YouTube.formatDuration(pos / 1000), color = Color.White, fontSize = 12.sp)
-                BoxWithConstraints(Modifier.weight(1f).fillMaxHeight().padding(horizontal = 12.dp)
+                BoxWithConstraints(Modifier.fillMaxWidth().height(16.dp)
                     .pointerInput(dur) { detectTapGestures { o -> if (dur > 0) { val t = (o.x / size.width * dur).toLong(); player.seekTo(t); pos = t } } }) {
-                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth().height(3.dp).clip(CircleShape).background(ViColors.playerSeekTrack))
-                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth(frac).height(3.dp).clip(CircleShape).background(ViColors.playerSeekBlue))
-                    Box(Modifier.align(Alignment.CenterStart).offset(x = (maxWidth - 12.dp) * frac).size(12.dp).clip(CircleShape).background(ViColors.playerSeekBlue))
+                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth().height(4.dp).clip(CircleShape).background(ViColors.playerSeekTrack))
+                    Box(Modifier.align(Alignment.CenterStart).fillMaxWidth(frac).height(4.dp).clip(CircleShape).background(VRed))
+                    Box(Modifier.align(Alignment.CenterStart).offset(x = (maxWidth - 14.dp) * frac).size(14.dp).clip(CircleShape).background(VRed))
                 }
-                Text(YouTube.formatDuration(dur / 1000), color = Color.White, fontSize = 12.sp)
-                Box(Modifier.padding(start = 12.dp).size(28.dp).clickable(onClick = onFullscreen), contentAlignment = Alignment.Center) {
-                    Ic(Res.drawable.ic_p_full, Modifier.size(18.dp), Color.White, stringResource(Res.string.detail_fullscreen))
+                Row(Modifier.fillMaxWidth().height(36.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Box(Modifier.size(32.dp).clickable { if (playing) player.pause() else player.play() }, contentAlignment = Alignment.Center) {
+                        Ic(if (playing) Res.drawable.ic_p_pause else Res.drawable.ic_p_play, Modifier.size(26.dp), Color.White, stringResource(Res.string.detail_play))
+                    }
+                    Box(Modifier.size(32.dp).clickable(onClick = onNext), contentAlignment = Alignment.Center) {
+                        Ic(Res.drawable.ic_p_next, Modifier.size(22.dp), Color.White, stringResource(Res.string.detail_next))
+                    }
+                    Text("${YouTube.formatDuration(pos / 1000)} / ${YouTube.formatDuration(dur / 1000)}", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.weight(1f))
+                    Box(Modifier.size(32.dp).clickable(onClick = onFullscreen), contentAlignment = Alignment.Center) {
+                        Ic(Res.drawable.ic_p_full, Modifier.size(20.dp), Color.White, stringResource(Res.string.detail_fullscreen))
+                    }
                 }
             }
         } else if (visible) {
@@ -214,8 +209,8 @@ fun InlinePlayer(
             Box(Modifier.offset(x = 218.dp, y = 10.dp)) {
                 Text(quality?.label ?: stringResource(Res.string.detail_auto), Modifier.clickable { menu = "q" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp)
                 DropdownMenu(menu == "q", { menu = null }) {
-                    LazyColumn(Modifier.width(160.dp).heightIn(max = 400.dp)) {
-                        items(qualities, key = { it.label + it.url }) { q ->
+                    Column(Modifier.width(160.dp)) {
+                        menuQualities.forEach { q ->
                             DropdownMenuItem(text = { Text(q.label) }, onClick = { quality = q; menu = null },
                                 trailingIcon = { if (q == quality) Icon(Icons.Filled.Check, null) })
                         }
@@ -225,8 +220,8 @@ fun InlinePlayer(
             Box(Modifier.offset(x = 273.dp, y = 10.dp)) {
                 Text(speedText, Modifier.clickable { menu = "s" }, color = Color.White, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp)
                 DropdownMenu(menu == "s", { menu = null }) {
-                    LazyColumn(Modifier.width(120.dp).heightIn(max = 400.dp)) {
-                        items(DetailLayoutSpec.SPEEDS, key = { it }) { sp ->
+                    Column(Modifier.width(120.dp)) {
+                        DetailLayoutSpec.SPEEDS.forEach { sp ->
                             DropdownMenuItem(text = { Text("${sp}x") }, onClick = { speed = sp; player.setPlaybackSpeed(sp); menu = null })
                         }
                     }
@@ -262,12 +257,12 @@ fun InlinePlayer(
     }
 }
 
+/** Translucent rounded chip over the wide player (CC, quality, speed). */
 @Composable
-private fun WideAutoplay(on: Boolean, onChange: (Boolean) -> Unit) {
-    Box(Modifier.size(36.dp, 16.dp).clip(CircleShape).background(if (on) ViColors.playerAutoplayOn else ViColors.playerAutoplayOff).clickable { onChange(!on) }) {
-        Box(Modifier.align(if (on) Alignment.CenterEnd else Alignment.CenterStart).size(16.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-            Ic(Res.drawable.ic_p_play, Modifier.size(10.dp), ViColors.playerAutoplayGlyph)
-        }
+private fun Chip(text: String, selected: Boolean = false, onClick: () -> Unit) {
+    Box(Modifier.height(34.dp).clip(RoundedCornerShape(10.dp)).background(if (selected) Color.White else ViColors.shade60).clickable(onClick = onClick)
+        .padding(horizontal = 12.dp), contentAlignment = Alignment.Center) {
+        Text(text, color = if (selected) Color.Black else Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 

@@ -76,9 +76,14 @@ import org.koin.compose.koinInject
  * POC DetailScreen DownloadSheet: VidMate's download sheet. #F6F7F9 sheet, white 130dp info card, white
  * format card with Music and Video sections, 44dp red #F23F40 DOWNLOAD pill.
  */
+private val WIDE_DIALOG_MIN = 840.dp
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DownloadSheet(video: Video, onDismiss: () -> Unit) {
+    // Desktop and tablets get a centred dialog; phones keep VidMate's bottom sheet.
+    val wideWindow = with(LocalDensity.current) { LocalWindowInfo.current.containerSize.width.toDp() } >= WIDE_DIALOG_MIN
+    if (wideWindow) return WideDownloadDialog(video, onDismiss)
     val v = video
     val useCase = koinInject<DownloadSheetUseCase>()
     val toast = LocalToast.current

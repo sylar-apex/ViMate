@@ -106,6 +106,10 @@
     <string name="detail_subscribe">Subscribe</string>
     <string name="detail_following">Following</string>
     <string name="detail_related">Related</string>
+    <string name="detail_related_videos">Related Videos</string>
+    <string name="detail_autoplay">Autoplay</string>
+    <string name="detail_show_more">Show more</string>
+    <string name="detail_show_less">Show less</string>
 
     <!-- Download sheet -->
     <string name="dl_rename">Rename</string>

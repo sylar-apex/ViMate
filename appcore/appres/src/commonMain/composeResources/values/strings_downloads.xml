@@ -12,4 +12,9 @@
     <string name="downloads_container">(%1$s)</string>
     <string name="downloads_added">Added to downloads</string>
     <string name="downloads_download">DOWNLOAD</string>
+    <string name="downloads_dialog_title">Download Video</string>
+    <string name="downloads_video_quality">Video Quality</string>
+    <string name="downloads_audio_quality">Audio Quality</string>
+    <string name="downloads_save_to">Save to</string>
+    <string name="downloads_download_size">Download (%1$s)</string>
 </resources>

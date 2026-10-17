@@ -147,10 +147,20 @@ fun DetailScreen(start: Video) {
     }
     BoxWithConstraints(Modifier.fillMaxSize()) {
     if (maxWidth >= DetailLayoutSpec.WIDE_MIN) WideDetail(
-        player = { playerArea(true) }, v = v, likes = next?.likes.orEmpty(), actions = actions,
-        comments = { CommentsCard(next?.commentCount.orEmpty(), state.firstComment, ctoken != null) { showComments = true } },
-        commentsPanel = if (showComments && ctoken != null) ({ CommentsPanel(ctoken, next.commentCount) { showComments = false } }) else null,
+        player = { playerArea(true) }, v = v, likes = next?.likes.orEmpty(),
+        description = state.info?.takeIf { it.video.id == v.id }?.description.orEmpty(),
+        commentCount = next?.commentCount.orEmpty(), commentsToken = ctoken,
         related = next?.related.orEmpty(), loading = state.nextLoading,
+        audioMode = audioMode, autoNext = autoNext, onAutoNext = { autoNext = it },
+        actions = WideActions(
+            onAudio = { audioMode = !audioMode; if (!player.isPlaying) player.play() },
+            onDownload = { nav.download(v) },
+            onRelatedDownload = { nav.download(it) },
+            onPopup = if (popup.supported) ({
+                if (!popup.canDraw()) popupAsk = true
+                else curQ?.let { q -> popup.show(v, q.url, q.audioUrl, q.label, player.currentPosition); player.handOff(); nav.back() }
+            }) else null,
+        ),
     ) else
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Box(Modifier.fillMaxWidth().background(ViColors.detailStatusBar).statusBarsPadding().background(Color.Black)) { playerArea(false) }
