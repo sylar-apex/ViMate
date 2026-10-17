@@ -83,7 +83,7 @@ internal fun DownloadsTab(selecting: Boolean, setSelecting: (Boolean) -> Unit) {
     var filterMenu by remember { mutableStateOf(false) }
     val selected = remember { mutableStateListOf<Long>() }
     val visible = all.filter { !it.hidden }
-    val active = visible.filter { it.state != TaskState.Done }
+    val active = visible.filter { it.state != TaskState.Done }.inQueueOrder()
     val done = visible.filter { it.state == TaskState.Done && (kindFilter == null || it.kind == kindFilter) }
     val hot by produceState<List<Video>>(emptyList()) { value = files.hotVideos() }
     val nav = LocalAppNavigator.current
@@ -248,3 +248,18 @@ internal fun MetaBar() = Box(Modifier.padding(horizontal = 8.dp).size(1.dp, 9.dp
 @Composable
 private fun MetaText(text: String, modifier: Modifier = Modifier) =
     Text(text, fontSize = 11.5.sp, lineHeight = 14.7.sp, color = ViColors.fileMeta, maxLines = 1, softWrap = false, modifier = modifier)
+
+/**
+ * Queue order: what is downloading or merging now first, then waiting items in the order they start
+ * (oldest queued first), then paused, then failed.
+ */
+internal fun List<VidTask>.inQueueOrder(): List<VidTask> = sortedWith(
+    compareBy<VidTask>({
+        when (it.state) {
+            TaskState.Running, TaskState.Merging -> 0
+            TaskState.Queued -> 1
+            TaskState.Paused -> 2
+            else -> 3
+        }
+    }, { it.createdAt }, { it.id }),
+)

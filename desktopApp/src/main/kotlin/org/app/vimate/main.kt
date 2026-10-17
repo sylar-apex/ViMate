@@ -1,5 +1,21 @@
 package org.app.vimate
 
+import org.app.vimate.appcore.adaptive.LocalTitleBarArea
+import org.app.vimate.appcore.adaptive.LocalInTitleBar
+import androidx.compose.foundation.window.WindowDraggableArea
+import androidx.compose.runtime.CompositionLocalProvider
+import org.app.vimate.appcore.theme.ViTheme
+import org.app.vimate.appcore.theme.ViColors
+import androidx.compose.ui.Modifier
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import org.koin.mp.KoinPlatform
 import org.app.vimate.sharedlogic.settings.AppKeys
 import org.app.vimate.sharedlogic.platform.PlatformActions
@@ -60,7 +76,17 @@ private fun runApp(args: Array<String>) = application {
             signals.onResume()
             onDispose { window.removeWindowFocusListener(focus) }
         }
-        App(embeddedPlayer = true)
+        // macOS: transparent title bar, so the window top takes the app's theme instead of the system grey bar.
+        val mac = remember { System.getProperty("os.name").startsWith("Mac") }
+        if (mac) LaunchedEffect(window) {
+            window.rootPane.putClientProperty("apple.awt.fullWindowContent", true)
+            window.rootPane.putClientProperty("apple.awt.transparentTitleBar", true)
+            window.rootPane.putClientProperty("apple.awt.windowTitleVisible", false)
+        }
+        CompositionLocalProvider(
+            LocalInTitleBar provides mac,
+            LocalTitleBarArea provides { content -> WindowDraggableArea { content() } },
+        ) { App(embeddedPlayer = true) }
     }
 }
 
@@ -86,3 +112,4 @@ private suspend fun notifyCompletedDownloads() {
         if (settings[AppKeys.completeNotify]) platform.notify("Download complete", e.task.fileName)
     }
 }
+

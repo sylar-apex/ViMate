@@ -1,5 +1,8 @@
 package org.app.vimate.batch.ui
 
+import org.app.vimate.batch.ui.component.WideBatchDialog
+import org.app.vimate.appcore.adaptive.WindowClass
+import org.app.vimate.appcore.adaptive.LocalWindowClass
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -77,5 +80,6 @@ fun BatchSelectContent(state: BatchSelectContract.State, onEvent: (BatchSelectCo
             }
         }
     }
-    if (state.sheet) BatchSheet(state, onEvent)
+    // Wide windows: centred dialog like a single-video download; phones keep the bottom sheet.
+    if (state.sheet) { if (LocalWindowClass.current != WindowClass.Compact) WideBatchDialog(state, onEvent) else BatchSheet(state, onEvent) }
 }

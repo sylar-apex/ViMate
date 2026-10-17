@@ -311,16 +311,33 @@ object YouTube {
     data class PlaylistPage(val title: String, val owner: String, val videos: List<Video>)
 
     /** A YouTube playlist (browse id "VL" + list id). */
+    private const val MAX_PLAYLIST = 5000
+
+    /** First "load more" token; it sits directly in continuationCommand or one level down (innertubeCommand). */
+    private fun nextToken(json: JsonElement): String? =
+        json.findAll("continuationCommand").firstNotNullOfOrNull { it["token"].str ?: it.findFirst("token").str }
+
     suspend fun playlist(listId: String): PlaylistPage {
         val r = call("browse", WEB, args("browseId" to "VL$listId"))
         val header = r.findFirst("pageHeaderViewModel") ?: r.findFirst("playlistHeaderRenderer")
         val title = header?.get("title").text ?: header?.path("title", "dynamicTextViewModel", "text", "content").str ?: r.findFirst("microformatDataRenderer")?.get("title").str.orEmpty()
         val owner = r.findFirst("ownerText").text ?: r.findFirst("metadataRows")?.findFirst("content").str.orEmpty()
-        val vids = r.findAll("playlistVideoRenderer").mapNotNull { v ->
+        // Older pages use playlistVideoRenderer, current ones lockup view models (parseVideos reads those).
+        fun page(json: JsonElement): List<Video> = json.findAll("playlistVideoRenderer").mapNotNull { v ->
             val id = v["videoId"].str ?: return@mapNotNull null
             Video(id, v["title"].text.orEmpty(), channel = v["shortBylineText"].text.orEmpty(), duration = v["lengthText"].text.orEmpty(),
                 thumbnail = v["thumbnail"].thumb ?: "https://i.ytimg.com/vi/$id/hqdefault.jpg")
-        }.ifEmpty { parseVideos(r) }
+        }.ifEmpty { parseVideos(json) }
+        val vids = page(r).toMutableList()
+        // YouTube returns ~100 videos per page; the first continuation token is the list's "load more".
+        var token = nextToken(r)
+        while (token != null && vids.size < MAX_PLAYLIST) {
+            val more = runCatching { call("browse", WEB, args("continuation" to token!!)) }.getOrNull() ?: break
+                val got = page(more).filter { v -> vids.none { it.id == v.id } }
+            if (got.isEmpty()) break
+            vids += got
+            token = nextToken(more)
+        }
         return PlaylistPage(title, owner, vids)
     }
 

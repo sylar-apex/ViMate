@@ -40,6 +40,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.appcore)
             api(projects.appfeatures.music.domain)
+            implementation(projects.appfeatures.batch.presentation)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -30,7 +30,8 @@ import org.app.vimate.sharedlogic.yt.Video
 @Composable internal fun ShortsRoute(r: Routes.Shorts) = org.app.vimate.shorts.ui.ShortsScreen(r.start)
 @Composable internal fun SitesRoute() = org.app.vimate.sites.ui.SitesScreen()
 @Composable internal fun BrowserRoute(r: Routes.Browser) = org.app.vimate.sites.ui.BrowserScreen(r.url)
-@Composable internal fun YtPlaylistRoute(r: Routes.YtPlaylist) = Readable { org.app.vimate.music.ui.YtPlaylistScreen(r.listId) }
+// Full width: the playlist screen lays itself out for wide windows.
+@Composable internal fun YtPlaylistRoute(r: Routes.YtPlaylist) = org.app.vimate.music.ui.YtPlaylistScreen(r.listId)
 @Composable internal fun YtSignInRoute() = Readable { org.app.vimate.me.ui.SubscriptionsScreen(forceSignIn = true) }
 @Composable internal fun GoogleLoginRoute() = Readable { org.app.vimate.me.ui.GoogleLoginScreen() }
 @Composable internal fun AccountFeedRoute(r: Routes.AccountFeed) = Readable { org.app.vimate.me.ui.AccountFeedScreen(r.title, r.browseId) }

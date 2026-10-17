@@ -1,5 +1,7 @@
 package org.app.vimate.sharedlogic.download.vid
 
+import org.app.vimate.sharedlogic.download.option.Options
+import org.app.kdownloader.TaskPreparer
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.CoroutineScope
@@ -45,6 +47,7 @@ class KVidDownloads(
 
     init {
         dl.urlRefresher = UrlRefresher { task -> refreshUrls(task) }
+        dl.preparer = TaskPreparer { task -> prepare(task) }
         scope.launch { settings.version.collect { dl.updateConfig(config()) } }
         scope.launch { dl.events.filterIsInstance<DownloadEvent.Completed>().collect { onCompleted(it.task) } }
     }
@@ -100,6 +103,25 @@ class KVidDownloads(
     }
 
     /** POC refreshUrls: googlevideo links last ~6 h; re-resolve by videoId and match parts by itag. */
+    /**
+     * A batch item starts: read its formats now and take the wanted quality, or the nearest one it has
+     * (the next lower first, else the next higher), then fill in parts, size and file name.
+     */
+    private suspend fun prepare(task: DownloadTask): DownloadTask? {
+        val vid = task.extras[TaskExtras.VIDEO_ID] ?: return null
+        val info = YouTube.info(vid)
+        val music = task.extras[TaskExtras.KIND] == Kind.Music.name
+        val (m, v) = Options.of(info)
+        val o = Options.nearest(if (music) m else v, task.extras[TaskExtras.QUALITY].orEmpty()) ?: return null
+        val vt = VidTaskMapper.toVid(task).copy(
+            ext = o.ext, quality = if (o.kind == Kind.Video) o.label.substringBefore(' ') else o.label, totalBytes = o.sizeBytes,
+            duration = info.video.duration, subtitleUrl = info.captions.firstOrNull()?.url,
+            parts = o.parts.map { Part(it.url, it.sizeBytes, it.itag, headers = mapOf("User-Agent" to YouTube.streamUA)) },
+        )
+        val req = VidTaskMapper.toRequest(vt)
+        return task.copy(parts = req.parts, fileName = req.fileName, totalBytes = o.sizeBytes, extras = task.extras + req.extras)
+    }
+
     private suspend fun refreshUrls(task: DownloadTask): List<DownloadPart>? {
         val vid = task.extras[TaskExtras.VIDEO_ID] ?: return null
         val info = YouTube.info(vid)

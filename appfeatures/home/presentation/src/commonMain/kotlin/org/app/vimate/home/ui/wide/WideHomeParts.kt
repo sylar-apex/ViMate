@@ -82,15 +82,15 @@ private val chipIcons: List<ImageVector> = listOf(
     Icons.Outlined.LibraryMusic, Icons.Outlined.LibraryMusic,
 )
 
-/** Full-width search pill (opens Search) with Downloads and Me on the right. */
+/** Full-width search pill (opens Search) with Downloads and Me on the right; [inTitleBar] is the slimmer macOS title-bar version. */
 @Composable
-internal fun WideTopBar(activeDownloads: Int) {
+fun WideTopBar(activeDownloads: Int, inTitleBar: Boolean = false) {
     val nav = LocalAppNavigator.current
     val h = rememberHover()
     val border by animateColorAsState(if (h.hovered) ViColors.ink.copy(alpha = .3f) else ViColors.wideHairline)
-    Row(Modifier.fillMaxWidth().padding(horizontal = WideHomeSpec.gutter).padding(top = 14.dp, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = WideHomeSpec.gutter).padding(top = if (inTitleBar) 6.dp else 14.dp, bottom = if (inTitleBar) 6.dp else 12.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(
-            Modifier.weight(1f).height(42.dp).clip(CircleShape).background(ViColors.tileBg).border(1.dp, border, CircleShape)
+            Modifier.weight(1f).height(if (inTitleBar) 36.dp else 42.dp).clip(CircleShape).background(ViColors.tileBg).border(1.dp, border, CircleShape)
                 .hover(h).clickable { nav.go(Routes.Search()) }.padding(horizontal = 18.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

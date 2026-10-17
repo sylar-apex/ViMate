@@ -50,26 +50,27 @@ class BatchStorageUseCase(private val platform: PlatformActions, private val set
 }
 
 /** POC BatchSheet "Download": one VidTask per resolved video in the picked format; returns how many were added. */
+/**
+ * Queues every picked video right away with the wanted quality; its formats are read when that download starts,
+ * taking the nearest available quality there (see KVidDownloads.prepare). Returns how many were queued.
+ */
 class EnqueueBatchUseCase(private val downloads: VidDownloads) {
-    operator fun invoke(videos: List<Video>, infos: Map<String, VideoInfo>, sel: String): Int {
-        val (label, cont) = sel.substringBefore('|') to sel.substringAfter('|')
-        var added = 0
+    operator fun invoke(videos: List<Video>, sel: String): Int {
+        val label = sel.substringBefore('|')
+        val music = label.endsWith("K")
         val base = nowMs()
         videos.forEachIndexed { i, v ->
-            val info = infos[v.id] ?: return@forEachIndexed
-            val (m, vd) = Options.of(info)
-            val o = (m + vd).find { it.label == label && it.container == cont }
-                ?: if (vd.any { it.label == label }) null else Options.default(vd, label) ?: vd.lastOrNull()
-            o ?: return@forEachIndexed
             downloads.enqueue(VidTask(
-                id = base * 100 + i, title = info.video.title, ext = o.ext, kind = o.kind,
-                quality = if (o.kind == Kind.Video) o.label.substringBefore(' ') else o.label,
-                thumbnail = v.thumbnail.ifEmpty { info.video.thumbnail }, duration = info.video.duration, pageUrl = info.video.url,
-                videoId = info.video.id, parts = o.parts.map { Part(it.url, it.sizeBytes, it.itag, headers = mapOf("User-Agent" to YouTube.streamUA)) },
-                subtitleUrl = info.captions.firstOrNull()?.url, totalBytes = o.sizeBytes,
+                id = base * 100 + i, title = v.title, ext = if (music) "m4a" else "mp4", kind = if (music) Kind.Music else Kind.Video,
+                quality = label, thumbnail = v.thumbnail, duration = v.duration, pageUrl = v.url, videoId = v.id, parts = emptyList(),
             ))
-            added++
         }
-        return added
+        return videos.size
     }
+}
+
+/** Qualities offered for a batch: fixed, so the sheet needs no per-video lookups. */
+object BatchQualities {
+    val music = listOf(BatchOption("128K", "M4A", 0), BatchOption("48K", "M4A", 0))
+    val video = listOf("144P", "240P", "360P", "480P", "720P", "1080P").map { BatchOption(it, "MP4", 0) }
 }

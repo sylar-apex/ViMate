@@ -1,5 +1,6 @@
 package org.app.vimate.home.ui.wide
 
+import org.app.vimate.appcore.adaptive.LocalInTitleBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,8 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
     LaunchedEffect(nearEnd) { if (nearEnd && state.feed.isNotEmpty()) onEvent(Event.LoadMore) }
 
     Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding()) {
-        WideTopBar(state.activeDownloads)
+        // macOS: the shell shows this bar in the window title bar instead.
+        if (!LocalInTitleBar.current) WideTopBar(state.activeDownloads)
         LazyVerticalGrid(
             GridCells.Adaptive(WideHomeSpec.cardMin), Modifier.fillMaxSize(), grid,
             contentPadding = PaddingValues(start = WideHomeSpec.gutter, end = WideHomeSpec.gutter, bottom = WideSpec.bottomInset),
@@ -57,7 +59,7 @@ internal fun HomeWide(state: State, onEvent: (Event) -> Unit) {
         ) {
             item(key = "header", span = { GridItemSpan(maxLineSpan) }) {
                 Column {
-                    HomeBanner()
+                    Box(Modifier.padding(top = if (LocalInTitleBar.current) 16.dp else 0.dp)) { HomeBanner() }
                     Box(Modifier.padding(top = 18.dp).bleed(WideHomeSpec.gutter)) { WideChips(state.chip) { onEvent(Event.SelectChip(it)) } }
                     SeeAllTitle(Res.string.wide_quick_access) { nav.go(Routes.Sites) }
                     QuickSites()

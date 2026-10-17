@@ -1,5 +1,7 @@
 package org.app.vimate.sites.ui
 
+import org.app.vimate.appcore.navigation.WebNav
+import androidx.compose.runtime.DisposableEffect
 import org.app.vimate.appres.resources.sites_blocked
 import org.app.vimate.sharedlogic.settings.AppKeys
 import org.app.kmediaplayer.settings.ObservableSettings
@@ -133,6 +135,17 @@ fun BrowserScreen(startUrl: String) {
     }
 
     BackHandler { if (web?.canGoBack() == true) web.goBack() else nav.back() }
+    // Title-bar arrows step through this page's history while the browser is open.
+    DisposableEffect(web) {
+        val w = web
+        if (w != null) nav.webNav = object : WebNav {
+            override fun canBack() = w.canGoBack()
+            override fun canForward() = w.canGoForward()
+            override fun back() = w.goBack()
+            override fun forward() = w.goForward()
+        }
+        onDispose { nav.webNav = null }
+    }
     val siteName = remember(url, title) {
         if (YouTube.idFromUrl(url) != null && title.isNotBlank()) return@remember title.removeSuffix(" - YouTube")
         siteTiles.firstOrNull { t -> hostOf(t.url)?.removePrefix("m.")?.let { h -> h in url } == true }?.name

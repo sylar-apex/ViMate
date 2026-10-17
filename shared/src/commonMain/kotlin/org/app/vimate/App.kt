@@ -1,5 +1,8 @@
 package org.app.vimate
 
+import org.app.vimate.shell.TitleBar
+import org.app.vimate.appcore.adaptive.LocalTitleBarArea
+import org.app.vimate.appcore.adaptive.LocalInTitleBar
 import org.app.vimate.appcore.locale.ProvideAppLanguage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -150,7 +153,10 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
     val items by downloads.tasks.collectAsState()
     val activeDownloads = items.count { it.state != TaskState.Done && it.state != TaskState.Failed }
     Box(Modifier.fillMaxSize().background(if (wide) ViColors.wideCanvas else MaterialTheme.colorScheme.background)) {
-        Row(Modifier.fillMaxSize()) {
+        // macOS: one slim bar across the window top, in the title bar (dragging it moves the window).
+        val inTitle = wide && LocalInTitleBar.current
+        if (inTitle) LocalTitleBarArea.current { TitleBar(activeDownloads) }
+        Row(Modifier.fillMaxSize().padding(top = if (inTitle) 38.dp else 0.dp)) {
             // Wide windows: permanent side bar on every page instead of the floating bottom bar.
             if (wide) {
                 val page = when {

@@ -14,4 +14,6 @@
     <string name="batch_container">(%1$s)</string>
     <string name="batch_download">Download</string>
     <string name="batch_added">%1$d added to downloads</string>
+    <string name="batch_nearest_note">Videos without this quality get the nearest one available.</string>
+    <string name="batch_download_n">Download %1$d videos</string>
 </resources>

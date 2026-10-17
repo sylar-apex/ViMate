@@ -70,6 +70,7 @@ import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appres.resources.*
 import org.app.vimate.files.ui.component.DoneActions
 import org.app.vimate.files.ui.component.LocalTab
+import org.app.vimate.files.ui.component.inQueueOrder
 import org.app.vimate.files.ui.component.PrivateGate
 import org.app.vimate.files.usecase.FilesUseCase
 import org.app.vimate.sharedlogic.download.option.Kind
@@ -163,7 +164,7 @@ private fun DownloadsWide() {
     val open = openDetail()
     val all by files.tasks.collectAsState()
     val visible = all.filter { !it.hidden }
-    val active = visible.filter { it.state != TaskState.Done }
+    val active = visible.filter { it.state != TaskState.Done }.inQueueOrder()
     var sort by rememberSaveable { mutableStateOf(Sort.Newest) }
     var grid by rememberSaveable { mutableStateOf(false) }
     val done = visible.filter { it.state == TaskState.Done }.sortedWith(sort.order)

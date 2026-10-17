@@ -1,5 +1,6 @@
 package org.app.vimate.appcore.navigation
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,15 +34,57 @@ class AppNavigator(private val nav: NavController) {
     /** True when a sub-page is above the tabs (POC `stack.size > 1`). */
     val canGoBack: Boolean get() = nav.previousBackStackEntry != null
 
-    fun go(route: Any) { nav.navigate(route) }
+    /** A place in the title-bar history: a tab, or a page opened over [tab]. */
+    private data class Place(val tab: Int, val route: Any?)
 
-    /** Pops one screen; false when already on the tabs. */
-    fun back(): Boolean = if (nav.previousBackStackEntry != null) { nav.popBackStack(); true } else false
+    // Every place visited (tabs and pages), and where the title bar's back / forward arrows stand in it.
+    private val history = mutableStateListOf(Place(Tab.HOME, null))
+    private var index by mutableIntStateOf(0)
+
+    /** The in-app browser while it is open: the arrows step through its own pages first. */
+    var webNav by mutableStateOf<WebNav?>(null)
+
+    val canGoHistoryBack: Boolean get() = webNav?.canBack() == true || index > 0
+    val canGoForward: Boolean get() = webNav?.canForward() == true || index < history.lastIndex
+
+    private fun record(place: Place) {
+        if (history.getOrNull(index) == place) return
+        while (history.lastIndex > index) history.removeAt(history.lastIndex)
+        history += place; index = history.lastIndex
+    }
+
+    fun go(route: Any) { record(Place(tab, route)); nav.navigate(route) }
+
+    /** Pops one screen (system / page back); false when already on the tabs. */
+    fun back(): Boolean = if (nav.previousBackStackEntry != null) {
+        nav.popBackStack()
+        if (index > 0) index--
+        true
+    } else false
+
+    /** Title-bar back: the browser's previous page, else the previous place (page or tab). */
+    fun historyBack() {
+        webNav?.takeIf { it.canBack() }?.let { it.back(); return }
+        if (index > 0) { index--; show(history[index]) }
+    }
+
+    /** Title-bar forward: the browser's next page, else the place left with [historyBack]. */
+    fun forward() {
+        webNav?.takeIf { it.canForward() }?.let { it.forward(); return }
+        if (index < history.lastIndex) { index++; show(history[index]) }
+    }
+
+    private fun show(p: Place) {
+        nav.popBackStack(Routes.Tabs, inclusive = false)
+        tab = p.tab
+        p.route?.let { nav.navigate(it) }
+    }
 
     /** Clears every sub-page and selects [tab]. */
     fun home(tab: Int) {
         nav.popBackStack(Routes.Tabs, inclusive = false)
         this.tab = tab
+        record(Place(tab, null))
     }
 
     /** Opens a YouTube link natively, anything else in the in-app browser. */
@@ -53,6 +96,14 @@ class AppNavigator(private val nav: NavController) {
 
     /** Opens the download sheet for [video] (POC `nav.downloadFor = v`). */
     fun download(video: Video) { downloadFor = video }
+}
+
+/** Back / forward inside the in-app browser, for the title-bar arrows. */
+interface WebNav {
+    fun canBack(): Boolean
+    fun canForward(): Boolean
+    fun back()
+    fun forward()
 }
 
 val LocalAppNavigator = staticCompositionLocalOf<AppNavigator> { error("no AppNavigator") }

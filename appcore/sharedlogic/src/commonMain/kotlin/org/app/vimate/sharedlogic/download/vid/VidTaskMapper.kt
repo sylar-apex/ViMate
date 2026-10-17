@@ -1,5 +1,6 @@
 package org.app.vimate.sharedlogic.download.vid
 
+import org.app.kdownloader.PREPARE
 import org.app.kdownloader.model.Destination
 import org.app.kdownloader.model.DownloadPart
 import org.app.kdownloader.model.DownloadRequest
@@ -36,6 +37,8 @@ internal object VidTaskMapper {
         put(TaskExtras.PAGE_URL, t.pageUrl)
         t.videoId?.let { put(TaskExtras.VIDEO_ID, it) }
         t.subtitleUrl?.let { put(TaskExtras.SUBTITLE_URL, it) }
+        // Batch items: formats are resolved when the download starts (see KVidDownloads.prepare).
+        if (t.parts.isEmpty() && t.videoId != null) put(PREPARE, "1")
     }
 
     fun toRequest(t: VidTask): DownloadRequest = DownloadRequest(

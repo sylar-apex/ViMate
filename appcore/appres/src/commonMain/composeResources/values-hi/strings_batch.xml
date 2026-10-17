@@ -12,4 +12,6 @@
     <string name="batch_video">वीडियो</string>
     <string name="batch_download">डाउनलोड</string>
     <string name="batch_added">%1$d डाउनलोड में जोड़े गए</string>
+    <string name="batch_nearest_note">जिन वीडियो में यह क्वालिटी नहीं है, उन्हें सबसे नज़दीकी क्वालिटी मिलेगी।</string>
+    <string name="batch_download_n">%1$d वीडियो डाउनलोड करें</string>
 </resources>

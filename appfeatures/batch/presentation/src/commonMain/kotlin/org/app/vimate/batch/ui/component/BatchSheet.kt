@@ -70,7 +70,7 @@ internal fun BatchSheet(state: BatchSelectContract.State, onEvent: (BatchSelectC
                 }
             }
             item {
-                Row(Modifier.padding(12.dp).fillMaxWidth().height(44.dp).clip(CircleShape).background(ViColors.batchDownload).clickable(enabled = state.infos.isNotEmpty()) { onEvent(BatchSelectContract.Event.Download) }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                Row(Modifier.padding(12.dp).fillMaxWidth().height(44.dp).clip(CircleShape).background(ViColors.batchDownload).clickable(enabled = state.sheetVideos.isNotEmpty()) { onEvent(BatchSelectContract.Event.Download) }, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
                     Box(Modifier.size(18.dp).clip(CircleShape).background(ViColors.surface), contentAlignment = Alignment.Center) { Ic(Res.drawable.ic_d_download, Modifier.size(12.dp), ViColors.batchDownload) }
                     Text(stringResource(Res.string.batch_download), Modifier.padding(start = 6.dp), color = ViColors.white, fontSize = 17.sp)
                 }
@@ -91,6 +91,6 @@ private fun OptionCell(o: BatchOption, on: Boolean, onClick: () -> Unit) {
             Text(o.label, fontWeight = FontWeight.Bold, fontSize = 12.9.sp, color = if (on) VRed else ViColors.ink)
             Text(stringResource(Res.string.batch_container, o.container), Modifier.padding(start = 2.dp), fontSize = 11.6.sp, color = if (on) VRed else ViColors.metaGrey)
         }
-        Text(fmtSize(o.sizeBytes).replace(" ", ""), Modifier.padding(start = 27.dp, top = 24.dp), fontSize = 11.6.sp, color = if (on) VRed else ViColors.metaGrey)
+        if (o.sizeBytes > 0) Text(fmtSize(o.sizeBytes).replace(" ", ""), Modifier.padding(start = 27.dp, top = 24.dp), fontSize = 11.6.sp, color = if (on) VRed else ViColors.metaGrey)
     }
 }

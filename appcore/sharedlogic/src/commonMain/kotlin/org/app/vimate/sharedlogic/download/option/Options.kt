@@ -49,6 +49,15 @@ object Options {
         return music to video.groupBy { it.label }.map { (_, l) -> l.maxBy { it.sizeBytes } }
     }
 
+    /** [wanted] ("720P", "48K"…) if present, else the next lower, else the next higher option. */
+    fun nearest(list: List<DownloadOption>, wanted: String): DownloadOption? {
+        fun num(s: String) = if (s.startsWith("4K")) 2160 else s.takeWhile(Char::isDigit).toIntOrNull() ?: 0
+        val w = num(wanted)
+        return list.firstOrNull { num(it.label) == w }
+            ?: list.filter { num(it.label) < w }.maxByOrNull { num(it.label) }
+            ?: list.filter { num(it.label) > w }.minByOrNull { num(it.label) }
+    }
+
     fun default(video: List<DownloadOption>, preferred: String): DownloadOption? {
         val h = preferred.filter(Char::isDigit)
         return video.find { it.label.startsWith(h) } ?: video.lastOrNull { it.parts.size == 1 } ?: video.firstOrNull()
