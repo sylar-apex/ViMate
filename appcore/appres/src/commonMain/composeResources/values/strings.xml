@@ -87,12 +87,8 @@
     <string name="note_item">Item</string>
 
     <!-- Home -->
-    <string name="home_search_hint">Search or enter url</string>
     <string name="home_notifications">Notifications</string>
     <string name="home_sites">Sites</string>
-    <string name="home_downloads">Downloads</string>
-    <string name="home_shorts">Shorts</string>
-    <string name="home_chip_all">All</string>
     <string name="home_empty">Nothing to show here. Items you mark Not interested stay hidden.</string>
     <string name="home_add_to_batch">Add to batch</string>
     <string name="home_remove_from_batch">Remove from batch</string>
@@ -145,6 +141,40 @@
     <string name="batch_edit">Edit list</string>
     <string name="batch_expand">Expand</string>
     <string name="batch_collapse">Collapse</string>
+
+    <!-- My Files -->
+    <string name="files_clean">Clean</string>
+    <string name="files_menu_search">Search</string>
+    <string name="files_menu_setting">Setting</string>
+    <string name="files_menu_pause_all">Pause All</string>
+    <string name="files_menu_resume_all">Resume All</string>
+    <string name="files_menu_delete">Delete</string>
+    <string name="files_menu_storage">%1$s USED/%2$s</string>
+    <string name="files_menu_storage_unknown">Storage unavailable</string>
+    <string name="files_menu_help">Download help</string>
+    <string name="files_no_task">No download task</string>
+    <string name="files_hot_videos">Hot videos</string>
+    <string name="files_hot_sites">Hot Sites</string>
+    <string name="files_all_sites">All sites</string>
+    <string name="files_failed_reason">Failed · %1$s</string>
+    <string name="files_canceled">Canceled</string>
+    <string name="files_percent">%1$s%%</string>
+    <string name="files_play_all">Play all</string>
+    <string name="files_no_music">No music</string>
+    <string name="files_no_videos">No videos</string>
+    <string name="files_allow_videos">Allow access to show the videos on this phone.</string>
+    <string name="files_allow_music">Allow access to show the music on this phone.</string>
+    <string name="files_allow">ALLOW</string>
+    <string name="files_move_private">Move to Private</string>
+    <string name="files_set_password_body">Lock videos as private with a 4-digit passcode, only you can access</string>
+    <string name="files_set_password_caps">SET PASSWORD</string>
+    <string name="files_pin_set">Please Set the password</string>
+    <string name="files_pin_confirm">Please confirm the password</string>
+    <string name="files_pin_enter">Please enter the password</string>
+    <string name="files_pin_show">Show digits</string>
+    <string name="files_pin_hide">Hide digits</string>
+    <string name="files_pin_clear">Clear</string>
+    <string name="files_pin_delete">Delete digit</string>
 
     <!-- Report reasons -->
     <string name="report_sexual">Sexual content</string>

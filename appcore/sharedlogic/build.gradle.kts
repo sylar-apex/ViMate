@@ -34,6 +34,8 @@ kotlin {
         browser()
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain.dependencies {
             api(projects.kmediaplayer.core)
@@ -45,6 +47,17 @@ kotlin {
             api(libs.koin.core.viewmodel)
             implementation(libs.kotlin.serialization)
         }
+        // NewPipeExtractor stream resolver, shared by Android and desktop (JVM).
+        val jvmShared by creating {
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation(libs.newpipe.extractor)
+                implementation(libs.okhttp)
+            }
+        }
+        androidMain.get().dependsOn(jvmShared)
+        val desktopMain by getting
+        desktopMain.dependsOn(jvmShared)
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.core.ktx)

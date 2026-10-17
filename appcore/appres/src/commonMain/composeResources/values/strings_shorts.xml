@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shorts_error">Error</string>
+    <string name="shorts_youtube">YouTube</string>
+    <string name="shorts_follow">+FOLLOW</string>
+    <string name="shorts_following">FOLLOWING</string>
+    <string name="shorts_like">Like</string>
+    <string name="shorts_dislike">Dislike</string>
+    <string name="shorts_comments">Comments</string>
+    <string name="shorts_share">Share</string>
+    <string name="shorts_download">Download</string>
+    <string name="shorts_more">More</string>
+    <string name="shorts_back">Back</string>
+</resources>

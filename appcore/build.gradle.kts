@@ -51,9 +51,25 @@ kotlin {
             api(libs.androidx.lifecycle.runtimeCompose)
             api(libs.androidx.lifecycle.viewmodelCompose)
             api(libs.koin.compose.viewmodel)
+            api(libs.coil.compose)
+            implementation(libs.kotlin.serialization)
+            implementation(libs.coil.network.ktor3)
+            implementation(libs.coil.svg)
+        }
+        androidMain.dependencies {
+            implementation(libs.coil.video)
+            implementation(libs.ktor.client.android.engine)
+        }
+        val desktopMain by getting
+        desktopMain.dependencies {
+            implementation(libs.ktor.client.cio)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         wasmJsMain.dependencies {
             implementation(libs.kotlinx.browser)
+            implementation(libs.ktor.client.js)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

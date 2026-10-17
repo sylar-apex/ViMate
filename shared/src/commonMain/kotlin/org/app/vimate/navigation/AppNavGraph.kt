@@ -1,43 +1,46 @@
 package org.app.vimate.navigation
 
-import androidx.navigation.NavController
+import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.psbapp.navigation.utils.pop
-import com.psbapp.navigation.utils.push
-import org.app.vimate.detail.ui.DetailScreen
-import org.app.vimate.downloads.ui.BatchScreen
-import org.app.vimate.downloads.ui.DownloadsScreen
-import org.app.vimate.home.ui.HomeNavigation
-import org.app.vimate.home.ui.HomeScreen
-import org.app.vimate.shell.MainTab
-import org.app.vimate.shell.TabsScreen
+import org.app.vimate.appcore.navigation.Routes
+import org.app.vimate.appcore.navigation.Tab
 
-fun NavGraphBuilder.appNavGraph(navController: NavController, tab: MainTab, onTab: (MainTab) -> Unit) {
-    val back: () -> Unit = { navController.pop() }
+/** Registers every [Routes] destination with its screen from Screens.kt. */
+internal fun NavGraphBuilder.appNavGraph(tab: () -> Int) {
+    composable<Routes.Tabs> { TabPage(tab()) }
+    composable<Routes.Search> { SearchRoute(it.toRoute()) }
+    composable<Routes.Detail> { DetailRoute(it.toRoute()) }
+    composable<Routes.Shorts> { ShortsRoute(it.toRoute()) }
+    composable<Routes.Sites> { SitesRoute() }
+    composable<Routes.Browser> { BrowserRoute(it.toRoute()) }
+    composable<Routes.YtPlaylist> { YtPlaylistRoute(it.toRoute()) }
+    composable<Routes.YtSignIn> { YtSignInRoute() }
+    composable<Routes.GoogleLogin> { GoogleLoginRoute() }
+    composable<Routes.AccountFeed> { AccountFeedRoute(it.toRoute()) }
+    composable<Routes.BatchSelect> { BatchSelectRoute(it.toRoute()) }
+    composable<Routes.MusicCollection> { MusicCollectionRoute(it.toRoute()) }
+    composable<Routes.MusicSearch> { MusicSearchRoute() }
+    composable<Routes.History> { HistoryRoute() }
+    composable<Routes.Playlists> { PlaylistsRoute() }
+    composable<Routes.PlaylistDetail> { PlaylistDetailRoute(it.toRoute()) }
+    composable<Routes.Subscriptions> { SubscriptionsRoute() }
+    composable<Routes.JunkClean> { JunkCleanRoute() }
+    composable<Routes.Boost> { BoostRoute() }
+    composable<Routes.Help> { HelpRoute() }
+    composable<Routes.Feedback> { FeedbackRoute() }
+    composable<Routes.Settings> { SettingsRoute() }
+    composable<Routes.SettingsGroup> { SettingsGroupRoute(it.toRoute()) }
+    composable<Routes.Private> { PrivateRoute() }
+    composable<Routes.Apps> { AppsRoute() }
+}
 
-    composable<Routes.Tabs> {
-        TabsScreen(tab = tab, onTab = onTab, onBasket = { navController.push(Routes.Batch) }) { current ->
-            when (current) {
-                MainTab.HOME -> HomeScreen(
-                    HomeNavigation(
-                        onSearch = {},
-                        onNotifications = {},
-                        onSites = {},
-                        onDownloads = { navController.push(Routes.Downloads) },
-                        onShorts = {},
-                        onDetail = { navController.push(Routes.Detail(it)) },
-                    ),
-                )
-                MainTab.MUSIC, MainTab.FILES, MainTab.ME -> Unit
-            }
-        }
-    }
-    composable<Routes.Downloads> { DownloadsScreen(onBack = back) }
-    composable<Routes.Batch> { BatchScreen(onBack = back) }
-    composable<Routes.Detail> { entry ->
-        val route = entry.toRoute<Routes.Detail>()
-        DetailScreen(route.mediaId, route.autoPlay, onBack = back, onOpenDetail = { navController.push(Routes.Detail(it)) })
-    }
+/** POC Root: `when (nav.tab) { 0 -> Home; 1 -> Music; 2 -> Files; else -> Me }`. */
+@Composable
+private fun TabPage(tab: Int) = when (tab) {
+    Tab.HOME -> HomeTab()
+    Tab.MUSIC -> MusicTab()
+    Tab.FILES -> FilesTab()
+    else -> MeTab()
 }

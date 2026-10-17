@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="music_title">Music</string>
+    <string name="music_downloads">Downloads</string>
+    <string name="music_search_hint">Search Music</string>
+    <string name="music_play_all">Play all</string>
+    <string name="music_play">Play</string>
+    <string name="music_shuffle">Shuffle</string>
+    <string name="music_no_songs">No songs</string>
+    <string name="music_playlist_detail">PlayList Detail</string>
+    <string name="music_videos_count">%1$d videos</string>
+    <string name="music_share">Share</string>
+    <string name="music_save">Save</string>
+    <string name="music_download">Download</string>
+    <string name="music_back">Back</string>
+</resources>

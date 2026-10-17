@@ -5,8 +5,6 @@ import org.app.vimate.appres.resources.Res
 import org.app.vimate.appres.resources.*
 import org.app.vimate.sharedlogic.event.AppMessage
 import org.app.vimate.sharedlogic.event.MessageKey
-import org.app.vimate.sharedlogic.model.NoteTitle
-import org.app.vimate.sharedlogic.model.ReportReason
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -58,20 +56,3 @@ val MessageKey.res: StringResource
 
 @Composable
 fun AppMessage.text(): String = stringResource(key.res, *args.toTypedArray())
-
-val NoteTitle.res: StringResource
-    get() = when (this) {
-        NoteTitle.DOWNLOAD_COMPLETE -> Res.string.note_download_complete
-        NoteTitle.SAVED -> Res.string.note_saved
-        NoteTitle.THANKS -> Res.string.note_thanks
-    }
-
-val ReportReason.res: StringResource
-    get() = when (this) {
-        ReportReason.SEXUAL -> Res.string.report_sexual
-        ReportReason.VIOLENT -> Res.string.report_violent
-        ReportReason.HATEFUL -> Res.string.report_hateful
-        ReportReason.HARMFUL -> Res.string.report_harmful
-        ReportReason.SPAM -> Res.string.report_spam
-        ReportReason.CHILD_ABUSE -> Res.string.report_child_abuse
-    }

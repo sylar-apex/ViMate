@@ -1,0 +1,6 @@
+package org.app.vimate.sharedlogic.download.vid
+
+actual object MediaProbe {
+    actual fun describe(uri: String, id: String): Pair<String?, Long>? = null
+    actual fun saveText(folder: String, name: String, text: String) = Unit
+}

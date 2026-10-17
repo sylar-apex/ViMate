@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ViMate</string>
+    <string name="dl_channel">Downloads</string>
+    <string name="dl_preparing">Preparing download</string>
+    <plurals name="dl_downloading">
+        <item quantity="one">Downloading %1$d file</item>
+        <item quantity="other">Downloading %1$d files</item>
+    </plurals>
+    <string name="dl_complete">Download complete</string>
 </resources>

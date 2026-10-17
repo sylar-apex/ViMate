@@ -17,6 +17,7 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositories {
+        maven("https://jitpack.io") { content { includeGroupByRegex("com\\.github\\..*") } }
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -59,7 +60,7 @@ include(":appcore:appres")
 include(":appcore:sharedlogic")
 
 // One module per screen, each split into domain + presentation
-val features = listOf("onboarding", "player", "home", "detail", "downloads")
+val features = listOf("home", "search", "detail", "shorts", "sites", "music", "batch", "files", "me", "settings", "player", "downloads")
 features.forEach { feature ->
     include(":appfeatures:$feature:domain")
     include(":appfeatures:$feature:presentation")

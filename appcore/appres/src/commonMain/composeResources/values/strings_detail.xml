@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="detail_save">Save</string>
+    <string name="detail_popup">Popup</string>
+    <string name="detail_play_audio">Play Audio</string>
+    <string name="detail_share">Share</string>
+    <string name="detail_download">Download</string>
+    <string name="detail_comments">Comments</string>
+    <string name="detail_comments_count"> ·%1$s</string>
+    <string name="detail_login_comment">login to sent public comment</string>
+    <string name="detail_close">Close</string>
+    <string name="detail_replies">%1$s REPLIES</string>
+    <string name="detail_no_comments">No comments</string>
+    <string name="detail_save_to_playlist">Save to playlist</string>
+    <string name="detail_playlist_entry">%1$s  (%2$s)</string>
+    <string name="detail_saved_to">Saved to %1$s</string>
+    <string name="detail_saved">Saved</string>
+    <string name="detail_new_playlist">New playlist</string>
+    <string name="detail_create">CREATE</string>
+    <string name="detail_cancel">Cancel</string>
+    <string name="detail_popup_title">Play videos in floating window</string>
+    <string name="detail_allow_permission">Allow permission</string>
+    <string name="detail_playback_error">Playback error: %1$s</string>
+    <string name="detail_collapse">Collapse</string>
+    <string name="detail_play">Play</string>
+    <string name="detail_next">Next</string>
+    <string name="detail_fullscreen">Fullscreen</string>
+    <string name="detail_play_audio_desc">Play audio</string>
+    <string name="detail_audio_hint">Audio can be background played while\nusing other apps or lock screen.</string>
+    <string name="detail_play_as_video">Play as video</string>
+    <string name="detail_play_next">Play Next</string>
+    <string name="detail_auto">Auto</string>
+    <string name="detail_cc">CC</string>
+</resources>

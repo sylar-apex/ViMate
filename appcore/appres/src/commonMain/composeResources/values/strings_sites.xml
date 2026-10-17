@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sites_title">Sites</string>
+    <string name="sites_back">Back</string>
+    <string name="sites_group_favorite">Favorite</string>
+    <string name="sites_group_entertainment">Entertainment</string>
+    <string name="sites_home">Home</string>
+    <string name="sites_grab_files">Grab files</string>
+    <string name="sites_reload">Reload</string>
+    <string name="sites_more">More</string>
+    <string name="sites_forward">Forward</string>
+    <string name="sites_open_url">Open URL</string>
+    <string name="sites_mobile_site">Mobile site</string>
+    <string name="sites_desktop_site">Desktop site</string>
+    <string name="sites_copy_link">Copy link</string>
+    <string name="sites_copied">Copied</string>
+    <string name="sites_share_link">Share link</string>
+    <string name="sites_downloads">Downloads</string>
+    <string name="sites_close">Close</string>
+    <string name="sites_download">Download</string>
+    <string name="sites_sign_in">Sign in</string>
+    <string name="sites_detected_media">Detected media</string>
+    <string name="sites_play">Play</string>
+    <string name="sites_added_to_downloads">Added to downloads</string>
+    <string name="sites_external_note">This page opened in your browser. In-app browsing and media detection are available on Android.</string>
+    <string name="sites_open_again">Open again</string>
+    <!-- Grabber -->
+    <string name="grab_title">Grabber</string>
+    <string name="grab_subtitle">%1$s  ·  %2$d files</string>
+    <string name="grab_list_view">List view</string>
+    <string name="grab_grid_view">Grid view</string>
+    <string name="grab_all">All</string>
+    <string name="grab_files">files</string>
+    <string name="grab_shown">%1$d %2$s</string>
+    <string name="grab_select_all">Select all</string>
+    <string name="grab_deselect_all">Deselect all</string>
+    <string name="grab_nothing">Nothing of this type on the page</string>
+    <string name="grab_selected">%1$d selected</string>
+    <string name="grab_download">  Download</string>
+    <string name="grab_added">%1$d added to downloads</string>
+    <string name="grab_sizes">+%1$d sizes</string>
+    <string name="grab_cant_play">Can\'t play: %1$s</string>
+    <string name="grab_type_video">Video</string>
+    <string name="grab_type_audio">Audio</string>
+    <string name="grab_type_image">Image</string>
+    <string name="grab_type_subtitle">Subtitle</string>
+    <string name="grab_type_document">Document</string>
+    <string name="grab_type_compressed">Compressed</string>
+    <string name="grab_type_program">Program</string>
+    <string name="grab_type_torrent">Torrent</string>
+    <string name="grab_type_other">Other</string>
+    <!-- Site download sheet -->
+    <string name="sitesheet_ok">OK</string>
+    <string name="sitesheet_rename">Rename</string>
+    <string name="sitesheet_path">Path:/storage/emulated/0/Download/%1$s/download/</string>
+    <string name="sitesheet_free">%1$s FREE/%2$s</string>
+    <string name="sitesheet_change">Change</string>
+    <string name="sitesheet_download">DOWNLOAD</string>
+</resources>

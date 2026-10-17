@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="batch_selected">Selected</string>
+    <string name="batch_select_all">Select All</string>
+    <string name="batch_done">DONE</string>
+    <string name="batch_back">Back</string>
+    <string name="batch_items_selected">%1$d items selected</string>
+    <string name="batch_path">Path:/storage/emulate…0/%1$s/download/</string>
+    <string name="batch_free">%1$s FREE/%2$s</string>
+    <string name="batch_change">CHANGE</string>
+    <string name="batch_reading_formats">Reading formats %1$d/%2$d…</string>
+    <string name="batch_music">Music</string>
+    <string name="batch_video">Video</string>
+    <string name="batch_container">(%1$s)</string>
+    <string name="batch_download">Download</string>
+    <string name="batch_added">%1$d added to downloads</string>
+</resources>
