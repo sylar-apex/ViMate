@@ -2,8 +2,7 @@ package org.app.vimate.settings.ui
 
 import androidx.lifecycle.viewModelScope
 import com.psbapp.mvi.MVIBaseViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import com.psbapp.utils.dispatcher.DispatcherProvider
 import kotlinx.coroutines.launch
 import org.app.kmediaplayer.settings.ObservableSettings
 import org.app.kmediaplayer.settings.Setting
@@ -13,7 +12,7 @@ import org.app.vimate.sharedlogic.settings.AppKeys
 import org.app.vimate.sharedlogic.yt.YouTube
 
 /** POC SettingsGroupScreen logic: reads/writes AppKeys, clears the cache. */
-class SettingsViewModel(private val settings: ObservableSettings, private val cache: AppCache) :
+class SettingsViewModel(private val settings: ObservableSettings, private val cache: AppCache, private val dispatcher: DispatcherProvider) :
     MVIBaseViewModel<SettingsContract.Event, SettingsContract.State, SettingsContract.Effect>() {
     override fun createInitialState() = SettingsContract.State()
     override fun handleEffect(effect: SettingsContract.Effect) {}
@@ -22,7 +21,7 @@ class SettingsViewModel(private val settings: ObservableSettings, private val ca
 
     init {
         viewModelScope.launch { settings.version.collect { v -> setState { copy(version = v) } } }
-        viewModelScope.launch(Dispatchers.IO) { val b = cache.size(); setState { copy(cacheBytes = b) } }
+        viewModelScope.launch(dispatcher.io) { val b = cache.size(); setState { copy(cacheBytes = b) } }
     }
 
     override fun handleEvent(event: SettingsContract.Event) {
@@ -34,7 +33,7 @@ class SettingsViewModel(private val settings: ObservableSettings, private val ca
                 settings[AppKeys.privatePin] = ""
                 setEffect(SettingsContract.Effect.PrivatePasswordCleared)
             }
-            SettingsContract.Event.ClearCache -> viewModelScope.launch(Dispatchers.IO) { cache.clear(); setState { copy(cacheBytes = 0) } }
+            SettingsContract.Event.ClearCache -> viewModelScope.launch(dispatcher.io) { cache.clear(); setState { copy(cacheBytes = 0) } }
         }
     }
 

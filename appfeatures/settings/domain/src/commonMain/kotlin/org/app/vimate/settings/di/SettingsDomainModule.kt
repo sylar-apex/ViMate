@@ -9,5 +9,5 @@ import org.koin.dsl.module
 /** Koin bindings of the settings feature (repositories, use cases, view models). */
 fun settingsDomainModule() = module {
     single<AppCache> { platformAppCache() }
-    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
 }

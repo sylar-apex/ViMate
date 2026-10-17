@@ -44,7 +44,8 @@ kotlin {
         }
         val nonAndroidMain by creating { dependsOn(commonMain.get()) }
         val desktopMain by getting { dependsOn(nonAndroidMain) }
-        iosMain.get().dependsOn(nonAndroidMain)
+        iosArm64Main.get().dependsOn(nonAndroidMain)
+        iosSimulatorArm64Main.get().dependsOn(nonAndroidMain)
         wasmJsMain.get().dependsOn(nonAndroidMain)
         commonTest.dependencies {
             implementation(libs.kotlin.test)

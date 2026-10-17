@@ -18,6 +18,6 @@ fun meDomainModule() = module {
     single<JunkFileSystem> { platformJunkFileSystem() }
     viewModel { MeViewModel(get()) }
     viewModel { LibraryViewModel(get()) }
-    viewModel { JunkViewModel(get(), getOrNull<VidDownloads>()) }
-    viewModel { BoostViewModel(get()) }
+    viewModel { JunkViewModel(get(), getOrNull<VidDownloads>(), get()) }
+    viewModel { BoostViewModel(get(), get()) }
 }

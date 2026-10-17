@@ -5,8 +5,7 @@ import com.psbapp.mvi.MVIBaseViewModel
 import com.psbapp.mvi.UiEffect
 import com.psbapp.mvi.UiEvent
 import com.psbapp.mvi.UiState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
+import com.psbapp.utils.dispatcher.DispatcherProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,14 +18,14 @@ class BoostContract {
 }
 
 /** POC BoostScreen: clears the cache (keeping partial downloads), then counts 0..100%. */
-class BoostViewModel(private val fs: JunkFileSystem) : MVIBaseViewModel<BoostContract.Event, BoostContract.State, BoostContract.Effect>() {
+class BoostViewModel(private val fs: JunkFileSystem, private val dispatcher: DispatcherProvider) : MVIBaseViewModel<BoostContract.Event, BoostContract.State, BoostContract.Effect>() {
     override fun createInitialState() = BoostContract.State()
     override fun handleEffect(effect: BoostContract.Effect) {}
     override fun handleEvent(event: BoostContract.Event) {}
 
     init {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { fs.clearCacheKeepingDownloads() }
+            withContext(dispatcher.io) { fs.clearCacheKeepingDownloads() }
             while (currentState.pct < 100) { delay(25); setState { copy(pct = pct + 1) } }
         }
     }
