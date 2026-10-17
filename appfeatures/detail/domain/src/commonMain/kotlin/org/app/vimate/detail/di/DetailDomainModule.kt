@@ -1,14 +1,15 @@
 package org.app.vimate.detail.di
 
-import org.app.vimate.detail.data.repository.DetailRepositoryImpl
-import org.app.vimate.detail.domain.repository.DetailRepository
-import org.app.vimate.detail.domain.usecase.GetMediaDetailUseCase
-import org.app.vimate.detail.ui.DetailViewModel
+import org.app.vimate.detail.repository.DetailRepository
+import org.app.vimate.detail.repository.DetailRepositoryImpl
+import org.app.vimate.detail.usecase.BuildQualitiesUseCase
+import org.app.vimate.detail.viewmodel.DetailViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
+/** Koin bindings of the detail feature (repositories, use cases, view models). */
 fun detailDomainModule() = module {
-    factory<DetailRepository> { DetailRepositoryImpl(get(), get(), get()) }
-    factory { GetMediaDetailUseCase(get()) }
-    viewModel { DetailViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    single<DetailRepository> { DetailRepositoryImpl(get(), get()) }
+    factory { BuildQualitiesUseCase() }
+    viewModel { DetailViewModel(get()) }
 }

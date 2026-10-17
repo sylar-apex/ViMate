@@ -41,6 +41,10 @@ kotlin {
             api(projects.appcore)
             api(projects.appfeatures.detail.domain)
         }
+        androidMain.dependencies {
+            implementation(libs.media3.exoplayer)
+            implementation(libs.media3.exoplayerHls)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
