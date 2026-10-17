@@ -212,6 +212,17 @@
     <string name="wide_files_browse">Browse videos</string>
     <string name="wide_files_downloading">Downloading</string>
     <string name="wide_files_library">Downloaded</string>
+    <string name="wide_files_sort_newest">Date added (newest)</string>
+    <string name="wide_files_sort_oldest">Date added (oldest)</string>
+    <string name="wide_files_sort_name">Name (A–Z)</string>
+    <string name="wide_files_sort_size">Size (largest)</string>
+    <string name="wide_files_see_all">See all</string>
+    <string name="wide_files_of">%1$s of %2$s</string>
+    <string name="wide_files_speed">%1$s/s</string>
+    <string name="wide_files_eta_s">%1$d seconds left</string>
+    <string name="wide_files_eta_m">%1$d min left</string>
+    <string name="wide_files_grid">Grid</string>
+    <string name="wide_files_list">List</string>
     <string name="wide_hero_watch">Watch now</string>
     <string name="wide_hero_badge">Trending now</string>
     <string name="wide_close">Close</string>
