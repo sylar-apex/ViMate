@@ -82,7 +82,7 @@ import org.koin.compose.koinInject
 
 /** POC LocalTab: Videos / Music tabs, device media in 87dp rows ("size | TYPE | date"); "No data" when empty. */
 @Composable
-internal fun LocalTab(audio: Boolean) {
+internal fun LocalTab(audio: Boolean, control: LocalTabControl? = null) {
     val files = koinInject<FilesUseCase>()
     val (state, retry) = rememberLoad(audio) { files.localMedia(audio) }
     var query by remember(audio) { mutableStateOf("") }
@@ -91,11 +91,14 @@ internal fun LocalTab(audio: Boolean) {
     val thumbs = remember(tasks) { tasks.filter { it.thumbnail.isNotEmpty() }.associate { it.fileName.substringBeforeLast('.') to it.thumbnail } }
     var sort by remember(audio) { mutableStateOf(LocalSort.Newest) }
     var grid by remember(audio) { mutableStateOf(true) }
-    val list = state.data.orEmpty().filter { query.isBlank() || it.title.contains(query.trim(), ignoreCase = true) }.sortedWith(sort.order)
+    // On wide windows the page row above owns search, sort and view (control); phones keep this tab's own toolbar.
+    val q = control?.query ?: query
+    val order = control?.let { LocalSort.entries[it.sort].order } ?: sort.order
+    val list = state.data.orEmpty().filter { q.isBlank() || it.title.contains(q.trim(), ignoreCase = true) }.sortedWith(order)
     val wideWindow = LocalWindowClass.current != WindowClass.Compact
-    val wide = wideWindow && grid
+    val wide = wideWindow && (control?.grid ?: grid)
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (control == null) Row(Modifier.padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             FilesSearchField(query, { query = it }, Modifier.weight(1f))
             SortMenu(sort) { sort = it }
             if (wideWindow) Row(Modifier.padding(start = 8.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle).padding(3.dp)) {
@@ -239,3 +242,6 @@ private fun ViewChip(icon: org.jetbrains.compose.resources.DrawableResource, on:
 }
 
 private val CanPreviewVideo = getPlatform().type == PlatformType.Android
+
+/** Search, sort (index into Newest / Oldest / Name / Size) and grid view, set by the wide My Files toolbar. */
+internal data class LocalTabControl(val query: String, val sort: Int, val grid: Boolean)

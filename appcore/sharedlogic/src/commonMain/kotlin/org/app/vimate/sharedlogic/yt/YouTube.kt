@@ -356,7 +356,41 @@ object YouTube {
         Moods("Moods & genres", "FEmusic_moods_and_genres"),
     }
 
-    suspend fun music(tab: MusicTab): List<Shelf> = parseMusicShelves(call("browse", REMIX, args("browseId" to tab.browseId)))
+    /**
+     * A YouTube Music tab. The first response holds only a few shelves; the rest come as continuations, which
+     * Music only answers when they carry the visitor id of the first response, so follow them (a few pages).
+     */
+    suspend fun music(tab: MusicTab): List<Shelf> {
+        val first = call("browse", REMIX, args("browseId" to tab.browseId))
+        val shelves = parseMusicShelves(first).toMutableList()
+        val vd = first.path("responseContext", "visitorData").str
+        var token = first.findFirst("nextContinuationData")?.get("continuation").str
+        var pages = 0
+        while (token != null && vd != null && pages++ < MUSIC_PAGES) {
+            val more = runCatching { musicContinuation(token, vd) }.getOrNull() ?: break
+            shelves += parseMusicShelves(more).filter { s -> shelves.none { it.title == s.title } }
+            token = more.findFirst("nextContinuationData")?.get("continuation").str
+        }
+        return shelves
+    }
+
+    private suspend fun musicContinuation(token: String, visitor: String): JsonElement {
+        val payload = buildJsonObject {
+            putJsonObject("context") {
+                putJsonObject("client") {
+                    put("clientName", REMIX.name); put("clientVersion", REMIX.version); put("hl", hl); put("gl", gl); put("visitorData", visitor)
+                }
+            }
+            put("continuation", token)
+        }
+        val resp = http.post("https://${REMIX.host}/youtubei/v1/browse?prettyPrint=false") {
+            header("User-Agent", REMIX.ua); header("Origin", "https://${REMIX.host}"); header("X-Goog-Visitor-Id", visitor)
+            contentType(ContentType.Application.Json); setBody(payload.toString())
+        }
+        return Json.parseToJsonElement(resp.bodyAsText())
+    }
+
+    private const val MUSIC_PAGES = 4
 
     suspend fun musicCollection(browseId: String, params: String? = null): Pair<String, List<Video>> {
         val r = call("browse", REMIX, args(*listOfNotNull("browseId" to browseId, params?.let { "params" to it }).toTypedArray()))

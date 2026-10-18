@@ -70,6 +70,7 @@ import org.app.vimate.appcore.theme.ViColors
 import org.app.vimate.appres.resources.*
 import org.app.vimate.files.ui.component.DoneActions
 import org.app.vimate.files.ui.component.LocalTab
+import org.app.vimate.files.ui.component.LocalTabControl
 import org.app.vimate.files.ui.component.FilesSearchField
 import org.app.vimate.files.ui.component.inQueueOrder
 import org.app.vimate.files.ui.component.PrivateGate
@@ -94,13 +95,27 @@ internal fun FilesWide() {
     // No page header: the side bar names the page; storage, tabs and lists start at the top.
     Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding().padding(top = 20.dp)) {
         StorageBar(stat.usedBytes, stat.totalBytes, Modifier.padding(start = WideSpec.gutter, bottom = 12.dp))
-        FilesTabs(tab, activeCount, Modifier.padding(start = WideSpec.gutter, bottom = 12.dp)) { tab = it }
+        // Tabs and the shared toolbar (search, sort, grid / list) on one row; the toolbar drives every tab.
+        var query by rememberSaveable { mutableStateOf("") }
+        var sort by rememberSaveable { mutableStateOf(Sort.Newest) }
+        var grid by rememberSaveable { mutableStateOf(true) }
+        Row(Modifier.padding(start = WideSpec.gutter, end = WideSpec.gutter, bottom = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            FilesTabs(tab, activeCount, Modifier) { tab = it }
+            if (tab != 3) {
+                FilesSearchField(query, { query = it }, Modifier.padding(start = 12.dp).weight(1f))
+                Box(Modifier.padding(start = 8.dp)) { SortMenu(sort) { sort = it } }
+                Row(Modifier.padding(start = 8.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle).padding(3.dp)) {
+                    ViewToggle(Res.drawable.ic_v_grid, stringResource(Res.string.wide_files_grid), grid) { grid = true }
+                    ViewToggle(Res.drawable.ic_v_list, stringResource(Res.string.wide_files_list), !grid) { grid = false }
+                }
+            }
+        }
         when (tab) {
-            0 -> DownloadsWide()
+            0 -> DownloadsWide(query, sort, grid)
             else -> WideCard(Modifier.padding(start = WideSpec.gutter, end = WideSpec.gutter, bottom = WideSpec.bottomInset).fillMaxSize(), padding = 8.dp) {
                 when (tab) {
-                    1 -> LocalTab(audio = false)
-                    2 -> LocalTab(audio = true)
+                    1 -> LocalTab(audio = false, LocalTabControl(query, sort.ordinal, grid))
+                    2 -> LocalTab(audio = true, LocalTabControl(query, sort.ordinal, grid))
                     else -> PrivateGate()
                 }
             }
@@ -155,33 +170,19 @@ private enum class Sort(val label: StringResource, val order: Comparator<VidTask
 }
 
 @Composable
-private fun DownloadsWide() {
+private fun DownloadsWide(query: String, sort: Sort, grid: Boolean) {
     val files = koinInject<FilesUseCase>()
     val nav = LocalAppNavigator.current
     val open = openDetail()
     val all by files.tasks.collectAsState()
-    var query by rememberSaveable { mutableStateOf("") }
     val visible = all.filter { !it.hidden && (query.isBlank() || it.title.contains(query.trim(), ignoreCase = true)) }
     val active = visible.filter { it.state != TaskState.Done }.inQueueOrder()
-    var sort by rememberSaveable { mutableStateOf(Sort.Newest) }
-    var grid by rememberSaveable { mutableStateOf(false) }
     val done = visible.filter { it.state == TaskState.Done }.sortedWith(sort.order)
     val hot by produceState<List<Video>>(emptyList()) { value = files.hotVideos() }
     LazyColumn(
         contentPadding = PaddingValues(start = WideSpec.gutter, end = WideSpec.gutter, bottom = WideSpec.bottomInset),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // Same toolbar as Videos / Music: search, sort, grid / list.
-        item(key = "search") {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                FilesSearchField(query, { query = it }, Modifier.weight(1f))
-                Box(Modifier.padding(start = 8.dp)) { SortMenu(sort) { sort = it } }
-                Row(Modifier.padding(start = 8.dp).clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle).padding(3.dp)) {
-                    ViewToggle(Res.drawable.ic_v_grid, stringResource(Res.string.wide_files_grid), grid) { grid = true }
-                    ViewToggle(Res.drawable.ic_v_list, stringResource(Res.string.wide_files_list), !grid) { grid = false }
-                }
-            }
-        }
         if (active.isNotEmpty()) item(key = "active") {
             WideCard(Modifier.fillMaxWidth(), padding = 12.dp) {
                 val anyRunning = active.any { it.state == TaskState.Running || it.state == TaskState.Queued }

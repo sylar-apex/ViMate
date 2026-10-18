@@ -1,5 +1,7 @@
 package org.app.vimate.music.ui.wide
 
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.Spacer
 import org.app.vimate.appcore.component.ShimmerCardGrid
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -66,14 +68,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun MusicWide(state: MusicContract.State, onEvent: (MusicContract.Event) -> Unit) {
     val nav = LocalAppNavigator.current
-    WidePage(
-        stringResource(Res.string.music_title), stringResource(Res.string.wide_music_sub),
-        actions = {
+    // No title block: tabs, music search and the downloads button share the top row.
+    Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding().padding(top = 20.dp)) {
+        Row(Modifier.fillMaxWidth().padding(start = WideSpec.gutter, end = WideSpec.gutter, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            WideTabs(state.tabLabels, state.tab) { onEvent(MusicContract.Event.SelectTab(it)) }
+            Spacer(Modifier.weight(1f))
             SearchPill { nav.go(Routes.MusicSearch) }
             WideIconButton(Res.drawable.ic_download, stringResource(Res.string.music_downloads)) { nav.home(Tab.FILES) }
-        },
-    ) {
-        WideTabs(state.tabLabels, state.tab, Modifier.padding(start = WideSpec.gutter, bottom = 8.dp)) { onEvent(MusicContract.Event.SelectTab(it)) }
+        }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = WideSpec.bottomInset)) {
             if (state.loading) item { Box(Modifier.padding(horizontal = WideSpec.gutter)) { ShimmerCardGrid(4, 2) } }
             state.error?.let { e -> item { ErrorBox(e.text()) { onEvent(MusicContract.Event.Retry) } } }
