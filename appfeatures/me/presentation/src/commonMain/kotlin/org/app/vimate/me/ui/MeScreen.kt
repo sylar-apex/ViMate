@@ -117,7 +117,7 @@ fun MeContent(
                         Shortcut(Res.drawable.ic_me_files, stringResource(Res.string.me_my_files), onClick = onFiles)
                         Shortcut(Res.drawable.ic_me_history, stringResource(Res.string.me_history), size = 28f) { onRoute(Routes.History) }
                         Shortcut(Res.drawable.ic_me_subs, stringResource(Res.string.me_subscription), size = 27f, dx = 1.7f, dy = 1.7f) { onRoute(Routes.Subscriptions) }
-                        Shortcut(Res.drawable.ic_me_playlist, stringResource(Res.string.me_playlist), size = 29f, dx = -1.5f, dy = -2f) { onRoute(Routes.Playlists) }
+                        Shortcut(Res.drawable.ic_me_playlist, stringResource(Res.string.bm_title), size = 29f, dx = -1.5f, dy = -2f) { onRoute(Routes.Playlists) }
                     }
                 }
                 Box(Modifier.align(Alignment.TopEnd).padding(top = 20.dp, end = 11.dp)) { ThemeSwitch(dark, onSetDark) }

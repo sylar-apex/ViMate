@@ -206,6 +206,7 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
             ) { Text(stringResource(Res.string.shell_clip_detected, url), maxLines = 2) }
         }
         nav.downloadFor?.let { v -> DownloadSheetSlot(v) { nav.downloadFor = null } }
+        nav.bookmarkFor?.let { b -> org.app.vimate.me.ui.BookmarkSaveDialog(b) { nav.bookmarkFor = null } }
         if (nowPlaying) Surface(Modifier.fillMaxSize()) { NowPlayingScreen { launcher.nowPlaying.value = false } }
         MessageToast(events, toast, aboveNav = onTabs && !wide)
         if (embeddedPlayer) EmbeddedPlayer()

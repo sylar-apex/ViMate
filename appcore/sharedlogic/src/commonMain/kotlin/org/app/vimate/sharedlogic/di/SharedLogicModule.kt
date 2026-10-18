@@ -36,6 +36,7 @@ fun sharedLogicModule() = module {
         }
     }
     single { Library(get()) }
+    single { org.app.vimate.sharedlogic.library.Bookmarks(get()) }
     single { YouTube }
     single { Instagram }
     single { AppEvents() }

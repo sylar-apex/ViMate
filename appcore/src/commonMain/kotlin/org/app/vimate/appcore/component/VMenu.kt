@@ -1,5 +1,7 @@
 package org.app.vimate.appcore.component
 
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -31,13 +33,15 @@ fun VMenu(
     offset: DpOffset = DpOffset(0.dp, 0.dp),
 ) {
     DropdownMenu(
-        expanded, onDismiss, Modifier.width(width.dp).background(Color.White), offset = offset,
-        shape = RoundedCornerShape(0.dp), containerColor = Color.White, shadowElevation = 6.dp, tonalElevation = 0.dp,
+        expanded, onDismiss, Modifier.widthIn(min = width.dp).padding(vertical = 2.dp), offset = offset,
+        shape = RoundedCornerShape(12.dp), containerColor = ViColors.surface, shadowElevation = 8.dp, tonalElevation = 0.dp,
+        border = androidx.compose.foundation.BorderStroke(1.dp, ViColors.wideHairline),
     ) {
         items.forEach { (icon, label, action) ->
-            Row(Modifier.fillMaxWidth().height(48.dp).clickable { onDismiss(); action() }.padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Ic(icon, Modifier.size(20.dp), ViColors.menuIcon, label)
-                Text(label, Modifier.padding(start = 16.dp), fontSize = 13.8.sp, color = ViColors.ink, maxLines = 1)
+            Row(Modifier.fillMaxWidth().padding(horizontal = 6.dp).height(38.dp).clip(RoundedCornerShape(8.dp)).clickable { onDismiss(); action() }.padding(start = 10.dp, end = 14.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Ic(icon, Modifier.size(18.dp), ViColors.sectionLabel, label)
+                Text(label, Modifier.padding(start = 12.dp), fontSize = 13.5.sp, color = ViColors.ink, maxLines = 1)
             }
         }
     }

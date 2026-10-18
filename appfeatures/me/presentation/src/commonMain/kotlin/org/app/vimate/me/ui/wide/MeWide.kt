@@ -91,7 +91,7 @@ internal fun MeWide(
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         ToolTile(Res.drawable.ic_me_files, stringResource(Res.string.me_my_files), VRed, onFiles)
                         ToolTile(Res.drawable.ic_me_history, stringResource(Res.string.me_history), Color(0xFFF59E0B)) { onRoute(Routes.History) }
-                        ToolTile(Res.drawable.ic_me_playlist, stringResource(Res.string.me_playlist), Color(0xFF8B5CF6)) { onRoute(Routes.Playlists) }
+                        ToolTile(Res.drawable.ic_me_playlist, stringResource(Res.string.bm_title), Color(0xFF8B5CF6)) { onRoute(Routes.Playlists) }
                     }
                     WideSectionTitle(stringResource(Res.string.wide_section_tools), Modifier.padding(top = 6.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {

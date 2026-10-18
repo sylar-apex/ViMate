@@ -45,6 +45,7 @@ class BrowserHeaderActions(
     val onCopy: () -> Unit,
     val onShare: () -> Unit,
     val onDownloads: () -> Unit,
+    val onBookmark: () -> Unit = {},
 )
 
 /** Measured from VidMate: compact header: home · address pill (tap to edit) · grab (red, count) · reload · menu. */
@@ -83,6 +84,7 @@ fun BrowserHeader(
                 Box(Modifier.fillMaxWidth().height(0.7.dp).background(ViColors.gap))
                 MenuItem(Res.drawable.ic_m_link, stringResource(Res.string.sites_open_url)) { onMenu(false); a.onEdit() }
                 MenuItem(if (desktop) Res.drawable.ic_m_mobile else Res.drawable.ic_m_desktop, stringResource(if (desktop) Res.string.sites_mobile_site else Res.string.sites_desktop_site)) { onMenu(false); a.onToggleDesktop() }
+                MenuItem(Res.drawable.ic_folder, stringResource(Res.string.bm_bookmark_page)) { onMenu(false); a.onBookmark() }
                 MenuItem(Res.drawable.ic_m_copy, stringResource(Res.string.sites_copy_link)) { onMenu(false); a.onCopy() }
                 MenuItem(Res.drawable.ic_d_share, stringResource(Res.string.sites_share_link)) { onMenu(false); a.onShare() }
                 MenuItem(Res.drawable.ic_m_dl, stringResource(Res.string.sites_downloads)) { onMenu(false); a.onDownloads() }

@@ -1,5 +1,11 @@
 package org.app.vimate.appcore.adaptive
 
+import org.app.vimate.appres.resources.bm_save
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
@@ -90,8 +96,15 @@ fun WideVideoCard(v: Video, onDownload: () -> Unit, onMenu: (() -> Unit)? = null
                 val meta = listOf(v.views, v.published).filter { it.isNotEmpty() }.joinToString("  •  ")
                 if (meta.isNotEmpty()) Text(meta, color = ViColors.metaGrey, fontSize = 12.sp, lineHeight = 16.sp, maxLines = 1)
             }
-            Box(Modifier.size(30.dp).clip(CircleShape).clickable { onMenu?.invoke() ?: nav.download(v) }, contentAlignment = Alignment.Center) {
-                Ic(Res.drawable.ic_more_vert, Modifier.size(18.dp), ViColors.ink, stringResource(Res.string.common_more))
+            var menu by remember { mutableStateOf(false) }
+            Box {
+                Box(Modifier.size(30.dp).clip(CircleShape).clickable { onMenu?.invoke() ?: run { menu = true } }, contentAlignment = Alignment.Center) {
+                    Ic(Res.drawable.ic_more_vert, Modifier.size(18.dp), ViColors.ink, stringResource(Res.string.common_more))
+                }
+                DropdownMenu(menu, { menu = false }) {
+                    DropdownMenuItem(text = { Text(stringResource(Res.string.common_download)) }, onClick = { menu = false; nav.download(v) })
+                    DropdownMenuItem(text = { Text(stringResource(Res.string.bm_save)) }, onClick = { menu = false; nav.bookmark(v) })
+                }
             }
         }
     }

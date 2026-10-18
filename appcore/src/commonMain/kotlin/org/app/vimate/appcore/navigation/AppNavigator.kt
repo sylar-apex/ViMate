@@ -106,6 +106,21 @@ class AppNavigator(private val nav: NavController) {
         else go(Routes.Browser(if ("://" in url) url else "https://$url"))
     }
 
+    /** Item waiting to be saved: the shell shows the "Save to bookmarks" folder picker while set. */
+    var bookmarkFor by mutableStateOf<org.app.vimate.sharedlogic.library.Bookmark?>(null)
+
+    /** Asks where to bookmark [v] (a video, or a song when [music]). */
+    fun bookmark(v: Video, music: Boolean = false) {
+        bookmarkFor = org.app.vimate.sharedlogic.library.Bookmark(0, null,
+            if (music) org.app.vimate.sharedlogic.library.BookmarkKind.Music else org.app.vimate.sharedlogic.library.BookmarkKind.Video,
+            v.title, v.url, v.thumbnail, v.channel, v.id)
+    }
+
+    /** Asks where to bookmark the web page [url]. */
+    fun bookmarkSite(url: String, title: String) {
+        bookmarkFor = org.app.vimate.sharedlogic.library.Bookmark(0, null, org.app.vimate.sharedlogic.library.BookmarkKind.Site, title.ifEmpty { url }, url)
+    }
+
     /** Opens the download sheet for [video] (POC `nav.downloadFor = v`). */
     fun download(video: Video) { downloadFor = video }
 }

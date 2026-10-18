@@ -1,5 +1,16 @@
 package org.app.vimate.me.ui
 
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import org.app.vimate.appcore.adaptive.WideVideoCard
+import org.app.vimate.appcore.adaptive.WideTabs
+import org.app.vimate.appcore.adaptive.WideSpec
+import org.app.vimate.appcore.adaptive.WindowClass
+import org.app.vimate.appcore.adaptive.LocalWindowClass
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.foundation.background
@@ -41,6 +52,7 @@ fun HistoryScreen(viewModel: LibraryViewModel = koinViewModel()) {
     val sites = state.sites
     var sub by remember { mutableStateOf<String?>(null) }
     var menu by remember { mutableStateOf(false) }
+    if (LocalWindowClass.current != WindowClass.Compact) return WideHistory(yt, sites, viewModel)
     if (sub != null) {
         BackHandler { sub = null }
         Column(Modifier.fillMaxSize().background(ViColors.surface).statusBarsPadding()) {
@@ -103,6 +115,53 @@ fun HistoryScreen(viewModel: LibraryViewModel = koinViewModel()) {
             Text(stringResource(Res.string.me_login_more), Modifier.weight(1f).padding(end = 12.dp), fontWeight = FontWeight.Bold, fontSize = 14.5.sp, lineHeight = 17.sp, color = ViColors.ink, maxLines = 2)
             Box(Modifier.size(73.dp, 31.dp).clip(RoundedCornerShape(3.dp)).background(ViColors.meTabRed).clickable { nav.go(Routes.GoogleLogin) }, contentAlignment = Alignment.Center) {
                 Text(stringResource(Res.string.me_sign_in), color = ViColors.white, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+            }
+        }
+    }
+}
+
+/** Desktop / tablet History: tabs for watched videos and websites, videos as a card grid, clear action. */
+@Composable
+private fun WideHistory(yt: List<org.app.vimate.sharedlogic.yt.Video>, sites: List<org.app.vimate.sharedlogic.library.SiteVisit>, viewModel: LibraryViewModel) {
+    val nav = LocalAppNavigator.current
+    var tab by remember { mutableStateOf(0) }
+    Column(Modifier.fillMaxSize().background(ViColors.wideCanvas).statusBarsPadding().padding(top = 20.dp)) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = WideSpec.gutter).padding(bottom = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            WideTabs(listOf(stringResource(Res.string.me_youtube_history) + " (${yt.size})", stringResource(Res.string.me_website_history) + " (${sites.size})"), tab) { tab = it }
+            Spacer(Modifier.weight(1f))
+            if (tab == 0 && yt.isNotEmpty()) Row(Modifier.clip(RoundedCornerShape(10.dp)).background(ViColors.chipIdle)
+                .clickable { viewModel.setEvent(LibraryContract.Event.ClearLocalHistory) }.padding(horizontal = 14.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
+                Ic(Res.drawable.ic_close, Modifier.size(14.dp), ViColors.ink)
+                Text(stringResource(Res.string.me_clear_local_history), Modifier.padding(start = 6.dp), fontSize = 13.sp, color = ViColors.ink)
+            }
+        }
+        when {
+            tab == 0 && yt.isEmpty() -> Empty(stringResource(Res.string.me_no_watch_history))
+            tab == 0 -> LazyVerticalGrid(GridCells.Fixed(4), Modifier.fillMaxSize(), contentPadding = PaddingValues(start = WideSpec.gutter, end = WideSpec.gutter, bottom = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                gridItems(yt, key = { it.id }) { v ->
+                    Box {
+                        WideVideoCard(v, onDownload = { nav.download(v) })
+                        Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(26.dp).clip(CircleShape).background(ViColors.shade60)
+                            .clickable { viewModel.setEvent(LibraryContract.Event.RemoveWatched(v.id)) }, contentAlignment = Alignment.Center) {
+                            Ic(Res.drawable.ic_close, Modifier.size(14.dp), Color.White)
+                        }
+                    }
+                }
+            }
+            sites.isEmpty() -> Empty(stringResource(Res.string.me_no_websites))
+            else -> LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(start = WideSpec.gutter, end = WideSpec.gutter, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(sites, key = { it.url }) { x ->
+                    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(ViColors.tileBg).clickable { nav.go(Routes.Browser(x.url)) }.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Ic(Res.drawable.ic_h_web, Modifier.size(20.dp), ViColors.ink)
+                        Column(Modifier.padding(start = 12.dp).weight(1f)) {
+                            Text(x.title.ifEmpty { x.url }, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = ViColors.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(x.url, fontSize = 12.sp, color = ViColors.sectionLabel, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                }
             }
         }
     }

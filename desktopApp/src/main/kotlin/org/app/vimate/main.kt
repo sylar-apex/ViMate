@@ -98,6 +98,8 @@ private fun openArg(name: String): LaunchRequest? = when (name) {
     "me" -> LaunchRequest.OpenTab(Tab.ME)
     "settings" -> LaunchRequest.OpenPage(Routes.Settings)
     "settings-others" -> LaunchRequest.OpenPage(Routes.SettingsGroup("Others"))
+    "history" -> LaunchRequest.OpenPage(Routes.History)
+    "bookmarks" -> LaunchRequest.OpenPage(Routes.Playlists)
     "sites" -> LaunchRequest.OpenPage(Routes.Sites)
     "search" -> LaunchRequest.OpenPage(Routes.Search())
     "shorts" -> LaunchRequest.OpenPage(Routes.Shorts())

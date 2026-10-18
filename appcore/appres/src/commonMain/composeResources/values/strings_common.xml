@@ -17,4 +17,20 @@
     <string name="shell_clip_detected">Link detected: %1$s</string>
     <string name="common_play">Play</string>
     <string name="common_error">Error</string>
+    <string name="bm_save">Save to bookmarks</string>
+    <string name="bm_title">Bookmarks</string>
+    <string name="bm_new_folder">New folder</string>
+    <string name="bm_folder_name">Folder name</string>
+    <string name="bm_save_here">Save here</string>
+    <string name="bm_all">All bookmarks</string>
+    <string name="bm_saved">Saved to %1$s</string>
+    <string name="bm_empty">Nothing saved here yet. Use the ⋮ menu › Save to bookmarks on any video, song or page.</string>
+    <string name="bm_rename">Rename</string>
+    <string name="bm_delete">Delete</string>
+    <string name="bm_open">Open</string>
+    <string name="bm_folders">Folders</string>
+    <string name="bm_items">Saved</string>
+    <string name="bm_bookmark_page">Bookmark this page</string>
+    <string name="bm_create">Create</string>
+    <string name="bm_cancel">Cancel</string>
 </resources>

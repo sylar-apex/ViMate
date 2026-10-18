@@ -202,6 +202,7 @@ fun BrowserScreen(startUrl: String) {
                 onCopy = { clipboard.setText(AnnotatedString(url)); scope.launch { toast(getString(Res.string.sites_copied)) } },
                 onShare = { share(url) },
                 onDownloads = { nav.home(Tab.FILES) },
+                onBookmark = { nav.bookmarkSite(url, siteName) },
             ),
         )
         if (editing) Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {

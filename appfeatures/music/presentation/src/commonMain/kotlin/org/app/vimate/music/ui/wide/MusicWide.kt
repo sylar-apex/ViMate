@@ -1,5 +1,10 @@
 package org.app.vimate.music.ui.wide
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.Spacer
 import org.app.vimate.appcore.component.ShimmerCardGrid
@@ -145,6 +150,17 @@ private fun SongRow(v: Video, onPlay: () -> Unit) {
             Text(v.title, color = ViColors.ink, fontSize = 14.5.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(listOf(v.channel, v.views).filter { it.isNotEmpty() }.joinToString("  •  "), Modifier.padding(top = 2.dp),
                 color = ViColors.sectionLabel, fontSize = 12.5.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        val nav = LocalAppNavigator.current
+        var menu by remember { mutableStateOf(false) }
+        Box {
+            Box(Modifier.size(32.dp).clip(CircleShape).clickable { menu = true }, contentAlignment = Alignment.Center) {
+                Ic(Res.drawable.ic_more_vert, Modifier.size(18.dp), ViColors.sectionLabel)
+            }
+            DropdownMenu(menu, { menu = false }) {
+                DropdownMenuItem(text = { Text(stringResource(Res.string.common_download)) }, onClick = { menu = false; nav.download(v) })
+                DropdownMenuItem(text = { Text(stringResource(Res.string.bm_save)) }, onClick = { menu = false; nav.bookmark(v, music = true) })
+            }
         }
     }
 }

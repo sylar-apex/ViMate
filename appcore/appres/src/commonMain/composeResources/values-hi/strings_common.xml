@@ -17,4 +17,20 @@
     <string name="shell_clip_detected">लिंक मिला: %1$s</string>
     <string name="common_play">चलाएँ</string>
     <string name="common_error">त्रुटि</string>
+    <string name="bm_save">बुकमार्क में सेव करें</string>
+    <string name="bm_title">बुकमार्क</string>
+    <string name="bm_new_folder">नया फ़ोल्डर</string>
+    <string name="bm_folder_name">फ़ोल्डर का नाम</string>
+    <string name="bm_save_here">यहाँ सेव करें</string>
+    <string name="bm_all">सभी बुकमार्क</string>
+    <string name="bm_saved">%1$s में सेव किया गया</string>
+    <string name="bm_empty">यहाँ अभी कुछ सेव नहीं है। किसी भी वीडियो, गाने या पेज पर ⋮ › बुकमार्क में सेव करें चुनें।</string>
+    <string name="bm_rename">नाम बदलें</string>
+    <string name="bm_delete">हटाएँ</string>
+    <string name="bm_open">खोलें</string>
+    <string name="bm_folders">फ़ोल्डर</string>
+    <string name="bm_items">सेव किए गए</string>
+    <string name="bm_bookmark_page">यह पेज बुकमार्क करें</string>
+    <string name="bm_create">बनाएँ</string>
+    <string name="bm_cancel">रद्द करें</string>
 </resources>
