@@ -85,6 +85,7 @@ private fun runApp(args: Array<String>) = application {
         }
         CompositionLocalProvider(
             LocalInTitleBar provides mac,
+            org.app.kmediaplayer.ui.music.LocalWindowTopInset provides if (mac) 28.dp else 0.dp,
             LocalTitleBarArea provides { content -> WindowDraggableArea { content() } },
         ) { App(embeddedPlayer = true) }
     }

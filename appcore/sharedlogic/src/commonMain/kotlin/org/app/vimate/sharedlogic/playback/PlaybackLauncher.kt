@@ -63,5 +63,7 @@ fun VideoInfo.toMediaFile(audioOnly: Boolean): MediaFile {
         mimeType = if (audioOnly) "audio/mp4" else "video/mp4",
         isAudio = audioOnly,
         artist = video.channel,
+        // The player's cover art reads an image URL from album: show the track's own thumbnail.
+        album = video.thumbnail,
     )
 }
