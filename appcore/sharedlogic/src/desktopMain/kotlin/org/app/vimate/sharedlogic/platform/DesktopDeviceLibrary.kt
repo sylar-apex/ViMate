@@ -23,11 +23,25 @@ class DesktopDeviceLibrary(private val downloadDir: () -> String) : DeviceLibrar
         val home = System.getProperty("user.home")
         val roots = listOf(File(downloadDir()), File(home, if (kind == FileKind.MUSIC) "Music" else "Movies"))
         val exts = if (kind == FileKind.MUSIC) AUDIO else VIDEO
-        roots.filter { it.isDirectory }
-            .flatMap { root -> root.walkTopDown().maxDepth(3).filter { it.isFile && it.extension.lowercase() in exts && !it.name.startsWith(".") }.toList() }
-            .distinctBy { it.canonicalPath }
+        // Each root and folder is read on its own: macOS blocks some (e.g. ~/Music/Music) and one refusal must not
+        // empty the whole list.
+        roots.filter { runCatching { it.isDirectory }.getOrDefault(false) }
+            .flatMap { root -> scan(root, exts, depth = 3) }
+            .distinctBy { it.absolutePath }
             .sortedByDescending { it.lastModified() }
             .map { f -> DeviceMedia(f.toURI().toString(), f.nameWithoutExtension, f.length(), f.extension.uppercase(), f.lastModified(), 0, kind) }
+    }
+
+    private fun scan(dir: File, exts: Set<String>, depth: Int): List<File> {
+        val entries = runCatching { dir.listFiles() }.getOrNull() ?: return emptyList()
+        return entries.flatMap { f ->
+            when {
+                f.name.startsWith(".") -> emptyList()
+                runCatching { f.isFile }.getOrDefault(false) -> if (f.extension.lowercase() in exts) listOf(f) else emptyList()
+                depth > 1 && runCatching { f.isDirectory }.getOrDefault(false) -> scan(f, exts, depth - 1)
+                else -> emptyList()
+            }
+        }
     }
 
     private companion object {

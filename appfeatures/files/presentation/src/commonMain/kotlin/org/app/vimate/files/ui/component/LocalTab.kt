@@ -1,5 +1,7 @@
 package org.app.vimate.files.ui.component
 
+import androidx.compose.foundation.Image
+import org.app.vimate.appcore.frame.rememberVideoFrame
 import com.psbapp.utils.PlatformType
 import com.psbapp.utils.getPlatform
 import androidx.compose.material.icons.filled.Movie
@@ -157,7 +159,9 @@ private fun Cover(f: MediaFile, audio: Boolean, thumb: String?, modifier: Modifi
             audio -> Icon(Icons.Filled.MusicNote, null, Modifier.size(32.dp), tint = ViColors.white)
             // Only platforms with a video-frame decoder (Android) can preview a local file; elsewhere the image loader
             // would read the whole (multi-GB) video into memory, so show a plain video tile instead.
-            !CanPreviewVideo -> Icon(Icons.Filled.Movie, null, Modifier.size(30.dp), tint = ViColors.white.copy(alpha = .7f))
+            // Desktop: a frame grabbed with libVLC; the clapper icon shows until it is ready.
+            !CanPreviewVideo -> rememberVideoFrame(f.uri, 0)?.let { Image(it, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop) }
+                ?: Icon(Icons.Filled.Movie, null, Modifier.size(30.dp), tint = ViColors.white.copy(alpha = .7f))
             else -> AsyncImage(f.uri, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
         }
         if (audio && thumb != null) Box(Modifier.align(Alignment.BottomStart).padding(6.dp).size(22.dp).clip(CircleShape).background(VRed), contentAlignment = Alignment.Center) {
