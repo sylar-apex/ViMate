@@ -30,16 +30,27 @@ class PlaybackLauncher(private val library: Library) {
         KMediaPlayer.playVideo(listOf(info.toMediaFile(audioOnly = false)), 0)
     }
 
+    /** True while a tapped track is being resolved, so the UI can show it is starting. */
+    val preparing = kotlinx.coroutines.flow.MutableStateFlow(false)
+
     suspend fun audio(videos: List<Video>, index: Int) {
-        // Queue a window around the tapped track; stream URLs resolve in parallel.
+        // Start the tapped track as soon as it resolves, then fill in the rest of the queue around it.
+        preparing.value = true
+        val first = try { YouTube.info(videos[index].id).toMediaFile(true) } finally { preparing.value = false }
+        KMediaPlayer.playMusic(listOf(first), 0)
         val from = (index - 5).coerceAtLeast(0)
         val window = videos.subList(from, minOf(videos.size, index + 25))
         val resolved = coroutineScope {
-            window.map { v -> async { runCatching { YouTube.info(v.id).toMediaFile(true) }.getOrNull() } }.awaitAll()
+            window.mapIndexed { i, v -> async { if (from + i == index) first else runCatching { YouTube.info(v.id).toMediaFile(true) }.getOrNull() } }.awaitAll()
         }
-        val target = resolved[index - from] ?: error("Track unavailable")
         val files = resolved.filterNotNull()
-        KMediaPlayer.playMusic(files, files.indexOf(target))
+        // Swap in the full queue only if the user is still on this track; keep its position.
+        if (KMediaPlayer.queue.value.singleOrNull()?.uri == first.uri) {
+            val pos = KMediaPlayer.engine.position
+            KMediaPlayer.queue.value = files
+            KMediaPlayer.engine.setItems(files, files.indexOfFirst { it.uri == first.uri }.coerceAtLeast(0), pos)
+            KMediaPlayer.engine.prepare(); KMediaPlayer.engine.play()
+        }
     }
 
     /** A local file or downloaded uri, as Files plays them (POC FilesScreen: playMusic / playVideo / playUrl). */

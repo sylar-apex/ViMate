@@ -1,5 +1,13 @@
 package org.app.vimate
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import org.app.vimate.appres.resources.music_loading
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.key
 import org.app.vimate.shell.TitleBar
 import org.app.vimate.appcore.adaptive.LocalTitleBarArea
@@ -174,7 +182,14 @@ private fun Root(nav: AppNavigator, toast: ToastState, embeddedPlayer: Boolean, 
                 val queue by KMediaPlayer.queue.collectAsState()
                 val hideMini = dest != null && (dest.hasRoute(Routes.Shorts::class) || dest.hasRoute(Routes.Detail::class))
                 val barBelow = onTabs && !wide
-                if (queue.isNotEmpty() && !hideMini)
+                // While a tapped song resolves, show a loading bar right away so the tap is visibly taken.
+                val preparing by launcher.preparing.collectAsState()
+                if (preparing && !hideMini) Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp).height(64.dp).clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) {
+                    CircularProgressIndicator(Modifier.size(22.dp), color = VRed, strokeWidth = 2.5.dp)
+                    Text(stringResource(Res.string.music_loading), Modifier.padding(start = 14.dp), color = MaterialTheme.colorScheme.onSurface, fontSize = 14.sp)
+                }
+                else if (queue.isNotEmpty() && !hideMini)
                     Box(Modifier.clickableNoRipple { launcher.nowPlaying.value = true }.padding(bottom = if (barBelow) ShellLayoutSpec.miniAboveBar else 0.dp)) { MiniPlayer() }
                 if (!barBelow) Spacer(Modifier.navigationBarsPadding())
             }

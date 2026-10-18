@@ -1,5 +1,6 @@
 package org.app.vimate.music.ui
 
+import androidx.compose.material.icons.filled.Shuffle
 import org.app.vimate.appcore.component.ShimmerBlock
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.filled.Check
@@ -129,19 +130,37 @@ fun YtPlaylistContent(listId: String, state: YtPlaylistContract.State, onEvent: 
 @Composable
 private fun WidePlaylist(listId: String, p: YtPlaylistContract.State, onEvent: (YtPlaylistContract.Event) -> Unit) {
     val nav = LocalAppNavigator.current
+    WideCollection(
+        key = listId, title = p.title, owner = p.owner, videos = p.videos, loading = p.loading,
+        error = p.error?.let { e -> { ErrorBox(e.text()) { onEvent(YtPlaylistContract.Event.Retry) } } },
+        shareUrl = "https://www.youtube.com/playlist?list=$listId",
+        onPlayAll = { p.videos.firstOrNull()?.let { nav.go(Routes.Detail.of(it)) } },
+        onOpen = { _, v -> nav.go(Routes.Detail.of(v)) },
+    )
+}
+
+/**
+ * Wide layout shared by YouTube playlists and YouTube Music albums / playlists: cover card on the left
+ * (art, title, owner, count, Play all, download-several, share), numbered rows on the right, in-place select mode.
+ */
+@Composable
+internal fun WideCollection(
+    key: String, title: String, owner: String, videos: List<Video>, loading: Boolean, error: (@Composable () -> Unit)?,
+    shareUrl: String?, onPlayAll: () -> Unit, onOpen: (Int, Video) -> Unit, onShuffle: (() -> Unit)? = null,
+) {
+    val nav = LocalAppNavigator.current
     val share = rememberShareText()
-    val cover = p.videos.firstOrNull()?.thumbnail
+    val cover = videos.firstOrNull()?.thumbnail
     val toast = LocalToast.current
     val addedText = stringResource(Res.string.batch_added, 0)
     // Select mode happens in place: numbers turn into checks; the dialog opens over this page.
-    var selecting by remember(listId) { mutableStateOf(false) }
-    var picked by remember(listId) { mutableStateOf(emptySet<String>()) }
+    var selecting by remember(key) { mutableStateOf(false) }
+    var picked by remember(key) { mutableStateOf(emptySet<String>()) }
     var dialog by remember { mutableStateOf(false) }
-    if (dialog) BatchDownloadDialog(p.videos.filter { it.id in picked }, { dialog = false }) { n ->
+    if (dialog) BatchDownloadDialog(videos.filter { it.id in picked }, { dialog = false }) { n ->
         selecting = false; toast(addedText.replace("0", "$n")); nav.home(Tab.FILES)
     }
     Row(Modifier.fillMaxSize().background(ViColors.wideCanvas).padding(16.dp), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
-        // Cover card: the first video's art over a dark brand wash, as on YouTube.
         Box(Modifier.width(300.dp).fillMaxHeight().clip(RoundedCornerShape(16.dp))
             .background(Brush.verticalGradient(listOf(Color(0xFF7A2E22), Color(0xFF3A1A16), ViColors.wideCanvas)))) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
@@ -149,34 +168,35 @@ private fun WidePlaylist(listId: String, p: YtPlaylistContract.State, onEvent: (
                     if (cover != null) AsyncImage(cover, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                     else ShimmerBlock(Modifier.fillMaxSize(), 14.dp)
                 }
-                if (p.loading && p.title.isEmpty()) {
+                if (loading && title.isEmpty()) {
                     ShimmerBlock(Modifier.padding(top = 16.dp).fillMaxWidth(.8f).height(22.dp))
                     ShimmerBlock(Modifier.padding(top = 10.dp).fillMaxWidth(.45f).height(14.dp))
-                } else Text(p.title, Modifier.padding(top = 14.dp), fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp, color = Color.White, maxLines = 3)
-                if (p.owner.isNotEmpty()) Text(p.owner, Modifier.padding(top = 8.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = .9f))
-                Text(stringResource(Res.string.music_videos_count, p.videos.size), Modifier.padding(top = 4.dp), fontSize = 13.sp, color = Color.White.copy(alpha = .7f))
+                } else Text(title, Modifier.padding(top = 14.dp), fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp, color = Color.White, maxLines = 3)
+                if (owner.isNotEmpty()) Text(owner, Modifier.padding(top = 8.dp), fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.White.copy(alpha = .9f))
+                if (!(loading && videos.isEmpty())) Text(stringResource(Res.string.music_videos_count, videos.size), Modifier.padding(top = 4.dp), fontSize = 13.sp, color = Color.White.copy(alpha = .7f))
                 Row(Modifier.padding(top = 18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Row(Modifier.height(36.dp).clip(CircleShape).background(Color.White).clickable { p.videos.firstOrNull()?.let { nav.go(Routes.Detail.of(it)) } }
+                    Row(Modifier.height(36.dp).clip(CircleShape).background(Color.White).clickable(onClick = onPlayAll)
                         .padding(horizontal = 20.dp), verticalAlignment = Alignment.CenterVertically) {
                         Ic(Res.drawable.ic_play, Modifier.size(20.dp), Color.Black)
                         Text(stringResource(Res.string.music_play_all), Modifier.padding(start = 6.dp), color = Color.Black, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     }
-                    RoundAction(Res.drawable.ic_d_download, VRed) { if (p.videos.isNotEmpty()) { selecting = true; picked = p.videos.map { it.id }.toSet() } }
-                    RoundAction(Res.drawable.ic_d_share, Color.White.copy(alpha = .15f)) { share("https://www.youtube.com/playlist?list=$listId") }
+                    onShuffle?.let { s -> Box(Modifier.size(36.dp).clip(CircleShape).background(Color.White.copy(alpha = .15f)).clickable(onClick = s), contentAlignment = Alignment.Center) { Icon(Icons.Filled.Shuffle, null, Modifier.size(18.dp), tint = Color.White) } }
+                    RoundAction(Res.drawable.ic_d_download, VRed) { if (videos.isNotEmpty()) { selecting = true; picked = videos.map { it.id }.toSet() } }
+                    shareUrl?.let { u -> RoundAction(Res.drawable.ic_d_share, Color.White.copy(alpha = .15f)) { share(u) } }
                 }
             }
         }
         Column(Modifier.weight(1f).fillMaxHeight()) {
-            if (selecting) SelectBar(picked.size, p.videos.size, picked.size == p.videos.size,
-                onAll = { picked = if (picked.size == p.videos.size) emptySet() else p.videos.map { it.id }.toSet() },
+            if (selecting) SelectBar(picked.size, videos.size, picked.size == videos.size,
+                onAll = { picked = if (picked.size == videos.size) emptySet() else videos.map { it.id }.toSet() },
                 onCancel = { selecting = false }, onDownload = { if (picked.isNotEmpty()) dialog = true })
             LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 20.dp)) {
-                if (p.loading) items(8) { PlaceholderRow() }
-                p.error?.let { e -> item { ErrorBox(e.text()) { onEvent(YtPlaylistContract.Event.Retry) } } }
-                itemsIndexed(p.videos, key = { _, v -> v.id }) { i, v ->
+                if (loading) items(8) { PlaceholderRow() }
+                error?.let { e -> item { e() } }
+                itemsIndexed(videos, key = { i, v -> "$i${v.id}" }) { i, v ->
                     val on = v.id in picked
                     NumberedRow(i + 1, v, if (selecting) on else null,
-                        { if (selecting) picked = if (on) picked - v.id else picked + v.id else nav.go(Routes.Detail.of(v)) }) { nav.download(v) }
+                        { if (selecting) picked = if (on) picked - v.id else picked + v.id else onOpen(i, v) }) { nav.download(v) }
                 }
             }
         }

@@ -36,7 +36,7 @@ import org.app.vimate.sharedlogic.yt.Video
 @Composable internal fun GoogleLoginRoute() = Readable { org.app.vimate.me.ui.GoogleLoginScreen() }
 @Composable internal fun AccountFeedRoute(r: Routes.AccountFeed) = Readable { org.app.vimate.me.ui.AccountFeedScreen(r.title, r.browseId) }
 @Composable internal fun BatchSelectRoute(r: Routes.BatchSelect) = Readable { org.app.vimate.batch.ui.BatchSelectScreen(r.videos) }
-@Composable internal fun MusicCollectionRoute(r: Routes.MusicCollection) = Readable { org.app.vimate.music.ui.MusicCollectionScreen(r) }
+@Composable internal fun MusicCollectionRoute(r: Routes.MusicCollection) = org.app.vimate.music.ui.MusicCollectionScreen(r)
 @Composable internal fun MusicSearchRoute() = Readable { org.app.vimate.music.ui.MusicSearchScreen() }
 @Composable internal fun HistoryRoute() = Readable { org.app.vimate.me.ui.HistoryScreen() }
 @Composable internal fun PlaylistsRoute() = Readable { org.app.vimate.me.ui.PlaylistsScreen() }

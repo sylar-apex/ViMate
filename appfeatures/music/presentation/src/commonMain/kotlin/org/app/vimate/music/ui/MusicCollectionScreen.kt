@@ -1,5 +1,6 @@
 package org.app.vimate.music.ui
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -48,6 +49,14 @@ fun MusicCollectionContent(routeTitle: String, state: MusicCollectionContract.St
     val nav = LocalAppNavigator.current
     val songs = state.songs
     val noSongs = stringResource(Res.string.music_no_songs)
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+    // Desktop / tablets: same cover card + numbered list as YouTube playlists; tapping a song plays it as music.
+    if (maxWidth >= 840.dp) return@BoxWithConstraints WideCollection(
+        key = routeTitle, title = state.title?.ifEmpty { null } ?: routeTitle, owner = "", videos = songs, loading = state.loading,
+        error = state.error?.let { e -> { ErrorBox(e.text()) { onEvent(MusicCollectionContract.Event.Retry) } } }, shareUrl = null,
+        onPlayAll = { onEvent(MusicCollectionContract.Event.PlayAll) }, onOpen = { i, _ -> onEvent(MusicCollectionContract.Event.Tap(i)) },
+        onShuffle = { onEvent(MusicCollectionContract.Event.Shuffle) },
+    )
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         BackBar(state.title?.ifEmpty { null } ?: routeTitle, { nav.back() })
         LazyColumn {
@@ -65,5 +74,6 @@ fun MusicCollectionContent(routeTitle: String, state: MusicCollectionContract.St
             }
             item { if (state.loading) Loading() else state.error?.let { e -> ErrorBox(e.text()) { onEvent(MusicCollectionContract.Event.Retry) } } ?: if (songs.isEmpty()) Empty(noSongs) else Unit }
         }
+    }
     }
 }
